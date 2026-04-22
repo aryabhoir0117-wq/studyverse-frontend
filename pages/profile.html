@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Pirate Profile</title>
+<link rel="stylesheet" href="../css/layout.css">
+</head>
+<body>
+
+<div class="app-layout">
+
+<aside class="sidebar">
+  <h2 class="logo">StudyVerse</h2>
+  <nav class="nav-links">
+    <a href="dashboard.html">Dashboard</a>
+    <a href="profile.html">Profile</a>
+  </nav>
+</aside>
+
+<div class="main-area">
+  <h1 style="padding:20px;">Pirate Profile</h1>
+
+  <div style="display:flex;gap:30px;padding:0 30px;flex-wrap:wrap;">
+
+    <div class="wanted-poster">
+      <h2>WANTED</h2>
+      <h3>PASS OR FAIL</h3>
+      <img src="" id="profileAvatar" style="width:150px;height:150px;object-fit:cover;border:4px solid black;margin:15px 0;">
+      <h3 id="profileName">Pirate</h3>
+      <p id="profileStatus" style="font-size:18px;font-weight:bold;margin:8px 0;">-</p>
+      <p class="bounty">Bounty: <span id="profileXP">0</span> Berries</p>
+      <p style="color:#3b2b15;margin-top:8px;">Rank: <span id="profileRank">Cabin Boy</span></p>
+      <p style="color:#3b2b15;">Streak: <span id="profileStreak">0</span></p>
+      <p style="color:#3b2b15;">Lessons: <span id="profileLessons">0</span></p>
+    </div>
+
+    <div>
+      <h3 style="color:#facc15;margin-bottom:15px;">Choose Your Pirate</h3>
+      <div id="avatarPicker" style="display:flex;flex-wrap:wrap;max-width:400px;"></div>
+    </div>
+
+  </div>
+</div>
+
+</div>
+
+<script src="../js/profile.js"></script>
+</body>
+</html>

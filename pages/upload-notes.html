@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Upload Notes</title>
+<link rel="stylesheet" href="../css/layout.css">
+</head>
+<body>
+
+<div class="app-layout">
+
+<aside class="sidebar">
+  <h2 class="logo">StudyVerse</h2>
+  <nav class="nav-links">
+    <a href="teacher-dashboard.html">Dashboard</a>
+    <a href="create-lesson.html">Create Lesson</a>
+    <a href="upload-notes.html">Upload Notes</a>
+  </nav>
+</aside>
+
+<div class="main-area">
+  <h1 style="padding:20px;">Upload Notes</h1>
+
+  <div class="form-box">
+
+    <label>Subject</label>
+    <select id="notesSubject">
+      <option value="maths">Math</option>
+      <option value="science">Science</option>
+      <option value="english">English</option>
+    </select>
+
+    <label>Title</label>
+    <input type="text" id="notesTitle" class="input-field" placeholder="Enter notes title">
+
+    <label>Content</label>
+    <textarea id="notesContent" rows="5"></textarea>
+
+    <label>Date</label>
+    <div style="display:flex;gap:10px;align-items:center;margin-bottom:20px;">
+      <input type="text" id="notesDate" class="input-field" placeholder="DD/MM/YYYY" style="margin-bottom:0;">
+      <button onclick="setToday()" class="btn-outline" style="white-space:nowrap;">📅 Today</button>
+    </div>
+
+    <button onclick="saveNotes()" class="btn-primary">Upload Text Notes</button>
+
+    <hr>
+
+    <label>Upload PDF</label><br><br>
+    <input type="file" id="pdfInput" accept=".pdf"><br><br>
+    <button onclick="uploadPDF()" class="btn-primary">Upload PDF</button>
+    <p id="uploadStatus" style="margin-top:10px;color:#facc15;"></p>
+
+  </div>
+
+  <h2 style="padding:20px 30px;">📋 My Uploaded Notes</h2>
+
+  <div style="padding:0 30px 30px;">
+    <table id="notesTable" style="width:100%;border-collapse:collapse;">
+      <thead>
+        <tr style="background:#1e293b;color:#facc15;">
+          <th style="padding:12px;text-align:left;border-bottom:1px solid #334155;">Title</th>
+          <th style="padding:12px;text-align:left;border-bottom:1px solid #334155;">Subject</th>
+          <th style="padding:12px;text-align:left;border-bottom:1px solid #334155;">Date</th>
+          <th style="padding:12px;text-align:left;border-bottom:1px solid #334155;">Content</th>
+          <th style="padding:12px;text-align:left;border-bottom:1px solid #334155;">PDF</th>
+          <th style="padding:12px;text-align:left;border-bottom:1px solid #334155;">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="notesTableBody">
+        <tr><td colspan="6" style="padding:20px;color:#94a3b8;">Loading...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+</div>
+
+<script src="../js/upload-notes.js"></script>
+</body>
+</html>

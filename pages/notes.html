@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Study Notes</title>
+<link rel="stylesheet" href="../css/layout.css">
+</head>
+<body>
+
+<div class="app-layout">
+
+<aside class="sidebar">
+  <h2 class="logo">StudyVerse</h2>
+  <nav class="nav-links">
+    <a href="dashboard.html">Dashboard</a>
+  </nav>
+</aside>
+
+<div class="main-area">
+
+  <h1 style="padding:20px;" id="notesTitle">Notes</h1>
+
+  <div style="padding:0 30px 30px;">
+    <table style="width:100%;border-collapse:collapse;">
+      <thead>
+        <tr style="background:#1e293b;color:#facc15;">
+          <th style="padding:12px;text-align:left;border-bottom:1px solid #334155;">Title</th>
+          <th style="padding:12px;text-align:left;border-bottom:1px solid #334155;">Subject</th>
+          <th style="padding:12px;text-align:left;border-bottom:1px solid #334155;">Date</th>
+          <th style="padding:12px;text-align:left;border-bottom:1px solid #334155;">Content</th>
+          <th style="padding:12px;text-align:left;border-bottom:1px solid #334155;">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="notesTableBody">
+        <tr><td colspan="5" style="padding:20px;color:#94a3b8;">Loading...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div id="pdfViewer" style="padding:0 30px 30px;display:none;">
+    <h3 style="color:#facc15;margin-bottom:15px;">📄Catch-UP</h3>
+    <iframe id="pdfFrame" width="100%" height="600px" style="border:none;border-radius:8px;"></iframe>
+  </div>
+
+</div>
+</div>
+
+<script src="../js/notes.js"></script>
+</body>
+</html>

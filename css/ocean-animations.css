@@ -1,0 +1,886 @@
+/* ============================================================
+   STUDYVERSE — OCEAN ANIMATIONS
+   Separate animation layer. Do not modify layout.css.
+   Day / Night toggle via [data-theme="day"] | [data-theme="night"]
+   ============================================================ */
+
+/* ── IMPORT ── */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600;700&family=IM+Fell+English:ital@0;1&display=swap');
+
+/* ══════════════════════════════════════════════
+   1. CSS VARIABLES — DAY / NIGHT THEMES
+══════════════════════════════════════════════ */
+:root,
+[data-theme="day"] {
+  --sky-top:        #3a9bd5;
+  --sky-mid:        #87ceeb;
+  --sky-horizon:    #b8e4f7;
+  --ocean-deep:     #02283d;
+  --ocean-mid:      #2885b4;
+  --ocean-surface:  #1fa3e0;
+  --ocean-shimmer:  rgba(255,255,255,0.18);
+  --wave-color:     rgba(255,255,255,0.12);
+  --card-bg:        rgba(20, 60, 90, 0.55);
+  --card-border:    rgba(255, 215, 80, 0.45);
+  --card-glow:      rgba(255, 200, 50, 0.35);
+  --card-shadow:    rgba(0, 80, 140, 0.5);
+  --gold:           #f5c842;
+  --gold-bright:    #ffe066;
+  --gold-dim:       #b8922a;
+  --text-primary:   #f0e8d0;
+  --text-secondary: #b8d4e8;
+  --text-accent:    #f5c842;
+  --sidebar-bg:     rgba(10, 30, 50, 0.85);
+  --sidebar-wood:   linear-gradient(180deg, #0a1e32 0%, #0d2540 40%, #0a1e32 100%);
+  --topbar-bg:      rgba(16, 104, 151, 0.668);
+  --ripple-color:   rgba(255, 255, 255, 0.3);
+  --sun-glow:       radial-gradient(ellipse at 75% 10%, rgba(255,220,100,0.22) 0%, transparent 60%);
+  --fog-overlay:    rgba(180,220,240,0.04);
+  --star-opacity:   0;
+  --moon-opacity:   0;
+  --biolumi-opacity: 0;
+}
+
+[data-theme="night"] {
+  --sky-top:        #020b18;
+  --sky-mid:        #0b1d3a;
+  --sky-horizon:    #003f9d;
+  --ocean-deep:     #030f1f;
+  --ocean-mid:      #051525;
+  --ocean-surface:  #062035;
+  --ocean-shimmer:  rgba(66, 134, 218, 0.08);
+  --wave-color:     rgba(30,100,180,0.15);
+  --card-bg:        rgba(5, 20, 40, 0.72);
+  --card-border:    rgba(60, 160, 255, 0.35);
+  --card-glow:      rgba(30, 120, 255, 0.25);
+  --card-shadow:    rgba(0, 20, 60, 0.8);
+  --gold:           #e8b84b;
+  --gold-bright:    #ffd166;
+  --gold-dim:       #8a6420;
+  --text-primary:   #d8e8f5;
+  --text-secondary: #7aa8cc;
+  --text-accent:    #e8b84b;
+  --sidebar-bg:     rgba(3, 10, 22, 0.92);
+  --sidebar-wood:   linear-gradient(180deg, #030a16 0%, #050f20 40%, #030a16 100%);
+  --topbar-bg:      rgba(29, 55, 74, 0.374);
+  --ripple-color:   rgba(60,160,255,0.25);
+  --sun-glow:       none;
+  --fog-overlay:    rgba(5,15,30,0.08);
+  --star-opacity:   1;
+  --moon-opacity:   1;
+  --biolumi-opacity: 1;
+}
+
+/* ══════════════════════════════════════════════
+   2. OCEAN WORLD BACKGROUND
+══════════════════════════════════════════════ */
+body {
+  font-family: 'Cinzel', serif;
+  background: none !important;
+  animation: none !important;
+  position: relative;
+  overflow-x: hidden;
+  color: var(--text-primary);
+  transition: color 0.8s ease;
+}
+
+/* Sky + ocean layered background */
+.ocean-world {
+  position: fixed;
+  inset: 0;
+  z-index: -10;
+  overflow: hidden;
+}
+
+/* Sky */
+.ocean-world .sky-layer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    var(--sky-top)     0%,
+    var(--sky-mid)     45%,
+    var(--sky-horizon) 65%,
+    var(--ocean-deep)  70%
+  );
+  transition: background 1.2s ease;
+}
+
+/* Sun glow (day only) */
+.ocean-world .sun-glow {
+  position: absolute;
+  inset: 0;
+  background: var(--sun-glow);
+  pointer-events: none;
+  transition: opacity 1.2s ease;
+}
+
+/* Deep ocean floor */
+.ocean-world .ocean-layer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 42%;
+  background: linear-gradient(
+    180deg,
+    var(--ocean-surface) 0%,
+    var(--ocean-mid)     35%,
+    var(--ocean-deep)    100%
+  );
+  transition: background 1.2s ease;
+}
+
+/* ── WAVE LAYERS ── */
+.wave {
+  position: absolute;
+  width: 200%;
+  height: 80px;
+  left: -50%;
+  border-radius: 50% 50% 0 0 / 30px 30px 0 0;
+  background: var(--wave-color);
+  backdrop-filter: blur(1px);
+  animation: waveScroll linear infinite;
+}
+
+.wave-1 { bottom: 36%; animation-duration: 14s; opacity: 0.7; height: 55px; }
+.wave-2 { bottom: 34%; animation-duration: 18s; animation-direction: reverse; opacity: 0.45; height: 45px; }
+.wave-3 { bottom: 32%; animation-duration: 22s; opacity: 0.3; height: 38px; }
+
+@keyframes waveScroll {
+  0%   { transform: translateX(0)   scaleY(1); }
+  25%  { transform: translateX(8%)  scaleY(1.04); }
+  50%  { transform: translateX(25%) scaleY(0.96); }
+  75%  { transform: translateX(18%) scaleY(1.02); }
+  100% { transform: translateX(50%) scaleY(1); }
+}
+
+/* Shimmer surface line */
+.ocean-world .shimmer-line {
+  position: absolute;
+  bottom: 40%;
+  left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--ocean-shimmer), transparent);
+  animation: shimmerMove 4s ease-in-out infinite;
+}
+
+@keyframes shimmerMove {
+  0%, 100% { opacity: 0.4; transform: scaleX(0.95); }
+  50%       { opacity: 1;   transform: scaleX(1); }
+}
+
+/* ── STARS (night) ── */
+.stars-layer {
+  position: absolute;
+  inset: 0;
+  opacity: var(--star-opacity);
+  transition: opacity 1.2s ease;
+  pointer-events: none;
+}
+
+.star {
+  position: absolute;
+  border-radius: 50%;
+  background: rgb(222, 236, 118);
+  animation: starTwinkle ease-in-out infinite;
+}
+
+@keyframes starTwinkle {
+  0%, 100% { opacity: 0.2; transform: scale(1); }
+  50%       { opacity: 1;   transform: scale(1.4); }
+}
+
+/* ── MOON (night) ── */
+.moon {
+  position: absolute;
+  top: 6%;
+  right: 12%;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fff8e1, #f0d080);
+  box-shadow: 0 0 30px 10px rgba(240,210,100,0.25), 0 0 80px 20px rgba(200,170,60,0.1);
+  opacity: var(--moon-opacity);
+  transition: opacity 1.2s ease;
+}
+
+/* Moon reflection on water */
+.moon-reflection {
+  position: absolute;
+  bottom: 18%;
+  right: 11%;
+  width: 28px;
+  height: 120px;
+  background: linear-gradient(180deg, rgba(240,210,100,0.35), transparent);
+  border-radius: 50%;
+  filter: blur(6px);
+  opacity: var(--moon-opacity);
+  animation: reflectionSway 5s ease-in-out infinite;
+  transition: opacity 1.2s ease;
+}
+
+@keyframes reflectionSway {
+  0%, 100% { transform: scaleX(1) translateX(0); }
+  50%       { transform: scaleX(1.3) translateX(3px); }
+}
+
+/* ── BIOLUMINESCENCE (night) ── */
+.biolumi-particle {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(80,220,255,0.9), transparent);
+  opacity: 0;
+  animation: biolumiFloat ease-in-out infinite;
+  filter: blur(2px);
+}
+
+@keyframes biolumiFloat {
+  0%   { opacity: 0;   transform: translateY(0)   scale(0.5); }
+  30%  { opacity: calc(var(--biolumi-opacity) * 0.8); }
+  70%  { opacity: calc(var(--biolumi-opacity) * 0.6); }
+  100% { opacity: 0;   transform: translateY(-60px) scale(1.3); }
+}
+
+/* ── FLOATING LIGHT RAYS (day) ── */
+.light-ray {
+  position: absolute;
+  top: 0;
+  width: 2px;
+  height: 55%;
+  background: linear-gradient(180deg, rgba(255,255,200,0.08), transparent);
+  transform-origin: top center;
+  animation: rayDrift ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes rayDrift {
+  0%, 100% { opacity: 0.4; transform: rotate(-2deg) scaleY(1); }
+  50%       { opacity: 0.8; transform: rotate(2deg)  scaleY(1.05); }
+}
+
+/* ── DISTANT ISLAND (decorative) ── */
+.distant-island {
+  position: absolute;
+  bottom: 40%;
+  border-radius: 50% 50% 0 0;
+  background: linear-gradient(180deg, #1a4a20, #0d3015);
+  opacity: 0.35;
+  filter: blur(1px);
+  pointer-events: none;
+}
+
+/* ══════════════════════════════════════════════
+   3. FLOATING CARD PHYSICS
+══════════════════════════════════════════════ */
+
+/* Base floating state */
+.stat-card,
+.subject-card {
+  background: var(--card-bg) !important;
+  border: 1px solid var(--card-border) !important;
+  box-shadow:
+    0 8px 32px var(--card-shadow),
+    0 0 0 0.5px rgba(255,215,80,0.1),
+    inset 0 1px 0 rgba(255,255,255,0.08) !important;
+  backdrop-filter: blur(14px) saturate(1.4);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  border-radius: 18px !important;
+  position: relative;
+  overflow: hidden;
+  transition:
+    transform 0.5s cubic-bezier(0.23,1,0.32,1),
+    box-shadow 0.5s ease,
+    border-color 0.5s ease !important;
+  will-change: transform;
+  color: var(--text-primary) !important;
+}
+
+/* Wood grain overlay on cards */
+.stat-card::before,
+.subject-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 18px,
+    rgba(0,0,0,0.04) 18px,
+    rgba(0,0,0,0.04) 19px
+  );
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: 0.4;
+}
+
+/* Gold top edge accent */
+.stat-card::after,
+.subject-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 12%; right: 12%;
+  height: 1.5px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  border-radius: 0 0 4px 4px;
+}
+
+/* Floating class injected by JS */
+.floating-card {
+  animation: oceanFloat ease-in-out infinite;
+}
+
+@keyframes oceanFloat {
+  0%   { transform: translateY(0px)   rotate(0deg); }
+  20%  { transform: translateY(-5px)  rotate(0.25deg); }
+  50%  { transform: translateY(-9px)  rotate(-0.2deg); }
+  80%  { transform: translateY(-4px)  rotate(0.15deg); }
+  100% { transform: translateY(0px)   rotate(0deg); }
+}
+
+/* Hover: tilt + glow */
+.stat-card:hover,
+.subject-card:hover {
+  transform: translateY(-14px) rotate(-0.4deg) scale(1.025) !important;
+  box-shadow:
+    0 20px 50px var(--card-glow),
+    0 0 30px var(--card-glow),
+    inset 0 1px 0 rgba(255,255,255,0.12) !important;
+  border-color: var(--gold) !important;
+  animation-play-state: paused !important;
+}
+
+/* Ripple ring under card on hover */
+.card-ripple {
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%) scale(0);
+  width: 90%;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, var(--ripple-color) 0%, transparent 70%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.stat-card:hover .card-ripple,
+.subject-card:hover .card-ripple {
+  animation: cardRippleExpand 0.6s ease forwards;
+}
+
+@keyframes cardRippleExpand {
+  0%   { transform: translateX(-50%) scale(0.3); opacity: 0.8; }
+  100% { transform: translateX(-50%) scale(1.4); opacity: 0; }
+}
+
+/* ══════════════════════════════════════════════
+   4. TYPOGRAPHY — PIRATE IDENTITY
+══════════════════════════════════════════════ */
+.logo {
+  font-family: 'Cinzel Decorative', cursive !important;
+  font-size: 20px !important;
+  font-weight: 900 !important;
+  color: var(--gold) !important;
+  letter-spacing: 1px;
+  text-shadow:
+    0 0 10px rgba(245,200,66,0.6),
+    0 0 30px rgba(245,200,66,0.3),
+    0 2px 4px rgba(0,0,0,0.8);
+  animation: goldPulse 3s ease-in-out infinite !important;
+}
+
+@keyframes goldPulse {
+  0%, 100% { text-shadow: 0 0 8px rgba(245,200,66,0.5), 0 2px 4px rgba(0,0,0,0.8); }
+  50%       { text-shadow: 0 0 22px rgba(245,200,66,0.9), 0 0 40px rgba(245,200,66,0.4), 0 2px 4px rgba(0,0,0,0.8); }
+}
+
+h1, h2 {
+  font-family: 'Cinzel', serif;
+  color: var(--text-accent);
+  letter-spacing: 0.04em;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.6);
+}
+
+h3 {
+  font-family: 'Cinzel', serif;
+  color: var(--text-primary);
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+p, span {
+  font-family: 'IM Fell English', serif;
+  font-size: 22px;
+  color: var(--gold-bright);
+  font-style: normal;
+}
+
+/* ══════════════════════════════════════════════
+   5. SIDEBAR — SHIP INTERIOR
+══════════════════════════════════════════════ */
+.sidebar {
+  background: var(--sidebar-wood) !important;
+  border-right: 1px solid rgba(255,215,80,0.12) !important;
+  box-shadow: 4px 0 30px rgba(0,0,0,0.5) !important;
+  position: relative;
+  overflow: hidden;
+  transition: background 1s ease;
+}
+
+/* Lantern glow ambience */
+.sidebar::before {
+  content: '';
+  position: absolute;
+  top: 80px;
+  left: -20px;
+  width: 120px;
+  height: 120px;
+  background: radial-gradient(circle, rgba(255,160,50,0.15), transparent 70%);
+  border-radius: 50%;
+  animation: lanternFlicker 3.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes lanternFlicker {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  25%       { opacity: 0.8; transform: scale(1.05); }
+  50%       { opacity: 0.5; transform: scale(0.95); }
+  75%       { opacity: 0.9; transform: scale(1.08); }
+}
+
+/* Vertical rope accent line */
+.sidebar::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  right: 0;
+  width: 1px;
+  background: repeating-linear-gradient(
+    180deg,
+    rgba(255,215,80,0.15) 0px,
+    rgba(255,215,80,0.15) 6px,
+    transparent 6px,
+    transparent 12px
+  );
+}
+
+.nav-links a {
+  font-family: 'Cinzel', serif !important;
+  font-size: 13px !important;
+  letter-spacing: 0.08em !important;
+  color: var(--text-secondary) !important;
+  text-decoration: none !important;
+  padding: 10px 14px !important;
+  border-radius: 10px !important;
+  display: block !important;
+  transition: all 0.3s ease !important;
+  border: 1px solid transparent !important;
+  position: relative;
+}
+
+.nav-links a:hover {
+  color: var(--gold) !important;
+  background: rgba(245,200,66,0.08) !important;
+  border-color: rgba(245,200,66,0.2) !important;
+  padding-left: 20px !important;
+  box-shadow: inset 3px 0 0 var(--gold) !important;
+}
+
+/* ══════════════════════════════════════════════
+   6. TOPBAR — CAPTAIN DECK
+══════════════════════════════════════════════ */
+.topbar {
+  background: var(--topbar-bg) !important;
+  border-bottom: 1px solid rgba(255,215,80,0.12) !important;
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary) !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4) !important;
+  position: relative;
+  transition: background 1s ease;
+}
+
+/* Rope divider line */
+.topbar::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 1px;
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(255,215,80,0.2) 0px,
+    rgba(255,215,80,0.2) 4px,
+    transparent 4px,
+    transparent 10px
+  );
+}
+
+.topbar strong {
+  color: var(--gold) !important;
+  font-family: 'Cinzel Decorative', cursive;
+  font-size: 14px;
+}
+
+/* ══════════════════════════════════════════════
+   7. BUTTONS — GOLD COIN STYLE
+══════════════════════════════════════════════ */
+.btn-primary {
+  background: linear-gradient(135deg, #e8a500 0%, #f5c842 40%, #ffd966 60%, #e09800 100%) !important;
+  color: #1a0e00 !important;
+  font-family: 'Cinzel', serif !important;
+  font-size: 11px !important;
+  letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+  border: none !important;
+  border-radius: 10px !important;
+  padding: 10px 18px !important;
+  cursor: pointer !important;
+  box-shadow: 0 4px 12px rgba(200,140,0,0.4), inset 0 1px 0 rgba(255,255,255,0.3) !important;
+  transition: all 0.3s cubic-bezier(0.23,1,0.32,1) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+  transition: left 0.4s ease;
+}
+
+.btn-primary:hover::before { left: 150%; }
+
+.btn-primary:hover {
+  transform: translateY(-2px) scale(1.04) !important;
+  box-shadow: 0 8px 25px rgba(245,200,66,0.6), 0 0 20px rgba(245,200,66,0.3) !important;
+}
+
+.btn-primary:active {
+  transform: scale(0.97) !important;
+  box-shadow: 0 2px 8px rgba(200,140,0,0.4) !important;
+}
+
+.btn-outline {
+  border: 1px solid var(--gold) !important;
+  color: var(--gold) !important;
+  background: transparent !important;
+  font-family: 'Cinzel', serif !important;
+  font-size: 11px !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+  border-radius: 10px !important;
+  padding: 10px 18px !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+}
+
+.btn-outline:hover {
+  background: rgba(245,200,66,0.1) !important;
+  box-shadow: 0 0 15px rgba(245,200,66,0.25) !important;
+}
+
+/* ══════════════════════════════════════════════
+   8. STATS GRID — FLOATING RAFTS
+══════════════════════════════════════════════ */
+.stats-grid {
+  gap: 24px !important;
+}
+
+.stat-card h3 {
+  font-size: 11px !important;
+  letter-spacing: 0.14em !important;
+  opacity: 0.7;
+  margin-bottom: 10px;
+}
+
+.stat-card p {
+  font-family: 'Cinzel Decorative', cursive !important;
+  font-size: 28px !important;
+  color: var(--gold-bright) !important;
+  text-shadow: 0 0 15px rgba(245,200,66,0.5);
+  line-height: 1;
+}
+
+/* ══════════════════════════════════════════════
+   9. SUBJECT CARDS — TREASURE BOARDS
+══════════════════════════════════════════════ */
+.subjects-grid {
+  gap: 22px !important;
+}
+
+.subject-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px !important;
+}
+
+.subject-card h3 {
+  font-size: 14px !important;
+  letter-spacing: 0.1em !important;
+  color: var(--text-accent) !important;
+  text-shadow: 0 0 8px rgba(245,200,66,0.3);
+}
+
+/* Subject-specific glows */
+.subject-card.math-card     { --card-glow: rgba(255,180,60,0.25); }
+.subject-card.science-card  { --card-glow: rgba(255,180,60,0.25);  }
+.subject-card.english-card  { --card-glow: rgba(255,180,60,0.25); }
+.subject-card.gk-card       { --card-glow: rgba(255,180,60,0.25); }
+
+/* ══════════════════════════════════════════════
+   10. THEME TOGGLE BUTTON
+══════════════════════════════════════════════ */
+.theme-toggle-btn {
+  position: fixed;
+  top: 100px;
+  right: 10px;
+  z-index: 999;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  color: var(--gold);
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(242, 255, 4, 0.4);
+}
+
+.theme-toggle-btn:hover {
+  background: rgba(245,200,66,0.15);
+  border-color: var(--gold);
+  box-shadow: 0 0 20px rgba(245,200,66,0.3);
+}
+
+/* Theme transition */
+body, .sidebar, .topbar, .stat-card, .subject-card {
+  transition:
+    background 1.2s ease,
+    border-color 0.8s ease,
+    box-shadow 0.8s ease,
+    color 0.5s ease;
+}
+
+/* ══════════════════════════════════════════════
+   11. XP PARTICLE BURST
+══════════════════════════════════════════════ */
+.xp-particle {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  animation: xpParticleFly 1s cubic-bezier(0.23,1,0.32,1) forwards;
+}
+
+@keyframes xpParticleFly {
+  0%   { opacity: 1; transform: translate(0,0) scale(1); }
+  100% { opacity: 0; transform: var(--fly-to) scale(0.2); }
+}
+
+.xp-float {
+  font-family: 'Cinzel Decorative', cursive !important;
+  font-size: 18px !important;
+  color: var(--gold-bright) !important;
+  text-shadow: 0 0 10px rgba(245,200,66,0.8) !important;
+}
+
+/* ══════════════════════════════════════════════
+   12. SIDEBAR ACHIEVEMENT + TREASURE
+══════════════════════════════════════════════ */
+.sidebar > div {
+  background: rgba(0,0,0,0.25) !important;
+  border: 1px solid rgba(255,215,80,0.15) !important;
+  border-radius: 12px !important;
+  backdrop-filter: blur(6px);
+}
+
+#achievementList li {
+  font-family: 'IM Fell English', serif !important;
+  font-size: 14px !important;
+  color: var(--text-secondary) !important;
+  border-bottom: 1px solid rgba(255,215,80,0.1);
+  padding: 4px 0;
+}
+
+/* ══════════════════════════════════════════════
+   13. AI CHATBOT — SHIP BOTTLE / SCROLL
+══════════════════════════════════════════════ */
+#aiChatIcon {
+  background: linear-gradient(135deg, #1a0e00, #2a1a00) !important;
+  border: 1px solid var(--gold) !important;
+  box-shadow: 0 0 20px rgba(245,200,66,0.3), 0 4px 15px rgba(0,0,0,0.5) !important;
+  font-size: 24px !important;
+  transition: all 0.3s ease !important;
+}
+
+#aiChatIcon:hover {
+  transform: scale(1.1) rotate(5deg) !important;
+  box-shadow: 0 0 30px rgba(245,200,66,0.5) !important;
+}
+
+#aiChatBox {
+  background: linear-gradient(145deg, rgba(10,20,35,0.97), rgba(5,15,28,0.97)) !important;
+  border: 1px solid rgba(255,215,80,0.2) !important;
+  backdrop-filter: blur(20px) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.7) !important;
+}
+
+.chat-header {
+  font-family: 'Cinzel', serif !important;
+  color: var(--gold) !important;
+  border-bottom: 1px solid rgba(255,215,80,0.15) !important;
+  padding-bottom: 8px !important;
+  letter-spacing: 0.06em;
+}
+
+/* ══════════════════════════════════════════════
+   14. LOGOUT BUTTON
+══════════════════════════════════════════════ */
+.logout-btn {
+  background: transparent !important;
+  border: 1px solid rgba(233, 241, 19, 0.932) !important;
+  color: rgb(233, 245, 70) !important;
+  font-family: 'Cinzel', serif !important;
+  font-size: 11px !important;
+  letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+  border-radius: 10px !important;
+  transition: all 0.3s ease !important;
+}
+
+.logout-btn:hover {
+  background: rgba(139, 151, 45, 0.1) !important;
+  border-color: rgb(241, 253, 79) !important;
+  box-shadow: 0 0 15px rgba(225, 239, 95, 0.2) !important;
+}
+
+/* ══════════════════════════════════════════════
+   15. ACHIEVEMENT POPUP
+══════════════════════════════════════════════ */
+.achievement-popup {
+  background: linear-gradient(135deg, rgba(10,20,35,0.97), rgba(20,10,0,0.97)) !important;
+  border: 1px solid var(--gold) !important;
+  font-family: 'Cinzel', serif !important;
+  font-size: 15px !important;
+  color: var(--gold) !important;
+  letter-spacing: 0.06em !important;
+  box-shadow: 0 0 30px rgba(245,200,66,0.3), 0 10px 40px rgba(0,0,0,0.6) !important;
+}
+
+/* ══════════════════════════════════════════════
+   16. DUEL MODE STORM OVERLAY
+══════════════════════════════════════════════ */
+.duel-storm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 8888;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 30%, rgba(20,10,50,0.95) 100%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.duel-storm-overlay.active { opacity: 1; }
+
+.lightning-flash {
+  position: fixed;
+  inset: 0;
+  background: rgba(200,220,255,0.9);
+  opacity: 0;
+  z-index: 8889;
+  pointer-events: none;
+  animation: lightningBolt 0.15s ease forwards;
+}
+
+@keyframes lightningBolt {
+  0%   { opacity: 0; }
+  20%  { opacity: 1; }
+  40%  { opacity: 0; }
+  60%  { opacity: 0.7; }
+  100% { opacity: 0; }
+}
+
+/* ══════════════════════════════════════════════
+   17. TEACHER — FLEET MAP PLACEHOLDER
+══════════════════════════════════════════════ */
+.fleet-map {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 18px;
+  padding: 24px;
+  margin-top: 24px;
+  backdrop-filter: blur(14px);
+  position: relative;
+  overflow: hidden;
+  min-height: 180px;
+}
+
+.fleet-map h3 {
+  font-family: 'Cinzel', serif;
+  color: var(--text-accent);
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  margin-bottom: 16px;
+}
+
+/* ══════════════════════════════════════════════
+   18. SCROLL-IN ENTRANCE
+══════════════════════════════════════════════ */
+@keyframes floatIn {
+  0%   { opacity: 0; transform: translateY(30px) scale(0.96); }
+  100% { opacity: 1; transform: translateY(0px)  scale(1); }
+}
+
+.float-in {
+  animation: floatIn 0.7s cubic-bezier(0.23,1,0.32,1) both;
+}
+
+/* ══════════════════════════════════════════════
+   19. CONTENT AREA
+══════════════════════════════════════════════ */
+.content {
+  background: transparent !important;
+}
+
+.content h1 {
+  font-family: 'Cinzel Decorative', cursive;
+  font-size: 26px;
+  letter-spacing: 0.06em;
+  margin-bottom: 6px;
+}
+
+.content h2 {
+  font-family: 'Cinzel', serif;
+  font-size: 16px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+/* ══════════════════════════════════════════════
+   20. SCROLLBAR
+══════════════════════════════════════════════ */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(245,200,66,0.25);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(245,200,66,0.5);
+}

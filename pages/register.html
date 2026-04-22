@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register — StudyVerse</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/auth.css">
+
+  <!-- Google Identity Services -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body background="../assets/Screenshot 2026-04-22 150350.png">
+
+<!-- VIDEO BG -->
+<!-- <video class="video-bg" autoplay muted loop playsinline>
+  <source src="../assets/ocean.mp4" type="video/mp4">
+</video> -->
+
+<!-- OVERLAY + STARS -->
+<div class="overlay"></div>
+<div class="stars" id="stars"></div>
+
+<!-- FIXED UI -->
+<a href="../index.html" class="brand-fixed">⚓ StudyVerse</a>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+  <span class="icon">☀️</span>
+  <span class="label">Light</span>
+</button>
+
+<!-- CENTERED CARD -->
+<div class="page">
+  <div class="auth-card">
+
+    <div class="card-header">
+      <span class="card-icon">🏴‍☠️</span>
+      <h2>Join the Crew</h2>
+      <p>Claim your spot on the ship</p>
+      <div class="gold-rule"></div>
+    </div>
+
+    <!-- ROLE -->
+    <div class="role-toggle">
+      <input type="radio" name="role" id="role-student" value="student" checked>
+      <label for="role-student">Student</label>
+      <input type="radio" name="role" id="role-teacher" value="teacher">
+      <label for="role-teacher">Teacher</label>
+    </div>
+
+    <div class="error-banner" id="errorBanner"></div>
+
+    <!-- ── GOOGLE BUTTON ──────────────────────────── -->
+    <!--
+      data-client_id   : your Google OAuth Client ID (paste it here)
+      data-callback    : the function in auth.js that receives the token
+      data-context     : "signup" shows "Sign up with Google" phrasing
+      The div renders the official Google button — no custom CSS needed.
+    -->
+    <div id="g_id_onload"
+         data-client_id="747967606643-nthgmpsfjvf9asqb71traqmmu8b6th49.apps.googleusercontent.com"
+         data-callback="handleGoogleCredential"
+         data-auto_prompt="false">
+    </div>
+
+    <div class="g_id_signin"
+         data-type="standard"
+         data-shape="rectangular"
+         data-theme="outline"
+         data-text="signup_with"
+         data-size="large"
+         data-logo_alignment="left"
+         data-width="360"
+         style="margin-bottom: 4px;">
+    </div>
+
+    <div class="divider"><span>or</span></div>
+    <!-- ─────────────────────────────────────────── -->
+
+    <form id="registerForm" novalidate>
+
+      <div class="field">
+        <label for="username">Username</label>
+        <div class="field-wrap">
+          <span class="field-icon"></span>
+          <input type="text" id="username" placeholder="e.g. CaptainArya"
+                 autocomplete="username" maxlength="20">
+          <span class="field-status" id="usernameStatus"></span>
+        </div>
+        <div class="field-msg" id="usernameMsg"></div>
+      </div>
+
+      <div class="field">
+        <label for="email">Email</label>
+        <div class="field-wrap">
+          <span class="field-icon"></span>
+          <input type="email" id="email" placeholder="captain@seas.com" autocomplete="email">
+          <span class="field-status" id="emailStatus"></span>
+        </div>
+        <div class="field-msg" id="emailMsg"></div>
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <div class="field-wrap">
+          <span class="field-icon"></span>
+          <input type="password" id="password" placeholder="Min 8 chars, letters + numbers"
+                 autocomplete="new-password">
+          <span class="field-status" id="passwordStatus"></span>
+        </div>
+        <div class="strength-bar">
+          <div class="strength-seg" id="seg1"></div>
+          <div class="strength-seg" id="seg2"></div>
+          <div class="strength-seg" id="seg3"></div>
+          <div class="strength-seg" id="seg4"></div>
+        </div>
+        <div class="field-msg" id="passwordMsg"></div>
+      </div>
+
+      <div class="field">
+        <label for="confirmPassword">Confirm Password</label>
+        <div class="field-wrap">
+          <span class="field-icon"></span>
+          <input type="password" id="confirmPassword" placeholder="Repeat passphrase"
+                 autocomplete="new-password">
+          <span class="field-status" id="confirmStatus"></span>
+        </div>
+        <div class="field-msg" id="confirmMsg"></div>
+      </div>
+
+      <button type="submit" class="btn-submit" id="registerBtn">Join the Crew</button>
+
+    </form>
+
+    <p class="terms">By registering you agree to the Code of Pirates. No mutiny allowed.</p>
+
+    <div class="card-footer">Already a crew member? <a href="login.html">Board the Ship</a></div>
+    <div class="card-footer back"><a href="../index.html">← Back to Home</a></div>
+
+  </div>
+</div>
+
+<script src="../js/auth.js"></script>
+</body>
+</html>

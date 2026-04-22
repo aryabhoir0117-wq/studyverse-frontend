@@ -1,0 +1,909 @@
+/* =====================================================
+   StudyVerse — Pirate Theme CSS
+   ===================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Pirata+One&family=Cinzel+Decorative:wght@700&family=Poppins:wght@300;400;600&family=IM+Fell+English:ital@1&display=swap');
+
+/* ──────────── CSS VARIABLES ──────────── */
+:root {
+  --navy:       #050d1a;
+  --deep-blue:  #0a1a2e;
+  --ocean:      #0d2540;
+  --teal:       #0e7490;
+  --teal-glow:  #22d3ee;
+  --gold:       #f0a830;
+  --gold-dark:  #b07818;
+  --gold-light: #ffd700;
+  --parchment:  #f5e6c8;
+  --wood:       #3d1f0a;
+  --wood-light: #7a4020;
+  --text-main:  #d0e8f0;
+  --text-muted: #6a9ab8;
+  --transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* ──────────── RESET & BASE ──────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  background: var(--navy);
+  color: var(--text-main);
+  font-family: 'Poppins', sans-serif;
+  font-weight: 300;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* ──────────── CUSTOM CURSOR ──────────── */
+.cursor-dot {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  background: var(--gold-light);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: transform 0.1s ease, background 0.2s;
+  box-shadow: 0 0 10px var(--gold-light);
+}
+
+.cursor-ring {
+  position: fixed;
+  width: 36px;
+  height: 36px;
+  border: 2px solid rgba(240,168,48,0.5);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%, -50%);
+  transition: transform 0.25s ease, width 0.25s, height 0.25s, border-color 0.2s;
+}
+
+body.cursor-hover .cursor-ring {
+  width: 56px;
+  height: 56px;
+  border-color: var(--gold);
+}
+body.cursor-hover .cursor-dot {
+  transform: translate(-50%, -50%) scale(1.6);
+}
+
+/* ──────────── OCEAN CANVAS ──────────── */
+#ocean-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ──────────── FOG ──────────── */
+.fog-layer {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: radial-gradient(ellipse at 50% 80%, rgba(14,116,144,0.08) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 1;
+  animation: fogDrift 18s ease-in-out infinite alternate;
+}
+@keyframes fogDrift {
+  from { opacity: 0.4; transform: scaleX(1); }
+  to   { opacity: 0.7; transform: scaleX(1.04); }
+}
+
+/* ──────────── SECTIONS Z-INDEX ──────────── */
+header, section, footer { position: relative; z-index: 10; }
+
+/* ──────────── TYPOGRAPHY ──────────── */
+h1, h2, h3, .logo-text {
+  font-family: 'Pirata One', cursive;
+  letter-spacing: 0.04em;
+}
+
+.section-title {
+  font-family: 'Cinzel Decorative', cursive;
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  color: var(--gold);
+  text-align: center;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 0 30px rgba(240,168,48,0.4);
+}
+
+.section-sub {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 1rem;
+  margin-bottom: 3rem;
+  font-style: italic;
+}
+
+/* ──────────── HEADER ──────────── */
+.site-header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  padding: 1rem 0;
+  background: linear-gradient(180deg, rgba(5,13,26,0.95) 0%, transparent 100%);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(240,168,48,0.12);
+  transition: var(--transition);
+}
+
+.site-header.scrolled {
+  background: rgba(5,13,26,0.98);
+  border-bottom-color: rgba(240,168,48,0.25);
+  box-shadow: 0 4px 30px rgba(0,0,0,0.5);
+}
+
+.nav-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.logo-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.logo-compass {
+  font-size: 1.8rem;
+  animation: compassSpin 8s linear infinite;
+  display: inline-block;
+  filter: drop-shadow(0 0 6px var(--gold));
+}
+@keyframes compassSpin {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(12deg); }
+  75% { transform: rotate(-12deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.logo-text {
+  font-size: 1.8rem;
+  color: var(--gold);
+  text-shadow: 0 0 20px rgba(240,168,48,0.5);
+}
+
+.nav-links {
+  display: flex;
+  gap: 0.2rem;
+  margin: 0 auto;
+}
+
+.nav-item {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  padding: 0.4rem 0.9rem;
+  border-radius: 4px;
+  transition: var(--transition);
+  position: relative;
+}
+.nav-item::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 50%;
+  width: 0; height: 2px;
+  background: var(--gold);
+  border-radius: 2px;
+  transform: translateX(-50%);
+  transition: width 0.3s ease;
+}
+.nav-item:hover {
+  color: var(--gold);
+}
+.nav-item:hover::after { width: 60%; }
+
+.nav-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+/* ──────────── BUTTONS ──────────── */
+.btn-gold {
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  color: var(--navy);
+  border: none;
+  padding: 0.55rem 1.4rem;
+  border-radius: 6px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: var(--transition);
+  box-shadow: 0 4px 16px rgba(240,168,48,0.3), inset 0 1px 0 rgba(255,255,255,0.2);
+  position: relative;
+  overflow: hidden;
+}
+.btn-gold::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s ease;
+}
+.btn-gold:hover::before { left: 100%; }
+.btn-gold:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(240,168,48,0.5), inset 0 1px 0 rgba(255,255,255,0.2);
+}
+.btn-gold:active {
+  transform: translateY(1px) scale(0.98);
+  box-shadow: 0 2px 8px rgba(240,168,48,0.3);
+}
+.btn-gold.large {
+  padding: 0.9rem 2.2rem;
+  font-size: 1rem;
+  border-radius: 8px;
+}
+
+.btn-outline-gold {
+  background: transparent;
+  color: var(--gold);
+  border: 2px solid var(--gold);
+  padding: 0.55rem 1.4rem;
+  border-radius: 6px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: var(--transition);
+}
+.btn-outline-gold:hover {
+  background: rgba(240,168,48,0.12);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(240,168,48,0.2);
+}
+.btn-outline-gold.large {
+  padding: 0.9rem 2.2rem;
+  font-size: 1rem;
+  border-radius: 8px;
+}
+
+/* ──────────── HERO SECTION ──────────── */
+.hero-section {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: 80px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-content {
+  text-align: center;
+  max-width: 800px;
+  padding: 2rem;
+  position: relative;
+  z-index: 20;
+  margin-top: -4rem;
+}
+
+.hero-eyebrow {
+  font-size: 0.88rem;
+  letter-spacing: 0.2em;
+  color: var(--teal-glow);
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.2s forwards;
+}
+
+.hero-title {
+  font-family: 'Cinzel Decorative', cursive;
+  font-size: clamp(2.5rem, 7vw, 5.5rem);
+  line-height: 1.1;
+  color: var(--parchment);
+  text-shadow: 0 0 60px rgba(240,168,48,0.25);
+  margin-bottom: 1.5rem;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.4s forwards;
+}
+
+.gold-glow {
+  color: var(--gold);
+  text-shadow: 0 0 40px rgba(240,168,48,0.8), 0 0 80px rgba(240,168,48,0.4);
+}
+
+.hero-sub {
+  font-size: clamp(0.95rem, 2vw, 1.1rem);
+  color: var(--text-muted);
+  line-height: 1.8;
+  margin-bottom: 2.5rem;
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.6s forwards;
+}
+
+.hero-btns {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.8s forwards;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Scroll hint */
+.scroll-hint {
+  margin-top: 3rem;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  opacity: 0;
+  animation: fadeUp 0.8s 1.2s forwards;
+}
+.scroll-arrow {
+  width: 18px;
+  height: 18px;
+  border-right: 2px solid var(--text-muted);
+  border-bottom: 2px solid var(--text-muted);
+  transform: rotate(45deg);
+  animation: bounce 1.6s ease infinite;
+}
+@keyframes bounce {
+  0%, 100% { transform: rotate(45deg) translateY(0); }
+  50% { transform: rotate(45deg) translateY(5px); }
+}
+
+/* ──────────── SHIP SCENE ──────────── */
+.ship-scene {
+  width: 100%;
+  max-width: 560px;
+  position: relative;
+  z-index: 15;
+  margin-top: 1rem;
+  opacity: 0;
+  animation: fadeUp 1s 1s forwards;
+}
+
+.ship-wrap {
+  transform-style: preserve-3d;
+  transition: transform 0.12s ease-out;
+  animation: shipBob 5s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes shipBob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  30% { transform: translateY(-8px) rotate(0.8deg); }
+  60% { transform: translateY(-4px) rotate(-0.4deg); }
+}
+
+.ship-svg {
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 20px 40px rgba(0,0,0,0.6)) drop-shadow(0 0 20px rgba(14,116,144,0.3));
+}
+
+/* Sail hover expand */
+.sail {
+  transform-origin: 205px 65px;
+  transition: d 0.3s ease;
+}
+
+/* Ship hover tips */
+.ship-tip {
+  transition: opacity 0.2s;
+}
+
+/* Mast glow on hover */
+.mast-clickable:hover {
+  filter: drop-shadow(0 0 8px rgba(240,168,48,0.8));
+}
+.cabin-clickable:hover {
+  filter: drop-shadow(0 0 8px rgba(34,211,238,0.8));
+}
+.chest-clickable:hover {
+  filter: drop-shadow(0 0 8px rgba(255,215,0,0.9));
+}
+
+/* ──────────── LANTERNS ──────────── */
+.lanterns-wrap {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 8;
+}
+
+.lantern {
+  position: absolute;
+  font-size: 1.6rem;
+  animation: lanternFloat linear infinite;
+  opacity: 0.7;
+  filter: drop-shadow(0 0 8px rgba(255,180,50,0.6));
+}
+@keyframes lanternFloat {
+  0%   { transform: translateY(0) rotate(-8deg); opacity: 0.7; }
+  50%  { transform: translateY(-22px) rotate(8deg); opacity: 0.9; }
+  100% { transform: translateY(0) rotate(-8deg); opacity: 0.7; }
+}
+
+/* ──────────── MESSAGE BOTTLES ──────────── */
+.bottle-wrap {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9;
+}
+.bottle {
+  position: absolute;
+  font-size: 1.4rem;
+  animation: bottleDrift ease-in-out infinite;
+  opacity: 0.65;
+  cursor: pointer;
+  pointer-events: all;
+  transition: transform 0.2s;
+  filter: drop-shadow(0 0 4px rgba(34,211,238,0.3));
+}
+.bottle:hover { transform: scale(1.3) rotate(-10deg) !important; opacity: 1; }
+@keyframes bottleDrift {
+  0%   { transform: translateY(0) rotate(8deg); }
+  50%  { transform: translateY(-12px) rotate(-6deg); }
+  100% { transform: translateY(0) rotate(8deg); }
+}
+
+/* Bottle tooltip */
+.bottle-tip {
+  position: absolute;
+  background: rgba(10,26,46,0.95);
+  border: 1px solid var(--gold);
+  border-radius: 8px;
+  padding: 0.5rem 0.8rem;
+  font-size: 0.75rem;
+  color: var(--parchment);
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 100;
+  bottom: 130%;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.bottle:hover .bottle-tip { opacity: 1; }
+
+/* ──────────── REWARD POPUP ──────────── */
+.reward-popup {
+  position: fixed;
+  inset: 0;
+  background: rgba(5,13,26,0.85);
+  backdrop-filter: blur(6px);
+  z-index: 5000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.reward-popup.active {
+  opacity: 1;
+  pointer-events: all;
+}
+.reward-inner {
+  background: linear-gradient(135deg, var(--deep-blue), var(--ocean));
+  border: 2px solid var(--gold);
+  border-radius: 16px;
+  padding: 2.5rem 3rem;
+  text-align: center;
+  animation: popIn 0.35s cubic-bezier(0.34,1.56,0.64,1) forwards;
+  box-shadow: 0 0 60px rgba(240,168,48,0.3);
+}
+@keyframes popIn {
+  from { transform: scale(0.5) rotate(-10deg); opacity: 0; }
+  to   { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+.reward-icon { font-size: 4rem; margin-bottom: 1rem; }
+.reward-text {
+  font-family: 'Pirata One', cursive;
+  font-size: 1.4rem;
+  color: var(--gold);
+  margin-bottom: 1.5rem;
+}
+
+/* ──────────── ISLANDS SECTION ──────────── */
+.islands-section {
+  padding: 6rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.islands-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 1.5rem;
+}
+
+.island-card {
+  background: linear-gradient(135deg, rgba(10,26,46,0.9), rgba(13,37,64,0.8));
+  border: 1px solid rgba(240,168,48,0.2);
+  border-radius: 16px;
+  padding: 2rem 1.5rem;
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(30px);
+}
+.island-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.5s ease var(--card-delay, 0s), transform 0.5s ease var(--card-delay, 0s);
+}
+.island-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(240,168,48,0.05), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.island-card:hover {
+  border-color: rgba(240,168,48,0.6);
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.4), 0 0 30px rgba(240,168,48,0.15);
+}
+.island-card:hover::before { opacity: 1; }
+
+.island-icon {
+  font-size: 2.8rem;
+  margin-bottom: 1rem;
+  display: block;
+}
+.island-card h3 {
+  font-family: 'Pirata One', cursive;
+  font-size: 1.4rem;
+  color: var(--gold);
+  margin-bottom: 0.75rem;
+}
+.island-card p {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.7;
+  margin-bottom: 1.2rem;
+}
+.island-tag {
+  display: inline-block;
+  background: rgba(14,116,144,0.2);
+  border: 1px solid rgba(34,211,238,0.3);
+  color: var(--teal-glow);
+  border-radius: 999px;
+  padding: 0.25rem 0.9rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+}
+
+/* ──────────── STATS BAR ──────────── */
+.stats-bar {
+  background: linear-gradient(90deg, rgba(10,26,46,0.9), rgba(14,116,144,0.15), rgba(10,26,46,0.9));
+  border-top: 1px solid rgba(240,168,48,0.15);
+  border-bottom: 1px solid rgba(240,168,48,0.15);
+  padding: 2.5rem 2rem;
+  display: flex;
+  justify-content: center;
+  gap: 4rem;
+  flex-wrap: wrap;
+}
+.stat-item {
+  text-align: center;
+}
+.stat-num {
+  display: block;
+  font-family: 'Cinzel Decorative', cursive;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  color: var(--gold);
+  text-shadow: 0 0 20px rgba(240,168,48,0.5);
+  line-height: 1;
+  margin-bottom: 0.3rem;
+}
+.stat-label {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* ──────────── FLAG BUILDER ──────────── */
+.flagbuilder-section {
+  padding: 6rem 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.flagbuilder-wrap {
+  display: flex;
+  gap: 3rem;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.flag-preview-wrap {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  flex-shrink: 0;
+}
+
+.flag-pole {
+  width: 6px;
+  height: 220px;
+  background: linear-gradient(180deg, #8a5020, #5a3010);
+  border-radius: 3px;
+  margin-top: -10px;
+  box-shadow: 2px 0 6px rgba(0,0,0,0.4);
+}
+
+#flag-canvas {
+  border-radius: 0 8px 8px 0;
+  box-shadow: 4px 4px 20px rgba(0,0,0,0.6), 0 0 30px rgba(240,168,48,0.1);
+  cursor: default;
+}
+
+.flag-controls {
+  flex: 1;
+  min-width: 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.ctrl-row label {
+  display: block;
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.color-swatches {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.swatch {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: var(--transition);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+.swatch:hover, .swatch.active {
+  border-color: var(--gold);
+  transform: scale(1.15);
+  box-shadow: 0 0 12px rgba(240,168,48,0.4);
+}
+
+.symbol-choices {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.sym-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  background: rgba(10,26,46,0.8);
+  border: 1px solid rgba(240,168,48,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.sym-btn:hover, .sym-btn.active {
+  border-color: var(--gold);
+  background: rgba(240,168,48,0.1);
+  transform: scale(1.1);
+}
+
+.crew-input {
+  width: 100%;
+  background: rgba(10,26,46,0.8);
+  border: 1px solid rgba(240,168,48,0.25);
+  border-radius: 8px;
+  padding: 0.6rem 1rem;
+  color: var(--parchment);
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.9rem;
+  outline: none;
+  transition: var(--transition);
+}
+.crew-input:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(240,168,48,0.1);
+}
+
+.flag-save-btn { width: 100%; text-align: center; }
+
+/* ──────────── PARCHMENT / ABOUT ──────────── */
+.about-section {
+  padding: 5rem 2rem;
+  display: flex;
+  justify-content: center;
+}
+.about-inner { max-width: 760px; width: 100%; }
+.parchment-card {
+  background: linear-gradient(135deg, #2a1a08, #1e1208);
+  border: 2px solid rgba(200,132,42,0.4);
+  border-radius: 12px;
+  padding: 3rem;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(200,132,42,0.2);
+}
+.parchment-card::before {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border: 1px solid rgba(200,132,42,0.15);
+  border-radius: 8px;
+  pointer-events: none;
+}
+.parchment-eyebrow {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  color: var(--gold-dark);
+  font-size: 0.9rem;
+  margin-bottom: 1.2rem;
+  letter-spacing: 0.08em;
+}
+.parchment-text {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 1.1rem;
+  line-height: 2;
+  color: var(--parchment);
+  opacity: 0.9;
+}
+.parchment-sign {
+  margin-top: 1.5rem;
+  font-family: 'Pirata One', cursive;
+  font-size: 1rem;
+  color: var(--gold);
+  text-align: right;
+}
+
+/* ──────────── LEADERBOARD ──────────── */
+.leaderboard-section {
+  padding: 5rem 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+.leaderboard-table {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(240,168,48,0.2);
+}
+.lb-row {
+  display: grid;
+  grid-template-columns: 80px 1fr 1fr 1fr;
+  padding: 0.9rem 1.5rem;
+  font-size: 0.9rem;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  transition: background 0.2s;
+  text-align: left;
+}
+.lb-header {
+  background: rgba(240,168,48,0.1);
+  color: var(--gold);
+  font-weight: 600;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.lb-row:not(.lb-header):hover { background: rgba(14,116,144,0.1); }
+.rank-1 { background: linear-gradient(90deg, rgba(255,215,0,0.08), transparent); color: var(--gold-light); }
+.rank-2 { background: linear-gradient(90deg, rgba(192,192,192,0.06), transparent); color: #d0d0d0; }
+.rank-3 { background: linear-gradient(90deg, rgba(205,127,50,0.06), transparent); color: #cd7f32; }
+
+/* ──────────── FINAL CTA ──────────── */
+.final-cta {
+  padding: 8rem 2rem;
+  text-align: center;
+  position: relative;
+}
+.final-cta::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 50%, rgba(14,116,144,0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+.cta-inner h2 {
+  font-family: 'Cinzel Decorative', cursive;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  color: var(--gold);
+  text-shadow: 0 0 40px rgba(240,168,48,0.5);
+  margin-bottom: 0.8rem;
+}
+.cta-inner p {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 1.2rem;
+  color: var(--text-muted);
+}
+
+/* ──────────── FOOTER ──────────── */
+.site-footer {
+  text-align: center;
+  padding: 2rem;
+  border-top: 1px solid rgba(240,168,48,0.1);
+  background: rgba(5,13,26,0.9);
+}
+
+/* ──────────── OCEAN RIPPLE CANVAS ──────────── */
+/* handled by JS */
+
+/* ──────────── BIOLUMINESCENT PARTICLES ──────────── */
+/* handled by JS canvas */
+
+/* ──────────── SCROLL ANIMATIONS ──────────── */
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ──────────── RESPONSIVE ──────────── */
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+  .nav-container { justify-content: space-between; }
+  .ship-scene { max-width: 95vw; }
+  .hero-title { font-size: 2.2rem; }
+  .stats-bar { gap: 2rem; }
+  .flagbuilder-wrap { flex-direction: column; align-items: center; }
+  .lb-row { grid-template-columns: 60px 1fr 1fr; }
+  .lb-row span:nth-child(3) { display: none; }
+}
+
+/* ──────────── SCROLLBAR ──────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--navy); }
+::-webkit-scrollbar-thumb { background: var(--gold-dark); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--gold); }

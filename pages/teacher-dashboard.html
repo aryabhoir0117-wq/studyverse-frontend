@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teacher Dashboard - StudyVerse</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/ocean-animations.css">
+
+  <style>
+    /* Teacher uses emerald accent to visually distinguish from student gold */
+    .teacher-accent   { color: #60c0e9 !important; }
+    .stat-card::after { background: linear-gradient(90deg, transparent, #4ade80, transparent) !important; }
+
+    .action-card {
+      background: var(--card-bg, rgba(5,20,40,.72));
+      border: 1px solid rgba(74,222,128,.28);
+      border-radius: 18px;
+      padding: 22px;
+      backdrop-filter: blur(14px);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+      animation: floatAnim ease-in-out infinite;
+      transition: transform .5s cubic-bezier(.23,1,.32,1), box-shadow .5s, border-color .5s;
+    }
+    .action-card::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: repeating-linear-gradient(90deg,transparent,transparent 18px,rgba(0,0,0,.04) 18px,rgba(0,0,0,.04) 19px);
+      border-radius: inherit; opacity: .35; pointer-events: none;
+    }
+    .action-card::after {
+      content: '';
+      position: absolute; top: 0; left: 12%; right: 12%; height: 1.5px;
+      background: linear-gradient(90deg, transparent, #9ede4a, transparent);
+    }
+    .action-card:hover {
+      transform: translateY(-12px) rotate(-.3deg) scale(1.02) !important;
+      animation-play-state: paused;
+      border-color: #4ade80;
+      box-shadow: 0 20px 50px rgba(74,222,128,.2), 0 0 25px rgba(74,222,128,.12);
+    }
+    .action-card h3 {
+      font-family: 'Cinzel', serif;
+      font-size: 13px; letter-spacing: .1em;
+      color: #4acdde;
+      text-shadow: 0 0 8px rgba(74,222,128,.3);
+    }
+    .action-card p {
+      font-family: 'IM Fell English', serif;
+      font-size: 12px; font-style: italic;
+      color: var(--text-secondary, #7aa8cc);
+    }
+    .btn-green {
+      background: linear-gradient(135deg,  #e8a500 0%, #f5c842 40%, #ffd966 60%, #e09800) !important;
+      color: #052e16 !important;
+      box-shadow: 0 4px 12px rgba(191, 204, 45, 0.35) !important;
+    }
+    .btn-green:hover {
+      box-shadow: 0 8px 25px rgba(230, 244, 70, 0.55), 0 0 18px rgba(74,222,128,.3) !important;
+    }
+
+    /* Float phases for action cards */
+    .action-card:nth-child(1) { animation-duration: 6s;   animation-delay: -.4s; }
+    .action-card:nth-child(2) { animation-duration: 5.6s; animation-delay: -1.3s; }
+    .action-card:nth-child(3) { animation-duration: 6.4s; animation-delay: -2.2s; }
+
+    @keyframes floatAnim {
+      0%   { transform: translateY(0)   rotate(0deg); }
+      20%  { transform: translateY(-5px)  rotate(.25deg); }
+      50%  { transform: translateY(-9px)  rotate(-.2deg); }
+      80%  { transform: translateY(-4px)  rotate(.15deg); }
+      100% { transform: translateY(0)   rotate(0deg); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-layout">
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar">
+    <h2 class="logo" style="color:#61dada!important;text-shadow:0 0 10px rgba(74,222,128,.55),0 0 28px rgba(74,222,128,.25)!important;">StudyVerse</h2>
+
+    <nav class="nav-links">
+      <a href="teacher-dashboard.html">Dashboard</a>
+      <a href="create-lesson.html">Create Lesson</a>
+      <a href="upload-notes.html">Upload Notes</a>
+    </nav>
+
+    <!-- Fleet pulse indicators -->
+    <!-- <div style="margin-top:20px;padding:14px;background:#0f172a;border-radius:12px;border:1px solid rgba(74,222,128,.15);">
+      <h4 style="color:#4ade80;margin-bottom:12px;font-family:'Cinzel',serif;font-size:11px;letter-spacing:.12em;text-transform:uppercase;">Fleet Status</h4>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="width:7px;height:7px;border-radius:50%;background:#4ade80;
+                       box-shadow:0 0 6px #4ade80;display:inline-block;
+                       animation:pulse 2s ease-in-out infinite;flex-shrink:0;"></span>
+          <span style="font-family:'IM Fell English',serif;font-size:12px;color:#94a3b8;">Crew at sea</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="width:7px;height:7px;border-radius:50%;background:#60a5fa;
+                       box-shadow:0 0 6px #60a5fa;display:inline-block;
+                       animation:pulse 2.5s .5s ease-in-out infinite;flex-shrink:0;"></span>
+          <span style="font-family:'IM Fell English',serif;font-size:12px;color:#94a3b8;">Lessons active</span>
+        </div>
+      </div>
+    </div> -->
+
+    <button id="logoutBtn" class="logout-btn">Logout</button>
+  </aside>
+
+  <!-- ══ MAIN AREA ══ -->
+  <div class="main-area">
+
+    <!-- Topbar — original id kept -->
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="opacity:.5;font-size:12px;font-family:'Cinzel',serif;letter-spacing:.04em;">Teacher Panel:</span>
+        <strong id="displayTeacher" style="font-family:'Cinzel Decorative',cursive;font-size:14px;color:#4ade80;"></strong>
+      </div>
+      <div id="liveClock" style="font-family:'Cinzel',serif;font-size:12px;letter-spacing:.06em;color:#7aa8cc;"></div>
+    </header>
+
+    <main class="content">
+
+      <h1 style="font-family:'Cinzel Decorative',cursive;font-size:26px;letter-spacing:.04em;
+                 color:#105063;margin-bottom:5px;">Teacher Control Deck</h1>
+      <p style="font-family:'IM Fell English',serif;font-size:13px;color:#7aa8cc;
+                font-style:italic;margin-bottom:28px;">Your fleet awaits orders, Commander.</p>
+
+      <!-- Stats Grid — original ids untouched -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <h3>Total Lessons</h3>
+          <p id="lessonCount">0</p>
+        </div>
+        <div class="stat-card">
+          <h3>Total Students</h3>
+          <p id="studentCount">0</p>
+        </div>
+        <div class="stat-card">
+          <h3>Notes Uploaded</h3>
+          <p id="notesCount">0</p>
+        </div>
+      </div>
+
+      <br>
+      <h2 style="font-family:'Cinzel',serif;font-size:14px;letter-spacing:.14em;
+                 text-transform:uppercase;opacity:.75;margin-bottom:20px;">Quick Actions</h2>
+
+      <!-- Action cards — original onclick handlers untouched -->
+      <div class="subjects-grid">
+        <div class="action-card">
+          <h3>Create Lesson</h3>
+          <p>Chart a new voyage for your crew to sail through.</p>
+          <button onclick="goCreateLesson()" class="btn-primary btn-green">Create</button>
+        </div>
+        <div class="action-card">
+          <h3>Upload Notes</h3>
+          <p>Stow reference scrolls into the ship's hold.</p>
+          <button onclick="goUploadNotes()" class="btn-primary btn-green">Upload</button>
+        </div>
+        <div class="action-card">
+          <h3>Student Progress</h3>
+          <p>Track each vessel's journey across the map.</p>
+          <button onclick="goProgress()" class="btn-primary btn-green">View</button>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- Your original scripts — untouched -->
+<script src="../js/teacher-dashboard.js"></script>
+<script src="../js/aiQuiz.js"></script>
+
+<!-- ══ PONEGLYPH CHATBOT — exact original structure ══ -->
+<div id="aiChatIcon" onclick="toggleChat()">&#x1F5FF;</div>
+<div id="aiChatBox">
+  <div class="chat-header">&#x1F5FF; Poneglyph — Study Guide</div>
+  <div id="chatMessages"></div>
+  <div style="display:flex;gap:5px;margin-top:8px;">
+    <input id="chatInput" type="text" placeholder="Ask anything..."
+      style="flex:1;padding:8px;border-radius:6px;border:1px solid #334155;background:#0f172a;color:white;font-size:13px;">
+    <button onclick="sendMessage()" class="btn-primary" style="padding:8px 12px;">Send</button>
+  </div>
+</div>
+<script src="../js/chatbot.js"></script>
+
+<!-- Ocean Animation Engine — always last -->
+<script src="../js/ocean-animations.js"></script>
+
+<!-- Live clock + pulse keyframe -->
+<script>
+  (function () {
+    // Clock
+    function tick() {
+      var el = document.getElementById('liveClock');
+      if (!el) return;
+      var n = new Date();
+      el.textContent = n.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+    }
+    setInterval(tick, 1000);
+    tick();
+
+    // Inject pulse keyframe for fleet dots
+    var s = document.createElement('style');
+    s.textContent = '@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.45;transform:scale(1.5);}}';
+    document.head.appendChild(s);
+  })();
+</script>
+
+</body>
+</html>

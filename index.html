@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>StudyVerse  Rule the Learning Seas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Pirata+One&family=Cinzel+Decorative:wght@700&family=Poppins:wght@300;400;600&family=IM+Fell+English:ital@1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Ocean Canvas Background -->
+  <canvas id="ocean-canvas"></canvas>
+
+  <!-- Fog Layer -->
+  <div class="fog-layer"></div>
+
+  <!-- Custom Cursor -->
+  <div class="cursor-dot" id="cursor-dot"></div>
+  <div class="cursor-ring" id="cursor-ring"></div>
+
+  <!-- ========== HEADER / NAV ========== -->
+  <header class="site-header" id="site-header">
+    <div class="nav-container">
+      <div class="logo-wrap">
+        <span class="logo-compass">⚓</span>
+        <span class="logo-text">StudyVerse</span>
+      </div>
+
+      <!-- Compass Nav -->
+      <nav class="nav-links">
+        <a href="#journey" class="nav-item">Start Journey</a>
+        <a href="#islands" class="nav-item">Courses</a>
+        <a href="#features" class="nav-item">Progress Map</a>
+        <a href="#leaderboard" class="nav-item">Leaderboard</a>
+        <a href="#crew" class="nav-item">Crew</a>
+      </nav>
+
+      <div class="nav-actions">
+        <a href="pages/login.html" class="btn-outline-gold">Login</a>
+        <a href="pages/login.html" class="btn-gold">Get Started</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========== HERO SECTION ========== -->
+  <section class="hero-section" id="journey">
+
+    <!-- Floating lanterns -->
+    <div class="lanterns-wrap" id="lanterns"></div>
+
+    <!-- Message Bottles -->
+    <div class="bottle-wrap" id="bottles"></div>
+
+    <!-- Hero Text -->
+    <div class="hero-content">
+      <p class="hero-eyebrow">⚔️ Inspired by One Piece</p>
+      <h1 class="hero-title">
+        Turn Learning<br/>Into An<br/><span class="gold-glow">Adventure</span>
+      </h1>
+      <p class="hero-sub">
+        This isn't a classroom. It's your ocean. Every lesson is a mission,<br/>
+        every challenge earns rewards, and every student becomes part of a crew.
+      </p>
+      <div class="hero-btns">
+        <a href="pages/login.html" class="btn-gold large">Start Your Journey</a>
+        <a href="pages/login.html" class="btn-outline-gold large">Join as Captain</a>
+      </div>
+
+      <!-- Scroll hint -->
+      <div class="scroll-hint">
+        <span>Scroll to explore</span>
+        <div class="scroll-arrow"></div>
+      </div>
+    </div>
+
+    <!-- ====== THE SHIP ====== -->
+    <div class="ship-scene" id="ship-scene">
+      <div class="ship-wrap" id="ship-wrap">
+        <svg class="ship-svg" id="ship-svg" viewBox="0 0 520 380" xmlns="http://www.w3.org/2000/svg">
+
+          <!-- Wake / Water reflection -->
+          <ellipse cx="260" cy="345" rx="160" ry="18" fill="rgba(0,180,200,0.15)" class="ship-wake"/>
+
+          <!-- Hull -->
+          <path d="M80 260 Q260 310 440 260 L420 300 Q260 340 100 300 Z" fill="#3d1f0a" stroke="#a0622a" stroke-width="2"/>
+          <path d="M100 300 Q260 340 420 300 L410 318 Q260 355 110 318 Z" fill="#2a1205"/>
+          <!-- Hull planks -->
+          <line x1="150" y1="265" x2="140" y2="310" stroke="#5a2e10" stroke-width="1.2" opacity="0.6"/>
+          <line x1="200" y1="275" x2="192" y2="320" stroke="#5a2e10" stroke-width="1.2" opacity="0.6"/>
+          <line x1="260" y1="280" x2="260" y2="325" stroke="#5a2e10" stroke-width="1.2" opacity="0.6"/>
+          <line x1="320" y1="275" x2="328" y2="320" stroke="#5a2e10" stroke-width="1.2" opacity="0.6"/>
+          <line x1="370" y1="265" x2="380" y2="310" stroke="#5a2e10" stroke-width="1.2" opacity="0.6"/>
+
+          <!-- Deck top edge -->
+          <path d="M80 260 Q260 240 440 260" fill="none" stroke="#c8842a" stroke-width="3"/>
+
+          <!-- Cabin / Captain's area -->
+          <rect x="340" y="210" width="90" height="55" rx="4" fill="#3d1f0a" stroke="#a0622a" stroke-width="2" class="cabin-clickable" id="cabin-btn" style="cursor:pointer"/>
+          <rect x="350" y="220" width="30" height="22" rx="2" fill="#1a3a4a" stroke="#4fc3d4" stroke-width="1.5"/><!-- window -->
+          <rect x="388" y="220" width="30" height="22" rx="2" fill="#1a3a4a" stroke="#4fc3d4" stroke-width="1.5"/><!-- window -->
+          <text x="385" y="255" font-size="9" fill="#c8842a" font-family="serif" text-anchor="middle" style="pointer-events:none">CAPTAIN</text>
+
+          <!-- Deck -->
+          <rect x="90" y="245" width="340" height="18" rx="2" fill="#4a2810" stroke="#7a4020" stroke-width="1.5"/>
+
+          <!-- Mast 1 (main) -->
+          <rect x="197" y="60" width="8" height="195" rx="2" fill="#5a3010" stroke="#8a5020" stroke-width="1.5" class="mast-clickable" id="mast-btn" style="cursor:pointer"/>
+          <!-- Crow's nest -->
+          <ellipse cx="201" cy="65" rx="20" ry="8" fill="#3d1f0a" stroke="#a0622a" stroke-width="1.5" id="mast-btn2" style="cursor:pointer" class="mast-clickable"/>
+          <!-- Main sail -->
+          <path id="main-sail" d="M205 65 Q260 110 255 190 L205 190 Z" fill="rgba(245,230,190,0.88)" stroke="#c8a060" stroke-width="1.5" class="sail" style="cursor:pointer"/>
+          <path d="M205 65 Q200 110 205 190" fill="none" stroke="#b8906050" stroke-width="1"/>
+          <!-- Sail stripes -->
+          <line x1="215" y1="80" x2="250" y2="82" stroke="#FFFF00" stroke-width="2"/>
+          <line x1="215" y1="110" x2="252" y2="113" stroke="#FFFF00" stroke-width="2"/>
+          <line x1="215" y1="140" x2="253" y2="145" stroke="#FFFF00" stroke-width="2"/>
+          <line x1="215" y1="168" x2="253" y2="173" stroke="#FFFF00" stroke-width="2"/>
+          <!-- Skull on sail -->
+          <!-- <text x="235" y="130" font-size="22" text-anchor="middle" fill="#c8302060" style="pointer-events:none">☠</text> -->
+
+          <!-- Mast 2 (fore) -->
+          <rect x="148" y="100" width="6" height="150" rx="2" fill="#5a3010" stroke="#8a5020" stroke-width="1.5"/>
+          <!-- Fore sail -->
+          <path id="fore-sail" d="M154 102 Q190 130 185 200 L154 200 Z" fill="rgba(245,230,190,0.75)" stroke="#c8a060" stroke-width="1.5" class="sail"/>
+
+          <!-- Bowsprit / Figurehead -->
+          <line x1="100" y1="250" x2="50" y2="210" stroke="#5a3010" stroke-width="6" stroke-linecap="round"/>
+          <circle cx="45" cy="207" r="10" fill="#c8842a" stroke="#ffd700" stroke-width="2"/>
+          <text x="45" y="212" font-size="10" text-anchor="middle" fill="#1a0a00" style="pointer-events:none">★</text>
+
+          <!-- Flags on mast -->
+          <rect x="205" y="62" width="28" height="18" rx="2" fill="#" stroke="#00000" stroke-width="1"/>
+          <text x="219" y="75" font-size="11" text-anchor="middle" fill="white" style="pointer-events:none">☠</text>
+
+          <!-- Treasure chest on deck -->
+          <rect x="270" y="228" width="32" height="22" rx="3" fill="#7a4a10" stroke="#ffd700" stroke-width="2" class="chest-clickable" id="chest-btn" style="cursor:pointer"/>
+          <rect x="270" y="228" width="32" height="10" rx="2" fill="#9a6020" stroke="#ffd700" stroke-width="1.5" style="pointer-events:none"/>
+          <rect x="282" y="237" width="8" height="6" rx="1" fill="#ffd700" style="pointer-events:none"/>
+
+          <!-- Cannon -->
+          <rect x="102" y="247" width="36" height="12" rx="4" fill="#2a2a2a" stroke="#555" stroke-width="1.5"/>
+          <circle cx="102" cy="253" r="6" fill="#1a1a1a" stroke="#444" stroke-width="1"/>
+          <rect x="328" y="247" width="36" height="12" rx="4" fill="#2a2a2a" stroke="#555" stroke-width="1.5"/>
+          <circle cx="364" cy="253" r="6" fill="#1a1a1a" stroke="#444" stroke-width="1"/>
+
+          <!-- Rope lines -->
+          <line x1="201" y1="65" x2="90" y2="250" stroke="#8a6040" stroke-width="1.2" opacity="0.6"/>
+          <line x1="201" y1="65" x2="440" y2="265" stroke="#8a6040" stroke-width="1.2" opacity="0.6"/>
+          <line x1="151" y1="103" x2="90" y2="210" stroke="#8a6040" stroke-width="1" opacity="0.5"/>
+          <line x1="201" y1="65" x2="151" y2="103" stroke="#8a6040" stroke-width="1.5" opacity="0.7"/>
+
+          <!-- Tooltip labels (hidden, shown on hover) -->
+          <g id="tip-mast" class="ship-tip" opacity="0">
+            <rect x="145" y="30" width="112" height="24" rx="4" fill="#0a1a2a" stroke="#ffd700" stroke-width="1"/>
+            <text x="201" y="46" font-size="09" text-anchor="middle" fill="#ffd700" font-family="'Poppins',sans-serif"> Sail Out For Learning!!</text>
+          </g>
+          <g id="tip-cabin" class="ship-tip" opacity="0">
+            <rect x="295" y="182" width="140" height="24" rx="4" fill="#0a1a2a" stroke="#ffd700" stroke-width="1"/>
+            <text x="365" y="198" font-size="11" text-anchor="middle" fill="#ffd700" font-family="'Poppins',sans-serif">⚓ Teacher Dashboard</text>
+          </g>
+          <g id="tip-chest" class="ship-tip" opacity="0">
+            <rect x="228" y="200" width="116" height="24" rx="4" fill="#0a1a2a" stroke="#ffd700" stroke-width="1"/>
+            <text x="286" y="216" font-size="11" text-anchor="middle" fill="#ffd700" font-family="'Poppins',sans-serif">💎 Explore Features</text>
+          </g>
+
+        </svg>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ========== REWARD POPUP ========== -->
+  <div class="reward-popup" id="reward-popup">
+    <div class="reward-inner">
+      <div class="reward-icon" id="reward-icon">🪙</div>
+      <p class="reward-text" id="reward-text">+50 XP! You discovered the treasure!</p>
+      <button class="btn-gold" onclick="closeReward()">Claim!</button>
+    </div>
+  </div>
+
+  <!-- ========== FEATURE ISLANDS ========== -->
+  <section class="islands-section" id="islands">
+    <h2 class="section-title">Chart Your Course</h2>
+    <p class="section-sub">Many islands. Many paths. One grand adventure.</p>
+
+    <div class="islands-grid">
+
+      <div class="island-card" data-delay="0">
+        <div class="island-icon"></div>
+        <h3>Quests & Missions</h3>
+        <p>Every assignment is a mission on the map. Complete them, earn XP, level up your rank.</p>
+        <span class="island-tag">Assignments</span>
+      </div>
+
+      <div class="island-card" data-delay="100">
+        <div class="island-icon"></div>
+        <h3>Treasure Rewards</h3>
+        <p>Collect gold coins, rare badges, and legendary titles. Your effort becomes your wealth.</p>
+        <span class="island-tag">Points & Badges</span>
+      </div>
+
+      <div class="island-card" data-delay="200">
+        <div class="island-icon"></div>
+        <h3>Crew Battles</h3>
+        <p>Join live quiz battles. Challenge rival crews. The smartest crew rules the sea.</p>
+        <span class="island-tag">Competitions</span>
+      </div>
+
+      <div class="island-card" data-delay="300">
+        <div class="island-icon"></div>
+        <h3>Captain Mode</h3>
+        <p>Teachers lead from the helm. Create quests, track your crew, and steer every voyage.</p>
+        <span class="island-tag">Teacher Tools</span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========== STATS BAR ========== -->
+  <!-- <section class="stats-bar">
+    <div class="stat-item"><span class="stat-num" data-target="12400">0</span><span class="stat-label">Pirates Enrolled</span></div>
+    <div class="stat-item"><span class="stat-num" data-target="340">0</span><span class="stat-label">Captains Teaching</span></div>
+    <div class="stat-item"><span class="stat-num" data-target="98000">0</span><span class="stat-label">XP Earned Today</span></div>
+    <div class="stat-item"><span class="stat-num" data-target="560">0</span><span class="stat-label">Islands Unlocked</span></div>
+  </section> -->
+
+  <!-- ========== PIRATE FLAG BUILDER ========== -->
+  <section class="flagbuilder-section" id="crew">
+    <h2 class="section-title">Design Your Flag</h2>
+    <p class="section-sub">Every pirate crew needs a flag. Build yours before you set sail.</p>
+
+    <div class="flagbuilder-wrap">
+      <div class="flag-preview-wrap">
+        <div class="flag-pole"></div>
+        <canvas id="flag-canvas" width="240" height="160"></canvas>
+      </div>
+
+      <div class="flag-controls">
+        <div class="ctrl-row">
+          <label>Background</label>
+          <div class="color-swatches" id="bg-swatches">
+            <div class="swatch active" data-color="#1a0a2e" style="background:#d9c6f0"></div>
+            <div class="swatch" data-color="#0a1a0a" style="background:#e4e8bd"></div>
+            <div class="swatch" data-color="#1a0a0a" style="background:#e8abab"></div>
+            <div class="swatch" data-color="#0a0a1a" style="background:#0a0a1a"></div>
+            <div class="swatch" data-color="#1a1a00" style="background:#a0d4fc"></div>
+          </div>
+        </div>
+
+        <div class="ctrl-row">
+          <label>Symbol</label>
+          <div class="symbol-choices" id="symbol-choices">
+            <div class="sym-btn active" data-sym="skull">☠</div>
+            <div class="sym-btn" data-sym="star">⭐</div>
+            <div class="sym-btn" data-sym="anchor">⚓</div>
+            <div class="sym-btn" data-sym="sword">⚔️</div>
+            <div class="sym-btn" data-sym="crown">👑</div>
+            <div class="sym-btn" data-sym="fire">🔥</div>
+          </div>
+        </div>
+
+        <div class="ctrl-row">
+          <label>Symbol Color</label>
+          <div class="color-swatches" id="sym-swatches">
+            <div class="swatch active" data-color="#ffffff" style="background:#ffffff"></div>
+            <div class="swatch" data-color="#ffd700" style="background:#ffd700"></div>
+            <div class="swatch" data-color="#ff4444" style="background:#ff4444"></div>
+            <div class="swatch" data-color="#44ffaa" style="background:#44ffaa"></div>
+            <div class="swatch" data-color="#4488ff" style="background:#4488ff"></div>
+          </div>
+        </div>
+
+        <div class="ctrl-row">
+          <label>Crew Name</label>
+          <input type="text" id="crew-name-input" class="crew-input" placeholder="e.g. Straw Hats" maxlength="20"/>
+        </div>
+
+        <button class="btn-gold flag-save-btn" id="download-flag">⬇ Save Flag</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== HERO PARAGRAPH / ABOUT ========== -->
+  <section class="about-section" id="features">
+    <div class="about-inner">
+      <div class="parchment-card">
+        <p class="parchment-eyebrow">~ The Grand Log ~</p>
+        <p class="parchment-text">
+          This isn't a classroom. It's your ocean. Inspired by One Piece, this platform turns learning into 
+          a high-stakes adventure where every lesson is a mission, every challenge earns rewards, and every 
+          student becomes part of a crew. Track progress like a treasure map, compete, collaborate, and grow 
+          under the guidance of captains who lead, not lecture. Stop memorizing. Start exploring.
+        </p>
+        <p class="parchment-sign">— StudyVerse, The New World of Learning</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== LEADERBOARD PREVIEW ========== -->
+  <section class="leaderboard-section" id="leaderboard">
+    <h2 class="section-title">Top Pirates</h2>
+    <p class="section-sub">The seas remember the bold. Will your name be on this board?</p>
+    <div class="leaderboard-table">
+      <div class="lb-row lb-header">
+        <span>Rank</span><span>Pirate</span><span>Crew</span><span>Bounty (XP)</span>
+      </div>
+      <div class="lb-row rank-1"><span>🥇 1</span><span>Monkey D. Luffy</span><span>Straw Hats</span><span>฿ 3,000,000,000</span></div>
+      <div class="lb-row rank-2"><span>🥈 2</span><span>Roronoa Zoro</span><span>Straw Hats</span><span>฿ 1,111,000,000</span></div>
+      <div class="lb-row rank-3"><span>🥉 3</span><span>Vinsmoke Sanji</span><span>Straw Hats</span><span>฿ 1,032,000,000</span></div>
+      <div class="lb-row"><span>4</span><span>Jinbe</span><span>Straw Hats</span><span>฿ 1,100,000,000</span></div>
+      <div class="lb-row"><span>5</span><span>Nico Robin</span><span>Straw Hats</span><span>฿ 930,000,000</span></div>
+      <div class="lb-row"><span>6</span><span>God Usopp</span><span>Straw Hats</span><span>฿ 500,000,000</span></div>
+      <div class="lb-row"><span>7</span><span>Franky</span><span>Straw Hats</span><span>฿ 394,000,000</span></div>
+      <div class="lb-row"><span>8</span><span>Brook</span><span>Straw Hats</span><span>฿ 383,000,000</span></div>
+      <div class="lb-row"><span>9</span><span>Nami</span><span>Straw Hats</span><span>฿ 366,000,000</span></div>
+      <div class="lb-row"><span>9</span><span>Chopper</span><span>Straw Hats</span><span>฿ 1000</span></div>
+
+    </div>
+    <a href="pages/login.html" class="btn-outline-gold" style="margin-top:2rem;display:inline-block;">See Full Rankings →</a>
+  </section>
+
+  <!-- ========== FINAL CTA ========== -->
+  <section class="final-cta">
+    <div class="cta-inner">
+      <h2>The Sea is Waiting.</h2>
+      <p>Complete Quests. Earn Rewards. Rule the Seas.</p>
+      <div class="hero-btns" style="margin-top:2rem;">
+        <a href="pages/login.html" class="btn-gold large">⚓ Start Your Journey</a>
+        <a href="pages/login.html" class="btn-outline-gold large">Join as Captain</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== FOOTER ========== -->
+  <footer class="site-footer">
+    <span class="logo-text" style="font-size:1.4rem;">StudyVerse</span>
+    <!-- <p style="color:#4a6a8a;margin-top:0.5rem;font-size:0.85rem;">© 2025 StudyVerse. All rights reserved. Chart your own course.</p> -->
+  </footer>
+
+  <script src="js/index.js"></script>
+</body>
+</html>

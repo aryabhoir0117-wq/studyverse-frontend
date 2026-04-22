@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Lesson - StudyVerse</title>
+  <link rel="stylesheet" href="../css/layout.css">
+</head>
+<body>
+
+  <div class="lesson-layout">
+
+    <header class="lesson-topbar">
+      <button onclick="goBack()" class="btn-outline">Back</button>
+      <div>Battle Bounty: <span id="liveXP">0</span></div>
+    </header>
+
+    <main class="lesson-content">
+
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+
+      <div class="question-card">
+        <h2 id="questionText">Question appears here</h2>
+        <div id="optionsContainer" class="options-grid"></div>
+      </div>
+
+      <button id="nextBtn" class="btn-primary next-btn" style="display:none;">
+        Next Question
+      </button>
+
+    </main>
+
+  </div>
+  <script src="../js/lesson.js"></script>
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — StudyVerse</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/auth.css">
+
+  <!-- Google Identity Services -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body background="../assets/Screenshot 2026-04-22 150350.png">
+
+<!-- VIDEO BG -->
+<!-- <video class="video-bg" autoplay muted loop playsinline>
+  <source src="../assets/ocean.mp4" type="video/mp4">
+</video> -->
+
+<!-- OVERLAY + STARS -->
+<div class="overlay"></div>
+<div class="stars" id="stars"></div>
+
+<!-- FIXED UI -->
+<a href="../index.html" class="brand-fixed">⚓ StudyVerse</a>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+  <span class="icon">☀️</span>
+  <span class="label">Light</span>
+</button>
+
+<!-- CENTERED CARD -->
+<div class="page">
+  <div class="auth-card">
+
+    <div class="card-header">
+      <span class="card-icon">⚓</span>
+      <h2>Set Sail Again</h2>
+      <p>Your crew is waiting on deck</p>
+      <div class="gold-rule"></div>
+    </div>
+
+    <!-- ROLE -->
+    <div class="role-toggle">
+      <input type="radio" name="role" id="role-student" value="student" checked>
+      <label for="role-student">Student</label>
+      <input type="radio" name="role" id="role-teacher" value="teacher">
+      <label for="role-teacher">Teacher</label>
+    </div>
+
+    <div class="error-banner" id="errorBanner"></div>
+
+    <!-- ── GOOGLE BUTTON ──────────────────────────── -->
+    <div id="g_id_onload"
+         data-client_id="747967606643-nthgmpsfjvf9asqb71traqmmu8b6th49.apps.googleusercontent.com"
+         data-callback="handleGoogleCredential"
+         data-auto_prompt="false">
+    </div>
+
+    <div class="g_id_signin"
+         data-type="standard"
+         data-shape="rectangular"
+         data-theme="outline"
+         data-text="signin_with"
+         data-size="large"
+         data-logo_alignment="left"
+         data-width="360"
+         style="margin-bottom: 4px;">
+    </div>
+
+    <div class="divider"><span>or</span></div>
+    <!-- ─────────────────────────────────────────── -->
+
+    <form id="loginForm" novalidate>
+
+      <div class="field">
+        <label for="loginEmail">Email</label>
+        <div class="field-wrap">
+          <span class="field-icon"></span>
+          <input type="email" id="loginEmail" placeholder="captain@seas.com"
+                 autocomplete="email">
+          <span class="field-status" id="emailStatus"></span>
+        </div>
+        <div class="field-msg" id="emailMsg"></div>
+      </div>
+
+      <div class="field">
+        <label for="loginPassword">Password</label>
+        <div class="field-wrap">
+          <span class="field-icon"></span>
+          <input type="password" id="loginPassword" placeholder="Your secret passphrase"
+                 autocomplete="current-password">
+          <span class="field-status" id="passwordStatus"></span>
+        </div>
+        <div class="field-msg" id="passwordMsg"></div>
+      </div>
+
+      <button type="submit" class="btn-submit" id="loginBtn">Board the Ship</button>
+
+    </form>
+
+    <div class="divider"><span>or</span></div>
+
+    <div class="card-footer">New here? <a href="register.html">Join the Crew</a></div>
+    <div class="card-footer back"><a href="../index.html">← Back to Home</a></div>
+
+  </div>
+</div>
+
+<script src="../js/auth.js"></script>
+</body>
+</html>

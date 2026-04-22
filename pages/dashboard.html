@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - StudyVerse</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/ocean-animations.css">
+</head>
+<body>
+
+<!-- Achievement Popup — your original ids untouched -->
+<div id="achievementPopup" class="achievement-popup">
+  <span id="achievementText"></span>
+</div>
+
+<div class="app-layout">
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar">
+    <h2 class="logo">StudyVerse</h2>
+
+    <nav class="nav-links">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="profile.html">Profile</a>
+    </nav>
+
+    <!-- Daily Treasure — original ids untouched -->
+    <div style="margin-top:20px;padding:14px;background:#0f172a;border-radius:12px;border:1px solid #1e3a5f;">
+      <h4 style="color:var(--gold,#f5c842);margin-bottom:10px;font-family:'Cinzel',serif;font-size:11px;letter-spacing:.12em;text-transform:uppercase;">Daily Treasure</h4>
+      <button
+        id="claimTreasureBtn"
+        onclick="claimTreasure()"
+        style="width:100%;background:linear-gradient(135deg,#e8a500,#f5c842,#ffd966,#e09800);border:none;padding:10px;border-radius:10px;font-family:'Cinzel',serif;font-weight:bold;font-size:11px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;color:#1a0e00;box-shadow:0 4px 14px rgba(200,140,0,.4);transition:all .3s;">
+        Open Chest
+      </button>
+      <p id="treasureMessage" style="margin-top:10px;color:#94a3b8;font-family:'IM Fell English',serif;font-size:12px;font-style:italic;min-height:16px;"></p>
+    </div>
+
+    <!-- Achievements — original id untouched -->
+    <div style="margin-top:14px;padding:14px;background:#0f172a;border-radius:12px;border:1px solid #1e3a5f;flex:1;overflow-y:auto;">
+      <h4 style="color:var(--gold,#f5c842);margin-bottom:10px;font-family:'Cinzel',serif;font-size:11px;letter-spacing:.12em;text-transform:uppercase;">Achievements</h4>
+      <ul id="achievementList" style="list-style:none;font-size:12px;color:#94a3b8;line-height:2.2;font-family:'IM Fell English',serif;"></ul>
+    </div>
+
+    <button id="logoutBtn" class="logout-btn">Logout</button>
+  </aside>
+
+  <!-- ══ MAIN AREA ══ -->
+  <div class="main-area">
+
+    <!-- Topbar — original ids untouched, streak restored -->
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="opacity:.55;font-size:12px;font-family:'Cinzel',serif;letter-spacing:.04em;">Welcome,</span>
+        <strong id="displayUser" style="font-family:'Cinzel Decorative',cursive;font-size:14px;color:var(--gold,#f5c842);"></strong>
+      </div>
+
+      <!-- STREAK — exact same id: streakCount -->
+              <div>Streak: <span id="streakCount">0</span> days</div>
+
+    </header>
+
+    <main class="content">
+
+      <h1 style="font-family:'Cinzel Decorative',cursive;font-size:26px;letter-spacing:.04em;
+                 color:var(--gold,#f5c842);margin-bottom:4px;">Ship Deck</h1>
+      <p style="font-family:'IM Fell English',serif;font-size:13px;color:#7aa8cc;
+                font-style:italic;margin-bottom:28px;">Sail the seas of knowledge, brave navigator.</p>
+
+      <!-- Stats Grid — original ids untouched -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <h3>Total Bounty</h3>
+          <p id="xpDisplay">0</p>
+        </div>
+        <div class="stat-card">
+          <h3>Pirate Rank</h3>
+          <p id="levelDisplay">-</p>
+        </div>
+        <div class="stat-card">
+          <h3>Lessons Completed</h3>
+          <p id="lessonCount">0</p>
+        </div>
+      </div>
+
+      <br>
+      <h2 style="font-family:'Cinzel',serif;font-size:14px;letter-spacing:.14em;
+                 text-transform:uppercase;opacity:.75;margin-bottom:20px;">Charts of the Realm</h2>
+
+      <!-- Subjects Grid — original onclick handlers untouched -->
+      <div class="subjects-grid">
+        <div class="subject-card">
+          <h3>Math</h3>
+          <p style="font-family:'IM Fell English',serif;font-size:12px;color:#7aa8cc;font-style:italic;">Navigate by the stars</p>
+          <button onclick="startLesson('maths')" class="btn-primary">Start Lesson</button>
+          <button onclick="viewNotes('maths')" class="btn-outline">View Notes</button>
+        </div>
+        <div class="subject-card">
+          <h3>Science</h3>
+          <p style="font-family:'IM Fell English',serif;font-size:12px;color:#7aa8cc;font-style:italic;">Discover the deep</p>
+          <button onclick="startLesson('science')" class="btn-primary">Start Lesson</button>
+          <button onclick="viewNotes('science')" class="btn-outline">View Notes</button>
+        </div>
+        <div class="subject-card">
+          <h3>English</h3>
+          <p style="font-family:'IM Fell English',serif;font-size:12px;color:#7aa8cc;font-style:italic;">Master the written word</p>
+          <button onclick="startLesson('english')" class="btn-primary">Start Lesson</button>
+          <button onclick="viewNotes('english')" class="btn-outline">View Notes</button>
+        </div>
+        <div class="subject-card">
+          <h3>Daily GK Quizzes</h3>
+          <p style="font-family:'IM Fell English',serif;font-size:12px;color:#7aa8cc;font-style:italic;">Test your worldly knowledge</p>
+          <button onclick="startLesson('gk')" class="btn-primary">Start Lesson</button>
+        </div>
+
+        <!-- Duel — original onclick kept, styled red -->
+        <div class="subject-card"  style="background:rgba(239,68,68,.06)!important;border-color:rgba(53, 113, 187, 0.844)!important;align-items:center;justify-content:center;text-align:center;">
+          <h3 style="color:#d8be15!important;">Duel Challenge</h3>
+          <p style="font-family:'IM Fell English',serif;font-size:12px;color:rgba(150, 200, 227, 0.423);font-style:italic;">Face another captain at sea</p>
+          <button class="btn-primary" onclick="startDuel()" onclick="svDuelStart()"
+            style="background:linear-gradient(135deg, #e8a500 0%, #f5c842 40%, #ffd966 60%, #e09800)!important;
+                   color:rgb(39, 22, 22)!important;box-shadow:0 4px 15px rgba(245, 234, 82, 0.564)!important;">
+             Start Duel
+          </button>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- Your original logic — untouched -->
+<script src="../js/dashboard.js"></script>
+
+<!-- ══ PONEGLYPH CHATBOT — exact original structure ══ -->
+<div id="aiChatIcon" onclick="toggleChat()">&#x1F5FF;</div>
+<div id="aiChatBox">
+  <div class="chat-header">&#x1F5FF; Poneglyph — Study Guide</div>
+  <div id="chatMessages"></div>
+  <div style="display:flex;gap:5px;margin-top:8px;">
+    <input id="chatInput" type="text" placeholder="Ask anything..."
+      style="flex:1;padding:8px;border-radius:6px;border:1px solid #334155;background:#0f172a;color:white;font-size:13px;">
+    <button onclick="sendMessage()" class="btn-primary" style="padding:8px 12px;">Send</button>
+  </div>
+</div>
+<script src="../js/chatbot.js"></script>
+
+<!-- Ocean Animation Engine — always last -->
+<script src="../js/ocean-animations.js"></script>
+
+<!-- ══ ONCE-DAILY TREASURE LOCK ══
+     Wraps your existing claimTreasure() without breaking it.
+     Locks by calendar date, unlocks automatically next day.     -->
+<script>
+(function treasureLock() {
+  const DATE_KEY = 'sv_treasure_date';
+  const btn      = document.getElementById('claimTreasureBtn');
+  const msg      = document.getElementById('treasureMessage');
+
+  function todayStr() { return new Date().toDateString(); }
+
+  function lock(showMsg) {
+    if (!btn) return;
+    btn.disabled              = true;
+    btn.style.opacity         = '0.4';
+    btn.style.cursor          = 'not-allowed';
+    btn.style.filter          = 'grayscale(0.55) brightness(0.85)';
+    btn.style.boxShadow       = 'none';
+    btn.textContent           = 'Chest Claimed';
+    if (showMsg && msg && !msg.textContent.trim()) {
+      msg.textContent = 'Return at dawn for your next haul, pirate.';
+    }
+  }
+
+  // On page load — if already claimed today, lock immediately
+  if (localStorage.getItem(DATE_KEY) === todayStr()) {
+    // Wait for DOM + dashboard.js to set any message first
+    setTimeout(() => lock(true), 200);
+  }
+
+  // Intercept claimTreasure after dashboard.js loads
+  window.addEventListener('load', () => {
+    const original = window.claimTreasure;
+    window.claimTreasure = function () {
+      if (localStorage.getItem(DATE_KEY) === todayStr()) {
+        if (msg) msg.textContent = 'Already plundered today, Captain.';
+        return;
+      }
+      // Run your original function
+      if (typeof original === 'function') original();
+      // Save today and lock
+      localStorage.setItem(DATE_KEY, todayStr());
+      lock(false);
+    };
+  });
+})();
+</script>
+
+</body>
+</html>
