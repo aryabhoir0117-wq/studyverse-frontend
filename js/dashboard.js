@@ -1,24 +1,268 @@
+// const user = JSON.parse(localStorage.getItem("user"));
+
+// if(user.role !== "student"){
+// window.location.href = "teacher-dashboard.html";
+// }
+// document.addEventListener("DOMContentLoaded", () => {
+// const achievements = [
+// {
+// id: "first_lesson",
+// title: "First Voyage",
+// desc: "Complete your first lesson",
+// xp: 10
+// },
+
+// {
+// id: "xp_100",
+// title: "Rookie Pirate",
+// desc: "Reach 100 XP",
+// xp: 100
+// },
+
+// {
+// id: "xp_500",
+// title: "Sea Warrior",
+// desc: "Reach 500 XP",
+// xp: 500
+// },
+
+// {
+// id: "streak_3",
+// title: "On Fire",
+// desc: "Study 3 days streak",
+// streak: 3
+// },
+
+// {
+// id: "streak_7",
+// title: "Legend",
+// desc: "Study 7 days streak",
+// streak: 7
+// }
+// ];
+// let unlocked = JSON.parse(localStorage.getItem("achievements")) || [];
+
+// function checkAchievements(){
+
+// // const user = JSON.parse(localStorage.getItem("user"));
+// // const xp = user.xp || 0;
+// // const streak = parseInt(localStorage.getItem("streak")) || 0;
+// const user = JSON.parse(localStorage.getItem("user"));
+// checkAchievements(user.xp);
+// const xpDisplay = document.getElementById("xpDisplay");
+// if(xpDisplay){
+// xpDisplay.textContent = user.xp;
+// }
+
+// /* ACHIEVEMENT CHECK */
+
+// const xp = user.xp || 0;
+
+// if(xp >= 50 && !localStorage.getItem("ach50")){
+// showAchievement("Cabin Boy");
+// localStorage.setItem("ach50", true);
+// }
+
+// if(xp >= 100 && !localStorage.getItem("ach100")){
+// showAchievement("Deckhand");
+// localStorage.setItem("ach100", true);
+// }
+
+// if(xp >= 200 && !localStorage.getItem("ach200")){
+// showAchievement("Swordsman");
+// localStorage.setItem("ach200", true);
+// }
+// achievements.forEach(a => {
+
+// if(unlocked.includes(a.id)) return;
+
+// if(a.xp && xp >= a.xp){
+// unlockAchievement(a);
+// }
+
+// if(a.streak && streak >= a.streak){
+// unlockAchievement(a);
+// }
+
+// });
+
+// }
+// function unlockAchievement(a){
+
+// unlocked.push(a.id);
+
+// localStorage.setItem("achievements", JSON.stringify(unlocked));
+
+// alert("🏆 Achievement Unlocked: " + a.title);
+
+// }
+
+// const achievementList = document.getElementById("achievementList");
+
+// if(achievementList){
+
+// achievementList.innerHTML = "";
+
+// unlocked.forEach(id => {
+
+// const ach = achievements.find(a => a.id === id);
+
+// const li = document.createElement("li");
+// li.textContent = ach.title + " - " + ach.desc;
+
+// achievementList.appendChild(li);
+
+// });
+
+// }
+//   const displayUser = document.getElementById("displayUser");
+//   const xpDisplay = document.getElementById("xpDisplay");
+//   const levelDisplay = document.getElementById("levelDisplay");
+
+//   const userData = localStorage.getItem("user");
+
+//   if (!userData) {
+//     window.location.href = "login.html";
+//     return;
+//   }
+
+//   const user = JSON.parse(userData);
+
+//   displayUser.textContent = user.username;
+//   xpDisplay.textContent = user.xp;
+//   const lessonCount = document.getElementById("lessonCount");
+
+// if(lessonCount){
+// lessonCount.textContent = user.lessonsCompleted;
+// }
+//   const ranks = [
+//     "Cabin Boy",
+//     "Deckhand",
+//     "Swordsman",
+//     "Commander",
+//     "Captain",
+//     "Warlord",
+//     "Yonko",
+//     "Pirate King"
+//   ];
+
+//   const level = Math.floor(user.xp / 100);
+
+//   levelDisplay.textContent = ranks[level] || "Pirate King";
+
+// });
+// const logoutBtn = document.getElementById("logoutBtn");
+
+// if (logoutBtn) {
+//   logoutBtn.addEventListener("click", () => {
+//     localStorage.clear();
+//     window.location.href = "../index.html";
+//   });
+// }
+
+// // SUBJECT SELECT
+
+// function startLesson(subject){
+
+// localStorage.setItem("currentSubject",subject);
+
+// window.location.href="lesson.html";
+
+// }
+// // const streakDisplay = document.getElementById("streakCount");
+
+// // if(streakDisplay){
+// //    streakDisplay.textContent = user.streak || 0;
+// // }
+// const today = new Date().toDateString();
+// const lastDate = localStorage.getItem('lastDate');
+// let streak = Number(localStorage.getItem('streak')) || 0;
+
+// if (lastDate !== today) {
+//   // If yesterday, increase; if they skipped a day, reset to 1
+//   const yesterday = new Date();
+//   yesterday.setDate(yesterday.getDate() - 1);
+  
+//   streak = (lastDate === yesterday.toDateString()) ? streak + 1 : 1;
+  
+//   localStorage.setItem('streak', streak);
+//   localStorage.setItem('lastDate', today);
+// }
+
+// // Now display it
+// const streakDisplay = document.getElementById("streakCount");
+// if (streakDisplay) streakDisplay.textContent = streak;
+
+// checkAchievements();
+// function showAchievement(text){
+
+// const popup = document.getElementById("achievementPopup");
+// const popupText = document.getElementById("achievementText");
+
+// if(!popup) return;
+
+// popupText.textContent = text;
+
+// popup.classList.add("show");
+
+// setTimeout(()=>{
+// popup.classList.remove("show");
+// },3000);
+
+// }
+// function viewNotes(subject){
+
+// localStorage.setItem("notesSubject", subject);
+
+// window.location.href = "notes.html";
+
+// }
+// function claimTreasure(){
+
+// const today = new Date().toDateString();
+// const lastClaim = localStorage.getItem("lastTreasure");
+
+// const message = document.getElementById("treasureMessage");
+
+// if(lastClaim === today){
+
+// message.innerText = "You already claimed today's treasure 🏴‍☠️";
+// return;
+
+// }
+
+// let xp = parseInt(localStorage.getItem("xp")) || 0;
+
+// const reward = Math.floor(Math.random()*40) + 10;
+
+// xp += reward;
+
+// localStorage.setItem("xp", xp);
+// localStorage.setItem("lastTreasure", today);
+
+// document.getElementById("xpDisplay").innerText = xp;
+
+// message.innerText = `You found ${reward} bounty!`;
+
+// }
+// function startDuel(){
+// window.location.href="duel.html";
+// }
+
 const BASE_URL = "https://studyverse-backend-28sn.onrender.com";
 
-const UNITS = {
-  maths:   ["Unit 1", "Unit 2", "Unit 3", "Unit 4", "Unit 5"],
-  science: ["Unit 1", "Unit 2", "Unit 3", "Unit 4", "Unit 5"],
-  english: ["Unit 1", "Unit 2", "Unit 3", "Unit 4", "Unit 5"],
-  gk:      ["Unit 1", "Unit 2", "Unit 3", "Unit 4", "Unit 5"]
-};
-
 const achievements = [
-  { id: "first_lesson", title: "First Voyage",  desc: "Complete your first lesson", xp: 10 },
-  { id: "xp_100",       title: "Cabin Boy",      desc: "Reach 100 Bounty",           xp: 100 },
-  { id: "xp_200",       title: "Deckhand",       desc: "Reach 200 Bounty",           xp: 200 },
-  { id: "xp_300",       title: "Swordsman",      desc: "Reach 300 Bounty",           xp: 300 },
-  { id: "xp_400",       title: "Commander",      desc: "Reach 400 Bounty",           xp: 400 },
-  { id: "xp_500",       title: "Captain",        desc: "Reach 500 Bounty",           xp: 500 },
-  { id: "xp_600",       title: "Warlord",        desc: "Reach 600 Bounty",           xp: 600 },
-  { id: "xp_700",       title: "Yonko",          desc: "Reach 700 Bounty",           xp: 700 },
-  { id: "xp_800",       title: "Pirate King",    desc: "Reach 800 Bounty",           xp: 800 },
-  { id: "streak_3",     title: "On Fire",        desc: "Study 3 days streak",        streak: 3 },
-  { id: "streak_7",     title: "Legend",         desc: "Study 7 days streak",        streak: 7 }
+  { id: "first_lesson", title: "First Voyage", desc: "Complete your first lesson", xp: 10 },
+  { id: "xp_100", title: "Cabin Boy", desc: "Reach 100 Bounty", xp: 100 },
+  { id: "xp_200", title: "Deckhand", desc: "Reach 200 Bounty", xp: 200 },
+  { id: "xp_300", title: "Swordsman", desc: "Reach 300 Bounty", xp: 300 },
+  { id: "xp_400", title: "Commander", desc: "Reach 400 Bounty", xp: 400 },
+  { id: "xp_500", title: "Captain", desc: "Reach 500 Bounty", xp: 500 },
+  { id: "xp_600", title: "Warlord", desc: "Reach 600 Bounty", xp: 600 },
+  { id: "xp_700", title: "Yonko", desc: "Reach 700 Bounty", xp: 700 },
+  { id: "xp_800", title: "Pirate King", desc: "Reach 800 Bounty", xp: 800 },
+  { id: "streak_3", title: "On Fire", desc: "Study 3 days streak", streak: 3 },
+  { id: "streak_7", title: "Legend", desc: "Study 7 days streak", streak: 7 }
 ];
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -41,11 +285,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (user.role === "teacher") { window.location.href = "teacher-dashboard.html"; return; }
 
-    document.getElementById("displayUser").textContent  = user.username;
-    document.getElementById("xpDisplay").textContent    = user.xp;
+    document.getElementById("displayUser").textContent = user.username;
+    document.getElementById("xpDisplay").textContent = user.xp;
     document.getElementById("levelDisplay").textContent = user.rank;
-    document.getElementById("streakCount").textContent  = user.streak;
-
+    document.getElementById("streakCount").textContent = user.streak;
     const lessonCount = document.getElementById("lessonCount");
     if (lessonCount) lessonCount.textContent = user.lessonsCompleted;
 
@@ -60,125 +303,46 @@ document.addEventListener("DOMContentLoaded", async () => {
       window.location.href = "../index.html";
     });
   }
+
 });
 
-/* ── UNIT PICKER MODAL ──────────────────────────────── */
-
-function startLesson(subject) {
-  // Show unit picker modal instead of going straight to lesson
-  showUnitPicker(subject, (unit) => {
-    localStorage.setItem("currentSubject", subject);
-    localStorage.setItem("currentUnit", unit);
-    window.location.href = "lesson.html";
+function checkAchievements(xp, streak) {
+  let unlocked = JSON.parse(localStorage.getItem("achievements")) || [];
+  achievements.forEach(a => {
+    if (unlocked.includes(a.id)) return;
+    if (a.xp && xp >= a.xp) unlockAchievement(a, unlocked);
+    if (a.streak && streak >= a.streak) unlockAchievement(a, unlocked);
   });
-}
-
-function showUnitPicker(subject, onSelect) {
-  // Remove any existing modal
-  const existing = document.getElementById("unitPickerModal");
-  if (existing) existing.remove();
-
-  const units = UNITS[subject] || ["Unit 1","Unit 2","Unit 3","Unit 4","Unit 5"];
-
-  const modal = document.createElement("div");
-  modal.id = "unitPickerModal";
-  modal.style.cssText = `
-    position: fixed; inset: 0; z-index: 9999;
-    background: rgba(0,0,0,0.85);
-    display: flex; align-items: center; justify-content: center;
-    backdrop-filter: blur(8px);
-    animation: fadeIn 0.3s ease;
-  `;
-
-  modal.innerHTML = `
-    <div style="
-      background: linear-gradient(145deg, #1a0c02, #0a1628);
-      border: 2px solid #f5c842;
-      border-radius: 20px;
-      padding: 40px 48px;
-      max-width: 480px; width: 90%;
-      text-align: center;
-      box-shadow: 0 0 80px rgba(245,200,66,0.2), 0 20px 60px rgba(0,0,0,0.8);
-      position: relative;
-    ">
-      <button onclick="document.getElementById('unitPickerModal').remove()"
-        style="position:absolute;top:16px;right:20px;background:none;border:none;color:#94a3b8;font-size:20px;cursor:pointer;">✕</button>
-
-      <div style="font-size:36px;margin-bottom:12px;">⚓</div>
-      <h2 style="font-family:'Cinzel Decorative',cursive;color:#f5c842;font-size:20px;letter-spacing:2px;margin-bottom:6px;">
-        Choose Your Unit
-      </h2>
-      <p style="font-family:'Crimson Pro',serif;font-size:15px;color:rgba(240,232,212,0.5);margin-bottom:28px;">
-        ${subject.toUpperCase()} — Select a unit to begin the voyage
-      </p>
-
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-        ${units.map((unit, i) => `
-          <button
-            onclick="handleUnitSelect('${subject}', '${unit}')"
-            style="
-              padding: 16px 12px;
-              background: rgba(255,209,102,0.07);
-              border: 1px solid rgba(255,209,102,0.25);
-              border-radius: 12px;
-              color: #f0e8d4;
-              font-family: 'Cinzel', serif;
-              font-size: 12px; letter-spacing: 1px;
-              cursor: pointer;
-              transition: all 0.2s ease;
-              animation: fadeUp 0.3s ease ${i * 0.05}s both;
-            "
-            onmouseover="this.style.background='rgba(255,209,102,0.15)';this.style.borderColor='#f5c842';this.style.color='#f5c842';this.style.transform='translateY(-2px)'"
-            onmouseout="this.style.background='rgba(255,209,102,0.07)';this.style.borderColor='rgba(255,209,102,0.25)';this.style.color='#f0e8d4';this.style.transform='translateY(0)'"
-          >
-            📜 ${unit}
-          </button>
-        `).join("")}
-      </div>
-    </div>
-  `;
-
-  // Inject animation keyframes once
-  if (!document.getElementById("unitPickerStyles")) {
-    const style = document.createElement("style");
-    style.id = "unitPickerStyles";
-    style.textContent = `
-      @keyframes fadeIn { from{opacity:0} to{opacity:1} }
-      @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
-    `;
-    document.head.appendChild(style);
+  const achievementList = document.getElementById("achievementList");
+  if (achievementList) {
+    achievementList.innerHTML = "";
+    unlocked.forEach(id => {
+      const ach = achievements.find(a => a.id === id);
+      if (!ach) return;
+      const li = document.createElement("li");
+      li.textContent = ach.title + " - " + ach.desc;
+      achievementList.appendChild(li);
+    });
   }
-
-  // Store callback so button can call it
-  window._unitPickerCallback = onSelect;
-  document.body.appendChild(modal);
 }
 
-// Called by inline onclick in modal
-window.handleUnitSelect = function(subject, unit) {
-  document.getElementById("unitPickerModal").remove();
-  if (typeof window._unitPickerCallback === "function") {
-    window._unitPickerCallback(unit);
-  }
-};
-
-/* ── NOTES ──────────────────────────────────────────── */
-
-function viewNotes(subject) {
-  localStorage.setItem("notesSubject", subject);
-  window.location.href = "notes.html";
+function unlockAchievement(a, unlocked) {
+  unlocked.push(a.id);
+  localStorage.setItem("achievements", JSON.stringify(unlocked));
+  showAchievement("🏆 " + a.title);
 }
 
-/* ── DUEL ───────────────────────────────────────────── */
-
-function startDuel() {
-  window.location.href = "duel.html";
+function showAchievement(text) {
+  const popup = document.getElementById("achievementPopup");
+  const popupText = document.getElementById("achievementText");
+  if (!popup) return;
+  popupText.textContent = text;
+  popup.classList.add("show");
+  setTimeout(() => popup.classList.remove("show"), 3000);
 }
-
-/* ── TREASURE ───────────────────────────────────────── */
 
 async function claimTreasure() {
-  const token   = localStorage.getItem("token");
+  const token = localStorage.getItem("token");
   const message = document.getElementById("treasureMessage");
   try {
     const response = await fetch(`${BASE_URL}/api/user/claim-treasure`, {
@@ -195,39 +359,16 @@ async function claimTreasure() {
   } catch (err) { message.textContent = "Server error."; }
 }
 
-/* ── ACHIEVEMENTS ───────────────────────────────────── */
-
-function checkAchievements(xp, streak) {
-  let unlocked = JSON.parse(localStorage.getItem("achievements")) || [];
-  achievements.forEach(a => {
-    if (unlocked.includes(a.id)) return;
-    if (a.xp     && xp     >= a.xp)     unlockAchievement(a, unlocked);
-    if (a.streak  && streak >= a.streak) unlockAchievement(a, unlocked);
-  });
-  const achievementList = document.getElementById("achievementList");
-  if (achievementList) {
-    achievementList.innerHTML = "";
-    unlocked.forEach(id => {
-      const ach = achievements.find(a => a.id === id);
-      if (!ach) return;
-      const li = document.createElement("li");
-      li.textContent = ach.title + " — " + ach.desc;
-      achievementList.appendChild(li);
-    });
-  }
+function startLesson(subject) {
+  localStorage.setItem("currentSubject", subject);
+  window.location.href = "lesson.html";
 }
 
-function unlockAchievement(a, unlocked) {
-  unlocked.push(a.id);
-  localStorage.setItem("achievements", JSON.stringify(unlocked));
-  showAchievement("🏆 " + a.title);
+function viewNotes(subject) {
+  localStorage.setItem("notesSubject", subject);
+  window.location.href = "notes.html";
 }
 
-function showAchievement(text) {
-  const popup     = document.getElementById("achievementPopup");
-  const popupText = document.getElementById("achievementText");
-  if (!popup) return;
-  popupText.textContent = text;
-  popup.classList.add("show");
-  setTimeout(() => popup.classList.remove("show"), 3000);
+function startDuel() {
+  window.location.href = "duel.html";
 }

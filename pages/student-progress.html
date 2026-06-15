@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Progress — StudyVerse</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+  <!-- SheetJS for xlsx export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+  <style>
+    /* ── Base reset matching StudyVerse theme ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #000000df;
+      --surface:   rgba(41, 60, 67, 0.937);
+      --surface2:  rgba(21, 54, 9, 0.85);
+      --border:    rgba(74,222,128,.18);
+      --border-h:  rgba(74,222,128,.5);
+      --accent:    #4acfde;
+      --gold:      #f5c842;
+      --teal:      #4acdde;
+      --text:      #c8dff5;
+      --muted:     #7aa8cc;
+      --card-r:    18px;
+      --font-serif:'IM Fell English', serif;
+      --font-head: 'Cinzel', serif;
+      --font-deco: 'Cinzel Decorative', cursive;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-serif);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Background ocean mesh ── */
+    body::before {
+      content:'';
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse 80% 50% at 20% 30%, rgba(0,120,180,.09) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 40% at 80% 70%, rgba(0,80,120,.07) 0%, transparent 70%);
+    }
+
+    /* ── Layout ── */
+    .app-layout { display: flex; min-height: 100vh; position: relative; z-index: 1; }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 220px; flex-shrink: 0;
+      background: rgba(2,10,22,.88);
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      padding: 24px 16px;
+      position: sticky; top: 0; height: 100vh;
+      backdrop-filter: blur(12px);
+    }
+    .logo {
+      font-family: var(--font-deco);
+      font-size: 18px;
+      color: #61dada !important;
+      text-shadow: 0 0 10px rgba(74,222,128,.55), 0 0 28px rgba(74,222,128,.25) !important;
+      margin-bottom: 28px;
+    }
+    .nav-links { display: flex; flex-direction: column; gap: 6px; }
+    .nav-links a {
+      display: block;
+      font-family: var(--font-head);
+      font-size: 12px; letter-spacing: .08em;
+      color: var(--muted);
+      text-decoration: none;
+      padding: 9px 12px;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      transition: all .3s;
+    }
+    .nav-links a:hover, .nav-links a.active {
+      color: var(--accent);
+      border-color: var(--border);
+      background: rgba(74,222,128,.06);
+    }
+    .logout-btn {
+      margin-top: auto;
+      background: transparent;
+      border: 1px solid rgba(255,100,100,.3);
+      color: #f87171;
+      border-radius: 10px;
+      padding: 9px 14px;
+      font-family: var(--font-head);
+      font-size: 11px; letter-spacing: .1em;
+      cursor: pointer;
+      transition: all .3s;
+    }
+    .logout-btn:hover { background: rgba(255,100,100,.1); border-color: #f87171; }
+
+    /* ── Main area ── */
+    .main-area { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 28px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(2,10,22,.6);
+      backdrop-filter: blur(10px);
+    }
+
+    .content { padding: 32px 28px; }
+
+    /* ── Page title ── */
+    .page-title {
+      font-family: var(--font-deco);
+      font-size: 24px; letter-spacing: .04em;
+      color: #4acdde;
+      margin-bottom: 4px;
+    }
+    .page-sub {
+      font-family: var(--font-serif);
+      font-size: 13px; font-style: italic;
+      color: var(--muted);
+      margin-bottom: 28px;
+    }
+
+    /* ── Stats row ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 18px;
+      position: relative;
+      backdrop-filter: blur(10px);
+      overflow: hidden;
+    }
+    .stat-card::after {
+      content:'';
+      position: absolute; top: 0; left: 12%; right: 12%; height: 1.5px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    }
+    .stat-card h4 {
+      font-family: var(--font-head);
+      font-size: 10px; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 8px;
+    }
+    .stat-card .stat-val {
+      font-family: var(--font-deco);
+      font-size: 22px; color: var(--accent);
+    }
+
+    /* ── Controls bar ── */
+    .controls-bar {
+      display: flex; align-items: center; gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+    .ctrl-input {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px 14px;
+      color: var(--text);
+      font-family: var(--font-head);
+      font-size: 12px; letter-spacing: .06em;
+      outline: none;
+      transition: border-color .3s;
+    }
+    .ctrl-input:focus { border-color: var(--border-h); }
+    .ctrl-input::placeholder { color: var(--muted); }
+
+    .btn {
+      font-family: var(--font-head);
+      font-size: 11px; letter-spacing: .1em;
+      padding: 9px 18px;
+      border-radius: 10px;
+      border: 1px solid;
+      cursor: pointer;
+      transition: all .3s;
+      white-space: nowrap;
+    }
+    .btn-gold {
+      background: linear-gradient(135deg, #e8a500, #f5c842, #ffd966, #e09800);
+      border-color: #f5c842;
+      color: #052e16;
+      box-shadow: 0 4px 12px rgba(245,200,66,.3);
+    }
+    .btn-gold:hover { box-shadow: 0 8px 24px rgba(245,200,66,.5); transform: translateY(-2px); }
+    .btn-teal {
+      background: transparent;
+      border-color: var(--teal);
+      color: var(--teal);
+    }
+    .btn-teal:hover { background: rgba(74,205,222,.1); transform: translateY(-2px); }
+    .btn-green {
+      background: transparent;
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .btn-green:hover { background: rgba(74,222,128,.1); transform: translateY(-2px); }
+    .btn-danger {
+      background: transparent;
+      border-color: #f87171;
+      color: #f87171;
+      font-size: 10px; padding: 5px 10px;
+    }
+    .btn-danger:hover { background: rgba(248,113,113,.1); }
+
+    /* ── Conversion controls ── */
+    .conv-row {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+    .conv-label {
+      font-family: var(--font-head);
+      font-size: 11px; letter-spacing: .1em;
+      color: var(--muted); text-transform: uppercase;
+    }
+    .conv-input {
+      width: 72px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 6px 10px;
+      color: var(--gold);
+      font-family: var(--font-head);
+      font-size: 13px;
+      text-align: center;
+      outline: none;
+    }
+    .conv-input:focus { border-color: var(--gold); }
+    .conv-eq {
+      font-family: var(--font-deco);
+      font-size: 13px; color: var(--teal);
+    }
+    .conv-note {
+      font-family: var(--font-serif);
+      font-size: 12px; font-style: italic;
+      color: var(--muted); margin-left: auto;
+    }
+
+    /* ── Table container ── */
+    .table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+      backdrop-filter: blur(12px);
+    }
+    .table-wrap table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    thead tr {
+      background: rgba(74,222,128,.07);
+      border-bottom: 1px solid var(--border);
+    }
+    thead th {
+      font-family: var(--font-head);
+      font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
+      color: var(--muted);
+      padding: 13px 14px;
+      text-align: left;
+      user-select: none;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    thead th:hover { color: var(--accent); }
+    thead th.sorted-asc::after  { content: ' ↑'; color: var(--accent); }
+    thead th.sorted-desc::after { content: ' ↓'; color: var(--accent); }
+
+    tbody tr {
+      border-bottom: 1px solid rgba(74,222,128,.07);
+      transition: background .2s;
+    }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: rgba(74,222,128,.04); }
+    tbody tr.editing { background: rgba(74,205,222,.06) !important; }
+
+    tbody td {
+      font-size: 13px;
+      padding: 11px 14px;
+      color: var(--text);
+      vertical-align: middle;
+    }
+    tbody td .rank-badge {
+      display: inline-block;
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      background: rgba(74,222,128,.15);
+      border: 1px solid var(--border);
+      text-align: center; line-height: 26px;
+      font-family: var(--font-head);
+      font-size: 11px; color: var(--accent);
+    }
+    tbody td .rank-badge.gold   { background: rgba(245,200,66,.2);  border-color: var(--gold); color: var(--gold); }
+    tbody td .rank-badge.silver { background: rgba(180,200,220,.15); border-color: #b0c4de;    color: #b0c4de; }
+    tbody td .rank-badge.bronze { background: rgba(205,127,50,.2);   border-color: #cd7f32;    color: #cd7f32; }
+
+    td.bounty-cell { color: var(--gold); font-family: var(--font-head); font-size: 13px; }
+    td.marks-cell  { color: var(--accent); font-family: var(--font-head); font-size: 13px; font-weight: 600; }
+    td.email-cell  { color: var(--muted); font-size: 12px; }
+
+    /* Editable cell */
+    .editable-cell {
+      cursor: pointer;
+      border-radius: 6px;
+      padding: 3px 6px;
+      transition: background .2s;
+    }
+    .editable-cell:hover { background: rgba(74,205,222,.1); outline: 1px solid rgba(74,205,222,.3); }
+    .cell-input {
+      background: rgba(4,20,44,.9);
+      border: 1px solid var(--teal);
+      border-radius: 6px;
+      color: var(--teal);
+      font-family: var(--font-head);
+      font-size: 12px;
+      padding: 3px 7px;
+      width: 100%;
+      outline: none;
+    }
+
+    /* ── Empty / loading states ── */
+    .state-row td {
+      text-align: center;
+      padding: 42px !important;
+      font-family: var(--font-serif);
+      font-style: italic;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    /* ── Add student row ── */
+    .add-row-form {
+      display: flex; gap: 8px; flex-wrap: wrap;
+      background: rgba(8,28,56,.7);
+      border-top: 1px solid var(--border);
+      padding: 12px 14px;
+    }
+    .add-row-form input {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 7px 11px;
+      color: var(--text);
+      font-family: var(--font-head);
+      font-size: 11px; letter-spacing: .06em;
+      outline: none;
+      flex: 1; min-width: 100px;
+    }
+    .add-row-form input:focus { border-color: var(--teal); }
+    .add-row-form input::placeholder { color: #3a5a7a; }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed; bottom: 28px; right: 28px;
+      background: rgba(5,20,40,.95);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      border-radius: 12px;
+      padding: 12px 20px;
+      font-family: var(--font-head);
+      font-size: 12px; letter-spacing: .08em;
+      opacity: 0; transform: translateY(10px);
+      transition: all .35s;
+      z-index: 999;
+      backdrop-filter: blur(10px);
+      pointer-events: none;
+    }
+    #toast.show { opacity: 1; transform: translateY(0); }
+
+    /* ── Floating back btn ── */
+    .back-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: var(--font-head);
+      font-size: 11px; letter-spacing: .08em;
+      color: var(--muted);
+      text-decoration: none;
+      padding: 7px 13px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      transition: all .3s;
+    }
+    .back-btn:hover { color: var(--text); border-color: var(--border-h); background: rgba(74,222,128,.05); }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(74,222,128,.25); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<div class="app-layout">
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar">
+    <h2 class="logo">StudyVerse</h2>
+    <nav class="nav-links">
+      <a href="teacher-dashboard.html">Dashboard</a>
+      <a href="create-lesson.html">Create Lesson</a>
+      <a href="upload-notes.html">Upload Notes</a>
+      <a href="student-progress.html" class="active">Student Progress</a>
+    </nav>
+    <button id="logoutBtn" class="logout-btn">Logout</button>
+  </aside>
+
+  <!-- ── MAIN ── -->
+  <div class="main-area">
+
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="opacity:.5;font-size:12px;font-family:'Cinzel',serif;letter-spacing:.04em;">Teacher:</span>
+        <strong id="displayTeacher" style="font-family:'Cinzel Decorative',cursive;font-size:14px;color:#4ade80;"></strong>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <a href="teacher-dashboard.html" class="back-btn">← Dashboard</a>
+        <div id="liveClock" style="font-family:'Cinzel',serif;font-size:12px;letter-spacing:.06em;color:#7aa8cc;"></div>
+      </div>
+    </header>
+
+    <main class="content">
+
+      <h1 class="page-title">Student Progress &amp; Bounty Ledger</h1>
+      <p class="page-sub">Track each crew member's voyage — convert bounties to marks &amp; export the fleet's log.</p>
+
+      <!-- Stats -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <h4>Total Students</h4>
+          <div class="stat-val" id="statTotal">0</div>
+        </div>
+        <div class="stat-card">
+          <h4>Total Bounties</h4>
+          <div class="stat-val" id="statBounties" style="color:var(--gold);">0</div>
+        </div>
+        <div class="stat-card">
+          <h4>Avg Marks</h4>
+          <div class="stat-val" id="statAvgMarks" style="color:var(--teal);">0</div>
+        </div>
+        <div class="stat-card">
+          <h4>Top Pirate</h4>
+          <div class="stat-val" id="statTop" style="font-size:13px;font-family:'Cinzel',serif;color:#f5c842;">—</div>
+        </div>
+      </div>
+
+      <!-- Bounty → Marks Conversion Rate -->
+      <div class="conv-row">
+        <span class="conv-label">Conversion Rate:</span>
+        <input type="number" class="conv-input" id="convRate" value="10" min="1" title="Bounties per 1 Mark">
+        <span class="conv-eq">bounties = 1 mark</span>
+        <span style="font-family:'Cinzel',serif;font-size:11px;color:var(--muted);">|</span>
+        <span class="conv-label">Max Marks:</span>
+        <input type="number" class="conv-input" id="maxMarks" value="100" min="1" style="color:var(--teal);" title="Marks cap">
+        <button class="btn btn-teal" onclick="applyConversion()" style="padding:7px 14px;font-size:10px;">Apply</button>
+        <span class="conv-note" id="convNote">1000 bounties = 100 marks (capped)</span>
+      </div>
+
+      <!-- Controls -->
+      <div class="controls-bar">
+        <input type="text" class="ctrl-input" id="searchInput" placeholder="Search student / email / roll no…" style="min-width:240px;" oninput="renderTable()">
+        <button class="btn btn-teal" onclick="addRowUI()">+ Add Student</button>
+        <button class="btn btn-gold" onclick="exportXLSX()">⬇ Download Excel</button>
+        <button class="btn btn-green" onclick="loadStudents()" style="padding:9px 14px;font-size:10px;">↺ Refresh</button>
+      </div>
+
+      <!-- Table -->
+      <div class="table-wrap">
+        <table id="progressTable">
+          <thead>
+            <tr>
+              <th onclick="sortBy('rank')"   data-col="rank">Rank</th>
+              <th onclick="sortBy('name')"   data-col="name">Student Name</th>
+              <th onclick="sortBy('email')"  data-col="email">Email</th>
+              <th onclick="sortBy('roll')"   data-col="roll">Roll No.</th>
+              <th onclick="sortBy('bounty')" data-col="bounty">Bounties ☽</th>
+              <th onclick="sortBy('marks')"  data-col="marks">Marks (Converted)</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <tr class="state-row"><td colspan="7">Loading crew manifest…</td></tr>
+          </tbody>
+        </table>
+
+        <!-- Add row form (hidden by default) -->
+        <div class="add-row-form" id="addRowForm" style="display:none;">
+          <input type="text"   id="newName"   placeholder="Student Name" style="min-width:130px;">
+          <input type="email"  id="newEmail"  placeholder="Email">
+          <input type="text"   id="newRoll"   placeholder="Roll No.">
+          <input type="number" id="newBounty" placeholder="Bounties" min="0" style="max-width:90px;">
+          <button class="btn btn-gold"  onclick="confirmAddRow()">Add</button>
+          <button class="btn btn-teal"  onclick="cancelAddRow()" style="border-color:var(--muted);color:var(--muted);">Cancel</button>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script>
+const BASE_URL = "https://studyverse-backend-28sn.onrender.com";
+
+/* ── State ── */
+let students = [];      // master array
+let sortCol = 'rank';
+let sortDir = 'asc';
+let convRate = 10;
+let maxMark  = 100;
+
+/* ── Boot ── */
+document.addEventListener("DOMContentLoaded", async () => {
+  // Clock
+  const clockEl = document.getElementById('liveClock');
+  const tick = () => { if(clockEl) clockEl.textContent = new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:true}); };
+  setInterval(tick, 1000); tick();
+
+  // Logout
+  document.getElementById('logoutBtn')?.addEventListener('click', () => {
+    localStorage.clear(); window.location.href = '../index.html';
+  });
+
+  // Conversion listeners
+  document.getElementById('convRate').addEventListener('change', updateConvNote);
+  document.getElementById('maxMarks').addEventListener('change', updateConvNote);
+
+  await authCheck();
+  await loadStudents();
+});
+
+async function authCheck() {
+  const token = localStorage.getItem('token');
+  if (!token) { window.location.href = 'login.html'; return; }
+  try {
+    const res = await fetch(`${BASE_URL}/api/user/profile`, { headers: { Authorization: `Bearer ${token}` } });
+    if (!res.ok) { localStorage.clear(); window.location.href = 'login.html'; return; }
+    const user = await res.json();
+    if (user.role !== 'teacher') { window.location.href = 'dashboard.html'; return; }
+    const el = document.getElementById('displayTeacher');
+    if (el) el.textContent = user.username;
+  } catch { /* offline demo mode */ }
+}
+
+/* ── Load students from backend ── */
+async function loadStudents() {
+  const token = localStorage.getItem('token');
+  const tbody = document.getElementById('tableBody');
+  tbody.innerHTML = '<tr class="state-row"><td colspan="7">Fetching crew manifest from the sea…</td></tr>';
+
+  try {
+    /* Try to get all students who have enrolled / have progress */
+    const res = await fetch(`${BASE_URL}/api/students`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      /* Normalise – backend may return different shapes */
+      students = (Array.isArray(data) ? data : data.students || []).map((s, i) => ({
+        id:     s._id || s.id || String(i),
+        name:   s.username || s.name || 'Unknown',
+        email:  s.email || '',
+        roll:   s.rollNumber || s.roll || '',
+        bounty: Number(s.bounties || s.bounty || s.points || 0),
+        marks:  0      /* calculated below */
+      }));
+    } else {
+      /* Fallback: pull enrolled students from lessons */
+      await loadFromLessons(token);
+    }
+  } catch {
+    /* Demo data when offline */
+    students = demoStudents();
+  }
+
+  recalcMarks();
+  renderTable();
+  updateStats();
+}
+
+async function loadFromLessons(token) {
+  try {
+    const res = await fetch(`${BASE_URL}/api/lessons/my/lessons`, { headers: { Authorization: `Bearer ${token}` } });
+    const lessons = res.ok ? await res.json() : [];
+    const map = {};
+    lessons.forEach(lesson => {
+      (lesson.enrolledStudents || lesson.students || []).forEach(s => {
+        const id = s._id || s.id || s.email;
+        if (!map[id]) map[id] = {
+          id, name: s.username || s.name || 'Unknown',
+          email: s.email || '', roll: s.rollNumber || s.roll || '',
+          bounty: Number(s.bounties || 0), marks: 0
+        };
+        else map[id].bounty = Math.max(map[id].bounty, Number(s.bounties || 0));
+      });
+    });
+    students = Object.values(map);
+    if (!students.length) students = demoStudents();
+  } catch { students = demoStudents(); }
+}
+
+function demoStudents() {
+  toast('Demo mode — showing sample data');
+  return [
+    { id:'1', name:'Monkey D. Luffy',  email:'luffy@strawhat.sea',  roll:'SH-001', bounty:3000000000, marks:0 },
+    { id:'2', name:'Roronoa Zoro',      email:'zoro@strawhat.sea',   roll:'SH-002', bounty:1111000000, marks:0 },
+    { id:'3', name:'Nami',              email:'nami@strawhat.sea',   roll:'SH-003', bounty:366000000,  marks:0 },
+    { id:'4', name:'Usopp',             email:'usopp@strawhat.sea',  roll:'SH-004', bounty:500000000,  marks:0 },
+    { id:'5', name:'Sanji',             email:'sanji@strawhat.sea',  roll:'SH-005', bounty:1032000000, marks:0 },
+    { id:'6', name:'Tony Tony Chopper', email:'chopper@strawhat.sea',roll:'SH-006', bounty:1000,       marks:0 },
+    { id:'7', name:'Nico Robin',        email:'robin@strawhat.sea',  roll:'SH-007', bounty:930000000,  marks:0 },
+    { id:'8', name:'Franky',            email:'franky@strawhat.sea', roll:'SH-008', bounty:394000000,  marks:0 },
+    { id:'9', name:'Brook',             email:'brook@strawhat.sea',  roll:'SH-009', bounty:383000000,  marks:0 },
+  ];
+}
+
+/* ── Conversion ── */
+function recalcMarks() {
+  convRate = Math.max(1, Number(document.getElementById('convRate').value) || 10);
+  maxMark  = Math.max(1, Number(document.getElementById('maxMarks').value) || 100);
+  students.forEach(s => {
+    s.marks = Math.min(maxMark, Math.round(s.bounty / convRate));
+  });
+}
+
+function applyConversion() {
+  recalcMarks(); renderTable(); updateStats();
+  toast('Conversion applied ✓');
+}
+
+function updateConvNote() {
+  const r = Math.max(1, Number(document.getElementById('convRate').value) || 10);
+  const m = Math.max(1, Number(document.getElementById('maxMarks').value) || 100);
+  document.getElementById('convNote').textContent = `${r * m} bounties = ${m} marks (capped)`;
+}
+
+/* ── Sort ── */
+function sortBy(col) {
+  if (sortCol === col) sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+  else { sortCol = col; sortDir = 'asc'; }
+  renderTable();
+}
+
+/* ── Render table ── */
+function renderTable() {
+  const q = (document.getElementById('searchInput').value || '').toLowerCase();
+  let rows = students.filter(s =>
+    s.name.toLowerCase().includes(q) ||
+    s.email.toLowerCase().includes(q) ||
+    String(s.roll).toLowerCase().includes(q)
+  );
+
+  // Sort
+  rows.sort((a, b) => {
+    let va = sortCol === 'rank'   ? a.bounty
+           : sortCol === 'bounty' ? a.bounty
+           : sortCol === 'marks'  ? a.marks
+           : (a[sortCol] || '').toString().toLowerCase();
+    let vb = sortCol === 'rank'   ? b.bounty
+           : sortCol === 'bounty' ? b.bounty
+           : sortCol === 'marks'  ? b.marks
+           : (b[sortCol] || '').toString().toLowerCase();
+    if (va < vb) return sortDir === 'asc' ? -1 : 1;
+    if (va > vb) return sortDir === 'asc' ?  1 : -1;
+    return 0;
+  });
+
+  // Sort descending for rank (highest bounty = rank 1)
+  if (sortCol === 'rank') rows = students.slice().sort((a,b) => b.bounty - a.bounty)
+    .filter(s => s.name.toLowerCase().includes(q) || s.email.toLowerCase().includes(q) || String(s.roll).toLowerCase().includes(q));
+
+  // Update sort indicators
+  document.querySelectorAll('thead th[data-col]').forEach(th => {
+    th.classList.remove('sorted-asc','sorted-desc');
+    if (th.dataset.col === sortCol) th.classList.add(sortDir === 'asc' ? 'sorted-asc' : 'sorted-desc');
+  });
+
+  // Compute rank globally from full bounty-sorted list
+  const globalRanked = students.slice().sort((a,b) => b.bounty - a.bounty);
+  const rankOf = id => globalRanked.findIndex(s => s.id === id) + 1;
+
+  const tbody = document.getElementById('tableBody');
+  if (!rows.length) {
+    tbody.innerHTML = '<tr class="state-row"><td colspan="7">No crew members found in these waters…</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = rows.map(s => {
+    const r = rankOf(s.id);
+    const badgeCls = r === 1 ? 'gold' : r === 2 ? 'silver' : r === 3 ? 'bronze' : '';
+    return `<tr data-id="${s.id}">
+      <td><span class="rank-badge ${badgeCls}">${r}</span></td>
+      <td><span class="editable-cell" onclick="editCell(this,'name','${s.id}')">${esc(s.name)}</span></td>
+      <td class="email-cell"><span class="editable-cell" onclick="editCell(this,'email','${s.id}')">${esc(s.email)}</span></td>
+      <td><span class="editable-cell" onclick="editCell(this,'roll','${s.id}')">${esc(String(s.roll))}</span></td>
+      <td class="bounty-cell"><span class="editable-cell" onclick="editCell(this,'bounty','${s.id}')">${fmtNum(s.bounty)}</span></td>
+      <td class="marks-cell">${s.marks}</td>
+      <td><button class="btn btn-danger" onclick="removeStudent('${s.id}')">Remove</button></td>
+    </tr>`;
+  }).join('');
+}
+
+/* ── Inline editing ── */
+function editCell(el, field, id) {
+  if (el.querySelector('input')) return; // already editing
+  const cur = el.textContent.trim().replace(/,/g,'');
+  const inp = document.createElement('input');
+  inp.className = 'cell-input';
+  inp.value = cur;
+  if (field === 'bounty') inp.type = 'number';
+  el.innerHTML = '';
+  el.appendChild(inp);
+  el.closest('tr').classList.add('editing');
+  inp.focus(); inp.select();
+
+  const commit = () => {
+    const s = students.find(x => x.id === id);
+    if (s) {
+      let val = inp.value.trim();
+      if (field === 'bounty') { val = Math.max(0, Number(val) || 0); }
+      s[field] = val;
+      if (field === 'bounty') { recalcMarks(); updateStats(); }
+    }
+    renderTable();
+    toast('Cell updated ✓');
+  };
+  inp.addEventListener('blur', commit);
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') { inp.blur(); } if (e.key === 'Escape') { renderTable(); } });
+}
+
+/* ── Add row ── */
+function addRowUI() {
+  document.getElementById('addRowForm').style.display = 'flex';
+  document.getElementById('newName').focus();
+}
+function cancelAddRow() { document.getElementById('addRowForm').style.display = 'none'; }
+function confirmAddRow() {
+  const name   = document.getElementById('newName').value.trim();
+  const email  = document.getElementById('newEmail').value.trim();
+  const roll   = document.getElementById('newRoll').value.trim();
+  const bounty = Math.max(0, Number(document.getElementById('newBounty').value) || 0);
+  if (!name) { toast('Name is required'); return; }
+  const id = 'manual_' + Date.now();
+  students.push({ id, name, email, roll, bounty, marks: Math.min(maxMark, Math.round(bounty / convRate)) });
+  ['newName','newEmail','newRoll','newBounty'].forEach(id => document.getElementById(id).value = '');
+  cancelAddRow();
+  updateStats(); renderTable();
+  toast('Student added ✓');
+}
+
+/* ── Remove ── */
+function removeStudent(id) {
+  students = students.filter(s => s.id !== id);
+  updateStats(); renderTable();
+  toast('Student removed');
+}
+
+/* ── Stats ── */
+function updateStats() {
+  document.getElementById('statTotal').textContent = students.length;
+  const totalB = students.reduce((a,s) => a + s.bounty, 0);
+  document.getElementById('statBounties').textContent = fmtNum(totalB);
+  const avgM = students.length ? Math.round(students.reduce((a,s) => a + s.marks, 0) / students.length) : 0;
+  document.getElementById('statAvgMarks').textContent = avgM;
+  const top = students.slice().sort((a,b) => b.bounty - a.bounty)[0];
+  document.getElementById('statTop').textContent = top ? top.name.split(' ')[0] : '—';
+}
+
+/* ── Excel Export ── */
+function exportXLSX() {
+  if (!students.length) { toast('No data to export'); return; }
+
+  const globalRanked = students.slice().sort((a,b) => b.bounty - a.bounty);
+  const rankOf = id => globalRanked.findIndex(s => s.id === id) + 1;
+
+  const wsData = [
+    ['Rank', 'Student Name', 'Email', 'Roll Number', 'Bounties', 'Marks (Converted)']
+  ];
+  students.slice().sort((a,b) => b.bounty - a.bounty).forEach(s => {
+    wsData.push([rankOf(s.id), s.name, s.email, s.roll, s.bounty, s.marks]);
+  });
+
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet(wsData);
+
+  // Column widths
+  ws['!cols'] = [
+    {wch:6}, {wch:22}, {wch:28}, {wch:14}, {wch:14}, {wch:18}
+  ];
+
+  // Header style (supported in some xlsx viewers)
+  const headerRange = XLSX.utils.decode_range(ws['!ref']);
+  for (let C = headerRange.s.c; C <= headerRange.e.c; C++) {
+    const addr = XLSX.utils.encode_cell({r:0, c:C});
+    if (!ws[addr]) continue;
+    ws[addr].s = {
+      font: { bold: true, color: { rgb: '052e16' } },
+      fill: { fgColor: { rgb: '4ade80' } },
+      alignment: { horizontal: 'center' }
+    };
+  }
+
+  /* Summary sheet */
+  const summaryData = [
+    ['StudyVerse — Bounty Marks Export'],
+    ['Generated', new Date().toLocaleString()],
+    ['Conversion Rate', `${convRate} bounties = 1 mark`],
+    ['Max Marks Cap', maxMark],
+    [],
+    ['Total Students', students.length],
+    ['Total Bounties', students.reduce((a,s) => a+s.bounty, 0)],
+    ['Average Marks', Math.round(students.reduce((a,s) => a+s.marks, 0) / (students.length || 1))],
+    ['Top Pirate', students.slice().sort((a,b) => b.bounty - a.bounty)[0]?.name || '—']
+  ];
+  const ws2 = XLSX.utils.aoa_to_sheet(summaryData);
+  ws2['!cols'] = [{wch:20},{wch:36}];
+
+  XLSX.utils.book_append_sheet(wb, ws2, 'Summary');
+  XLSX.utils.book_append_sheet(wb, ws, 'Student Marks');
+
+  XLSX.writeFile(wb, `studyverse_student_marks_${Date.now()}.xlsx`);
+  toast('Excel file downloaded ✓');
+}
+
+/* ── Helpers ── */
+function fmtNum(n) { return Number(n).toLocaleString(); }
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Units — StudyVerse</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600;700&family=IM+Fell+English:ital@0;1&family=Crimson+Pro:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --gold: #f5c842;
+      --gold-dim: #b8922a;
+      --gold-glow: rgba(245,200,66,0.25);
+      --ocean-deep: #060d1a;
+      --ocean-mid: #0a1628;
+      --plank: #111e32;
+      --plank-light: #1a2d47;
+      --plank-border: #1e3a5f;
+      --text: #e8dfc8;
+      --text-dim: #7a94b0;
+      --green: #22c55e;
+      --orange: #f97316;
+      --red: #ef4444;
+      --green-glow: rgba(34,197,94,0.2);
+      --orange-glow: rgba(249,115,22,0.2);
+      --red-glow: rgba(239,68,68,0.2);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--ocean-deep);
+      color: var(--text);
+      font-family: 'Crimson Pro', Georgia, serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ─── animated ocean bg ─── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 20% 80%, rgba(10,30,70,0.9) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 20%, rgba(5,15,40,0.8) 0%, transparent 60%),
+        linear-gradient(180deg, #060d1a 0%, #0a1628 50%, #060d1a 100%);
+      z-index: -2;
+    }
+
+    /* wave lines */
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 60px,
+        rgba(30,90,160,0.04) 60px,
+        rgba(30,90,160,0.04) 61px
+      );
+      z-index: -1;
+      animation: waveScroll 8s linear infinite;
+    }
+    @keyframes waveScroll { from { transform: translateY(0); } to { transform: translateY(61px); } }
+
+    /* ─── layout ─── */
+    .app-layout { display: flex; min-height: 100vh; }
+
+    /* ─── sidebar ─── */
+    .sidebar {
+      width: 230px;
+      background: linear-gradient(180deg, #0a1628 0%, #060d1a 100%);
+      border-right: 1px solid var(--plank-border);
+      padding: 28px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      position: sticky; top: 0; height: 100vh;
+      flex-shrink: 0;
+    }
+
+    .logo {
+      font-family: 'Cinzel Decorative', cursive;
+      color: var(--gold);
+      font-size: 16px;
+      text-align: center;
+      margin-bottom: 24px;
+      text-shadow: 0 0 20px var(--gold-glow), 0 0 40px rgba(245,200,66,0.1);
+      letter-spacing: 0.05em;
+      line-height: 1.4;
+    }
+
+    .nav-links a {
+      display: block;
+      padding: 10px 14px;
+      color: var(--text-dim);
+      text-decoration: none;
+      border-radius: 8px;
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: all 0.2s;
+      margin-bottom: 2px;
+      border: 1px solid transparent;
+    }
+    .nav-links a:hover {
+      background: var(--plank-light);
+      color: var(--gold);
+      border-color: var(--plank-border);
+    }
+
+    /* ─── main area ─── */
+    .main-area { flex: 1; padding: 0; overflow-y: auto; }
+
+    /* ─── page header ─── */
+    .page-header {
+      padding: 28px 40px 0;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .back-btn {
+      background: transparent;
+      border: 1px solid var(--plank-border);
+      color: var(--text-dim);
+      padding: 8px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: all 0.2s;
+    }
+    .back-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+    .page-title {
+      font-family: 'Cinzel Decorative', cursive;
+      font-size: 22px;
+      color: var(--gold);
+      text-shadow: 0 0 30px var(--gold-glow);
+    }
+
+    .subject-badge {
+      background: var(--plank);
+      border: 1px solid var(--gold-dim);
+      color: var(--gold);
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .page-subtitle {
+      font-family: 'IM Fell English', serif;
+      font-style: italic;
+      color: var(--text-dim);
+      font-size: 14px;
+      padding: 8px 40px 28px;
+    }
+
+    /* ─── units grid ─── */
+    .units-grid {
+      padding: 0 40px 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* ─── unit card ─── */
+    .unit-card {
+      background: linear-gradient(135deg, var(--plank) 0%, rgba(10,22,40,0.9) 100%);
+      border: 1px solid var(--plank-border);
+      border-radius: 20px;
+      overflow: hidden;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      position: relative;
+    }
+    .unit-card::before {
+      content: '';
+      position: absolute; top: 0; left: 10%; right: 10%; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+      opacity: 0.5;
+    }
+    .unit-card:hover { border-color: var(--gold-dim); box-shadow: 0 8px 40px rgba(0,0,0,0.4); }
+
+    .unit-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 28px;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.2s;
+    }
+    .unit-header:hover { background: rgba(255,255,255,0.02); }
+
+    .unit-left { display: flex; align-items: center; gap: 16px; }
+
+    .unit-icon {
+      width: 48px; height: 48px;
+      background: var(--ocean-mid);
+      border: 1px solid var(--plank-border);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .unit-name {
+      font-family: 'Cinzel', serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: 0.04em;
+    }
+
+    .unit-meta {
+      font-family: 'IM Fell English', serif;
+      font-style: italic;
+      font-size: 13px;
+      color: var(--text-dim);
+      margin-top: 3px;
+    }
+
+    .unit-right { display: flex; align-items: center; gap: 16px; }
+
+    .unit-pct {
+      font-family: 'Cinzel', serif;
+      font-size: 12px;
+      color: var(--gold);
+      letter-spacing: 0.05em;
+    }
+
+    .unit-chevron {
+      color: var(--text-dim);
+      font-size: 14px;
+      transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+    }
+    .unit-card.open .unit-chevron { transform: rotate(180deg); }
+
+    /* unit progress bar */
+    .unit-progress-bar {
+      height: 2px;
+      background: var(--ocean-deep);
+      margin: 0 28px;
+    }
+    .unit-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--gold-dim), var(--gold));
+      border-radius: 2px;
+      transition: width 0.6s ease;
+    }
+
+    /* ─── difficulty rows ─── */
+    .difficulty-levels {
+      padding: 0 28px 20px;
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .unit-card.open .difficulty-levels { display: flex; }
+
+    .level-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 20px;
+      border-radius: 14px;
+      border: 1px solid var(--plank-border);
+      background: var(--ocean-mid);
+      transition: all 0.25s;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+    .level-row::before {
+      content: '';
+      position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+      border-radius: 3px 0 0 3px;
+      transition: opacity 0.2s;
+      opacity: 0;
+    }
+    .level-row.basic-row::before   { background: var(--green); }
+    .level-row.inter-row::before   { background: var(--orange); }
+    .level-row.advanced-row::before { background: var(--red); }
+
+    .level-row.unlocked:hover {
+      transform: translateX(4px);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    .level-row.unlocked:hover::before { opacity: 1; }
+
+    .level-row.unlocked.basic-row:hover   { border-color: var(--green); background: rgba(34,197,94,0.06); }
+    .level-row.unlocked.inter-row:hover   { border-color: var(--orange); background: rgba(249,115,22,0.06); }
+    .level-row.unlocked.advanced-row:hover { border-color: var(--red); background: rgba(239,68,68,0.06); }
+
+    .level-row.locked {
+      opacity: 0.4;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    .level-row.completed { border-color: rgba(34,197,94,0.3); }
+
+    .level-icon { font-size: 24px; width: 32px; text-align: center; flex-shrink: 0; }
+
+    .level-info { flex: 1; }
+
+    .level-name {
+      font-family: 'Cinzel', serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .level-name.basic        { color: var(--green); }
+    .level-name.intermediate { color: var(--orange); }
+    .level-name.advanced     { color: var(--red); }
+
+    .level-desc {
+      font-family: 'IM Fell English', serif;
+      font-style: italic;
+      font-size: 13px;
+      color: var(--text-dim);
+      margin-top: 2px;
+    }
+
+    .level-status {
+      font-family: 'Cinzel', serif;
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+    .status-play     { background: rgba(34,197,94,0.15); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
+    .status-locked   { background: rgba(71,85,105,0.3);  color: #475569;      border: 1px solid #334155; }
+    .status-claimed  { background: rgba(245,200,66,0.12); color: var(--gold); border: 1px solid rgba(245,200,66,0.3); }
+    .status-done     { background: rgba(34,197,94,0.12); color: var(--green); border: 1px solid rgba(34,197,94,0.25); }
+
+    /* ─── popups ─── */
+    .popup-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+    }
+    .popup-overlay.show { display: flex; }
+
+    .popup-box {
+      background: linear-gradient(135deg, var(--plank) 0%, var(--ocean-mid) 100%);
+      border: 1px solid var(--plank-border);
+      border-radius: 24px;
+      padding: 40px;
+      max-width: 420px;
+      width: 90%;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      animation: popIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.85) translateY(20px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .popup-box::before {
+      content: '';
+      position: absolute; top: 0; left: 10%; right: 10%; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+    }
+
+    .popup-icon { font-size: 52px; margin-bottom: 16px; }
+
+    .popup-title {
+      font-family: 'Cinzel Decorative', cursive;
+      font-size: 17px;
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+    .popup-title.danger { color: var(--red); text-shadow: 0 0 20px rgba(239,68,68,0.3); }
+    .popup-title.gold   { color: var(--gold); text-shadow: 0 0 20px var(--gold-glow); }
+
+    .popup-text {
+      font-family: 'IM Fell English', serif;
+      font-style: italic;
+      color: var(--text-dim);
+      font-size: 15px;
+      line-height: 1.7;
+      margin-bottom: 28px;
+    }
+
+    .popup-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+    .btn-gold {
+      background: linear-gradient(135deg, #e8a500, #f5c842, #ffd966, #e09800);
+      color: #1a0e00;
+      border: none;
+      padding: 11px 26px;
+      border-radius: 10px;
+      font-family: 'Cinzel', serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .btn-gold:hover { opacity: 0.85; transform: translateY(-1px); }
+
+    .btn-outline-gold {
+      background: transparent;
+      color: var(--gold);
+      border: 1px solid var(--gold-dim);
+      padding: 11px 26px;
+      border-radius: 10px;
+      font-family: 'Cinzel', serif;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-outline-gold:hover { background: rgba(245,200,66,0.1); }
+
+    /* ─── scrollbar ─── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--ocean-deep); }
+    ::-webkit-scrollbar-thumb { background: var(--plank-border); border-radius: 3px; }
+
+    /* ─── responsive ─── */
+    @media (max-width: 700px) {
+      .sidebar { display: none; }
+      .units-grid { padding: 0 16px 40px; }
+      .page-header { padding: 20px 16px 0; }
+      .page-subtitle { padding: 6px 16px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-layout">
+
+  <aside class="sidebar">
+    <h2 class="logo">Study<br>Verse</h2>
+    <nav class="nav-links">
+      <a href="dashboard.html">⚓ Ship Deck</a>
+      <a href="profile.html">☠ Profile</a>
+      <a href="student-leaderboard.html">🏆 Leaderboard</a>
+    </nav>
+  </aside>
+
+  <div class="main-area">
+    <div class="page-header">
+      <button class="back-btn" onclick="window.location.href='dashboard.html'">← Back</button>
+      <h1 class="page-title">Choose Your Voyage</h1>
+      <span class="subject-badge" id="subjectLabel">Loading…</span>
+    </div>
+    <p class="page-subtitle" id="pageSubtitle">Select a unit and difficulty to begin your journey, brave navigator.</p>
+
+    <div class="units-grid" id="unitsGrid">
+      <p style="color:var(--text-dim);padding:20px;">Loading units…</p>
+    </div>
+  </div>
+</div>
+
+<!-- Popup: Not ready for advanced -->
+<div class="popup-overlay" id="popupNotReady">
+  <div class="popup-box">
+    <div class="popup-icon">⚓</div>
+    <div class="popup-title danger">Not Ready Yet, Sailor!</div>
+    <p class="popup-text">
+      The seas ahead are treacherous. A true pirate builds strength from the ground up.
+      Conquer the basics before challenging the storm.
+    </p>
+    <div class="popup-actions">
+      <button class="btn-gold" id="popupBasicBtn">Start from Basic</button>
+      <button class="btn-outline-gold" onclick="closePopups()">Stay Here</button>
+    </div>
+  </div>
+</div>
+
+<!-- Popup: Bounty already claimed -->
+<div class="popup-overlay" id="popupClaimed">
+  <div class="popup-box">
+    <div class="popup-icon">🏴‍☠️</div>
+    <div class="popup-title gold">Bounty Already Plundered!</div>
+    <p class="popup-text">
+      You've already earned your reward for this voyage. Set sail again for practice — but no new bounty awaits, Captain.
+    </p>
+    <div class="popup-actions">
+      <button class="btn-gold" id="popupPracticeBtn">Practice Anyway</button>
+      <button class="btn-outline-gold" onclick="closePopups()">Retreat</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const BASE_URL = "https://studyverse-backend-28sn.onrender.com";
+  const TOKEN = localStorage.getItem('token');
+  const params = new URLSearchParams(window.location.search);
+  const subject = params.get('subject') || 'maths';
+
+  // subject display
+  const subjectNames = { maths: 'Mathematics', science: 'Science', english: 'English', gk: 'General Knowledge' };
+  document.getElementById('subjectLabel').textContent = subjectNames[subject] || subject;
+
+  const unitDefs = [
+    { id: '1', name: 'Unit 1', desc: 'Foundations of the Realm', icon: '⚓' },
+    { id: '2', name: 'Unit 2', desc: 'Core Concepts & Strategy', icon: '🗺️' },
+    { id: '3', name: 'Unit 3', desc: 'Advanced Territory', icon: '⚔️' },
+  ];
+
+  const diffDefs = [
+    { key: 'basic',        label: 'Basic',        icon: '🟢', desc: 'Build your foundation — all sailors start here', cls: 'basic-row',    nameCls: 'basic' },
+    { key: 'intermediate', label: 'Intermediate', icon: '🟡', desc: 'Test your limits — for seasoned deckhands',     cls: 'inter-row',    nameCls: 'intermediate' },
+    { key: 'advanced',     label: 'Advanced',     icon: '🔴', desc: 'Prove your mastery — only the worthy prevail', cls: 'advanced-row', nameCls: 'advanced' },
+  ];
+
+  function getProgress() {
+    try { return JSON.parse(localStorage.getItem('studyverse_progress') || '{}'); } catch { return {}; }
+  }
+
+  function isCompleted(uid, diff) {
+    return getProgress()[`${subject}_${uid}_${diff}`] === 'completed';
+  }
+
+  function isClaimed(uid, diff) {
+    return getProgress()[`${subject}_${uid}_${diff}_claimed`] === true;
+  }
+
+  function isUnlocked(uid, diff) {
+    if (diff === 'basic')        return true;
+    if (diff === 'intermediate') return isCompleted(uid, 'basic');
+    if (diff === 'advanced')     return isCompleted(uid, 'intermediate');
+    return false;
+  }
+
+  function unitPct(uid) {
+    let done = 0;
+    diffDefs.forEach(d => { if (isCompleted(uid, d.key)) done++; });
+    return Math.round((done / 3) * 100);
+  }
+
+  let pendingUnit = null, pendingDiff = null;
+
+  function buildUnits() {
+    const grid = document.getElementById('unitsGrid');
+    grid.innerHTML = '';
+    unitDefs.forEach(unit => {
+      const pct = unitPct(unit.id);
+      const card = document.createElement('div');
+      card.className = 'unit-card';
+      card.id = `unit-card-${unit.id}`;
+      card.innerHTML = `
+        <div class="unit-header" onclick="toggleUnit('${unit.id}')">
+          <div class="unit-left">
+            <div class="unit-icon">${unit.icon}</div>
+            <div>
+              <div class="unit-name">${unit.name}: ${unit.desc}</div>
+              <div class="unit-meta">${pct}% of voyage complete</div>
+            </div>
+          </div>
+          <div class="unit-right">
+            <span class="unit-pct">${pct}%</span>
+            <span class="unit-chevron">▼</span>
+          </div>
+        </div>
+        <div class="unit-progress-bar">
+          <div class="unit-progress-fill" style="width:${pct}%"></div>
+        </div>
+        <div class="difficulty-levels" id="levels-${unit.id}">
+          ${diffDefs.map(d => buildLevelRow(unit.id, d)).join('')}
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+  }
+
+  function buildLevelRow(uid, d) {
+    const unlocked  = isUnlocked(uid, d.key);
+    const completed = isCompleted(uid, d.key);
+    const claimed   = isClaimed(uid, d.key);
+
+    let statusHtml = '';
+    if (!unlocked)     statusHtml = `<span class="level-status status-locked">🔒 Locked</span>`;
+    else if (claimed)  statusHtml = `<span class="level-status status-claimed">🏴‍☠️ Claimed</span>`;
+    else if (completed) statusHtml = `<span class="level-status status-done">✓ Done</span>`;
+    else               statusHtml = `<span class="level-status status-play">▶ Sail</span>`;
+
+    return `
+      <div class="level-row ${d.cls} ${unlocked ? 'unlocked' : 'locked'} ${completed ? 'completed' : ''}"
+           onclick="handleLevelClick('${uid}','${d.key}',${unlocked},${claimed})">
+        <span class="level-icon">${d.icon}</span>
+        <div class="level-info">
+          <div class="level-name ${d.nameCls}">${d.label}</div>
+          <div class="level-desc">${d.desc}</div>
+        </div>
+        ${statusHtml}
+      </div>`;
+  }
+
+  function toggleUnit(uid) {
+    const card = document.getElementById(`unit-card-${uid}`);
+    card.classList.toggle('open');
+  }
+
+  function handleLevelClick(uid, diff, unlocked, claimed) {
+    pendingUnit = uid;
+    pendingDiff = diff;
+
+    if (!unlocked) {
+      // show not-ready popup
+      document.getElementById('popupBasicBtn').onclick = () => {
+        closePopups();
+        goToLesson(uid, 'basic', false);
+      };
+      document.getElementById('popupNotReady').classList.add('show');
+      return;
+    }
+
+    if (claimed) {
+      document.getElementById('popupPracticeBtn').onclick = () => {
+        closePopups();
+        goToLesson(uid, diff, true);
+      };
+      document.getElementById('popupClaimed').classList.add('show');
+      return;
+    }
+
+    goToLesson(uid, diff, false);
+  }
+
+  function goToLesson(uid, diff, practice) {
+    window.location.href = `lesson.html?subject=${subject}&unit=${uid}&difficulty=${diff}&practice=${practice}`;
+  }
+
+  function closePopups() {
+    document.querySelectorAll('.popup-overlay').forEach(p => p.classList.remove('show'));
+  }
+
+  buildUnits();
+</script>
+
+</body>
+</html>

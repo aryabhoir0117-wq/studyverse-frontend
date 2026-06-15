@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bounty Board — StudyVerse</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600;700&family=IM+Fell+English:ital@0;1&family=Noto+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f1216;
+  --bg2:#07131f;
+  --surf:rgba(6,18,36,.82);
+  --surf2:rgba(10,24,48,.9);
+  --b:rgba(212,175,55,.22);
+  --bh:rgba(212,175,55,.55);
+  --gold:#f5c842;
+  --gold2:#e8a500;
+  --teal:#4acdde;
+  --jade:#57c785;
+  --red:#e05050;
+  --silver:#c0c8d8;
+  --bronze:#cd7f32;
+  --text:#d8eaf5;
+  --muted:#7090aa;
+  --r:16px;
+  --hf:'Cinzel Decorative',cursive;
+  --sf:'Cinzel',serif;
+  --bf:'IM Fell English',serif;
+}
+html,body{min-height:100vh;background:var(--bg);color:var(--text);font-family:var(--bf);overflow-x:hidden}
+
+/* ═══ CANVAS BACKGROUND ═══ */
+#bgCanvas{position:fixed;inset:0;z-index:0;pointer-events:none}
+
+/* ═══ DOODLE SVG OVERLAYS ═══ */
+.doodle-layer{position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+.doodle-layer svg{position:absolute;opacity:500}
+
+/* ═══ LAYOUT ═══ */
+.app{display:flex;min-height:100vh;position:relative;z-index:2}
+
+/* ═══ SIDEBAR ═══ */
+.sidebar{
+  width:210px;flex-shrink:0;
+  background:rgba(2,8,18,.9);
+  border-right:1px solid var(--b);
+  display:flex;flex-direction:column;
+  padding:22px 14px;
+  position:sticky;top:0;height:100vh;
+  backdrop-filter:blur(16px);
+}
+.logo{font-family:var(--hf);font-size:16px;color:#61dada!important;
+  text-shadow:0 0 12px rgba(97,218,218,.5);margin-bottom:26px;line-height:1.3}
+.nav-links{display:flex;flex-direction:column;gap:5px}
+.nav-links a{
+  font-family:var(--sf);font-size:11px;letter-spacing:.08em;
+  color:var(--muted);text-decoration:none;
+  padding:8px 11px;border-radius:10px;
+  border:1px solid transparent;transition:all .3s;
+}
+.nav-links a:hover,.nav-links a.active{color:var(--gold);border-color:var(--b);background:rgba(212,175,55,.06)}
+.logout-btn{
+  margin-top:auto;background:transparent;
+  border:1px solid rgba(255,100,100,.3);color:#f87171;
+  border-radius:10px;padding:8px 12px;
+  font-family:var(--sf);font-size:10px;letter-spacing:.1em;
+  cursor:pointer;transition:all .3s;
+}
+.logout-btn:hover{background:rgba(255,100,100,.1)}
+
+/* ═══ MAIN ═══ */
+.main{flex:1;display:flex;flex-direction:column;min-width:0}
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:13px 26px;
+  border-bottom:1px solid var(--b);
+  background:rgba(2,8,18,.7);
+  backdrop-filter:blur(10px);
+}
+.content{padding:28px 24px 60px}
+
+/* ═══ HERO BANNER ═══ */
+.hero{
+  position:relative;
+  background:linear-gradient(135deg,rgba(10,24,48,.95) 0%,rgba(4,12,28,.98) 100%);
+  border:1px solid var(--b);
+  border-radius:22px;
+  padding:28px 32px 22px;
+  margin-bottom:28px;
+  overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 60% 80% at 10% 50%,rgba(212,175,55,.07) 0%,transparent 60%),
+    radial-gradient(ellipse 40% 60% at 90% 30%,rgba(74,205,222,.05) 0%,transparent 60%);
+  pointer-events:none;
+}
+.hero-ship{position:absolute;right:24px;bottom:0;opacity:.18;font-size:88px;line-height:1;transform:scaleX(-1)}
+.hero h1{font-family:var(--hf);font-size:22px;color:var(--gold);
+  text-shadow:0 0 24px rgba(245,200,66,.35);margin-bottom:6px}
+.hero p{font-family:var(--bf);font-style:italic;font-size:13px;color:var(--muted)}
+.countdown-chip{
+  display:inline-flex;align-items:center;gap:8px;
+  margin-top:14px;
+  background:rgba(212,175,55,.1);border:1px solid rgba(212,175,55,.3);
+  border-radius:100px;padding:6px 16px;
+  font-family:var(--sf);font-size:11px;letter-spacing:.08em;
+}
+.countdown-chip .dot{width:7px;height:7px;border-radius:50%;background:var(--gold);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.5)}}
+#countdown{color:var(--gold);font-weight:700}
+
+/* ═══ TAB BAR ═══ */
+.tab-bar{
+  display:flex;gap:6px;margin-bottom:22px;
+  background:rgba(6,18,36,.6);border:1px solid var(--b);
+  border-radius:14px;padding:5px;
+  backdrop-filter:blur(10px);
+}
+.tab{
+  flex:1;font-family:var(--sf);font-size:11px;letter-spacing:.1em;
+  padding:9px 6px;border-radius:10px;border:none;
+  background:transparent;color:var(--muted);cursor:pointer;
+  transition:all .3s;text-transform:uppercase;
+}
+.tab.active{background:rgba(212,175,55,.15);color:var(--gold);border:1px solid rgba(212,175,55,.35)}
+.tab:hover:not(.active){color:var(--text);background:rgba(255,255,255,.04)}
+
+/* ═══ BOARDS GRID ═══ */
+.boards-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media(max-width:860px){.boards-grid{grid-template-columns:1fr}}
+
+/* ═══ BOARD CARD ═══ */
+.board{
+  background:var(--surf);border:1px solid var(--b);
+  border-radius:var(--r);overflow:hidden;
+  backdrop-filter:blur(14px);
+  transition:border-color .4s;
+}
+.board:hover{border-color:var(--bh)}
+.board-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 18px 12px;
+  border-bottom:1px solid rgba(212,175,55,.12);
+  background:rgba(212,175,55,.04);
+  position:relative;overflow:hidden;
+}
+.board-header::after{
+  content:'';position:absolute;bottom:0;left:10%;right:10%;height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+}
+.board-title{font-family:var(--sf);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+.board-badge{
+  font-family:var(--sf);font-size:9px;letter-spacing:.1em;
+  background:rgba(212,175,55,.15);border:1px solid rgba(212,175,55,.3);
+  color:var(--gold);border-radius:100px;padding:3px 10px;
+}
+
+/* ═══ RANK ROWS ═══ */
+.rank-list{padding:10px 0}
+.rank-row{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 18px;
+  border-bottom:1px solid rgba(212,175,55,.05);
+  transition:background .2s;
+  position:relative;
+}
+.rank-row:last-child{border-bottom:none}
+.rank-row:hover{background:rgba(212,175,55,.04)}
+.rank-row.me{background:rgba(87,199,133,.07)!important;border-left:3px solid var(--jade);}
+.rank-row.rank-1{background:rgba(245,200,66,.06)!important}
+.rank-row.rank-2{background:rgba(192,200,216,.04)!important}
+.rank-row.rank-3{background:rgba(205,127,50,.05)!important}
+
+.pos-badge{
+  width:28px;height:28px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--sf);font-size:11px;font-weight:700;
+}
+.pos-gold  {background:rgba(245,200,66,.2);border:1.5px solid var(--gold);color:var(--gold)}
+.pos-silver{background:rgba(192,200,216,.15);border:1.5px solid var(--silver);color:var(--silver)}
+.pos-bronze{background:rgba(205,127,50,.2);border:1.5px solid var(--bronze);color:var(--bronze)}
+.pos-other {background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);color:var(--muted)}
+
+.avatar{
+  width:32px;height:32px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--sf);font-size:11px;font-weight:700;
+  border:1.5px solid rgba(255,255,255,.12);
+}
+.rank-info{flex:1;min-width:0}
+.rank-name{font-family:var(--sf);font-size:12px;letter-spacing:.04em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
+.rank-sub{font-family:var(--bf);font-size:11px;font-style:italic;color:var(--muted);margin-top:1px}
+
+.bounty-val{
+  font-family:var(--hf);font-size:12px;color:var(--gold);
+  text-align:right;white-space:nowrap;
+}
+.change-chip{
+  font-size:9px;font-family:var(--sf);letter-spacing:.06em;
+  padding:2px 6px;border-radius:100px;margin-left:4px;
+}
+.up{background:rgba(87,199,133,.15);color:var(--jade)}
+.down{background:rgba(224,80,80,.15);color:var(--red)}
+.same{background:rgba(255,255,255,.07);color:var(--muted)}
+
+/* ═══ ACHIEVEMENT PANEL ═══ */
+.achieve-panel{
+  background:var(--surf);border:1px solid var(--b);
+  border-radius:var(--r);padding:20px 22px;
+  backdrop-filter:blur(14px);margin-bottom:22px;
+  position:relative;overflow:hidden;
+}
+.achieve-panel::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 70% 60% at 50% 0%,rgba(87,199,133,.07) 0%,transparent 70%);
+  pointer-events:none;
+}
+.achieve-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:16px;
+}
+.achieve-header h3{font-family:var(--sf);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--jade)}
+.my-rank-display{
+  font-family:var(--hf);font-size:13px;color:var(--gold);
+  background:rgba(212,175,55,.1);border:1px solid rgba(212,175,55,.25);
+  border-radius:100px;padding:4px 14px;
+}
+.achieve-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.achieve-card{
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);
+  border-radius:12px;padding:12px 14px;
+  cursor:pointer;transition:all .35s;text-align:center;
+  position:relative;overflow:hidden;
+}
+.achieve-card:hover{border-color:var(--bh);background:rgba(212,175,55,.07);transform:translateY(-3px)}
+.achieve-card.earned{border-color:rgba(87,199,133,.4);background:rgba(87,199,133,.07)}
+.achieve-card.earned::after{
+  content:'✓';position:absolute;top:6px;right:8px;
+  font-size:9px;color:var(--jade);font-family:var(--sf);
+}
+.achieve-icon{font-size:22px;margin-bottom:6px;display:block}
+.achieve-name{font-family:var(--sf);font-size:10px;letter-spacing:.08em;color:var(--text);text-transform:uppercase}
+.achieve-desc{font-family:var(--bf);font-size:11px;font-style:italic;color:var(--muted);margin-top:3px}
+
+/* ═══ ADD RANK FORM ═══ */
+.rank-claim{
+  background:var(--surf2);border:1px solid rgba(74,205,222,.25);
+  border-radius:var(--r);padding:18px 22px;margin-bottom:22px;
+  position:relative;
+}
+.rank-claim h3{font-family:var(--sf);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--teal);margin-bottom:14px}
+.form-row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+.form-group{display:flex;flex-direction:column;gap:5px;flex:1;min-width:100px}
+.form-group label{font-family:var(--sf);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.form-group input,.form-group select{
+  background:rgba(4,12,28,.8);border:1px solid rgba(74,205,222,.2);
+  border-radius:8px;padding:8px 11px;color:var(--text);
+  font-family:var(--sf);font-size:11px;outline:none;
+  transition:border-color .3s;
+}
+.form-group input:focus,.form-group select:focus{border-color:var(--teal)}
+.form-group select option{background:#07131f}
+.btn{
+  font-family:var(--sf);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+  padding:9px 18px;border-radius:10px;border:1px solid;cursor:pointer;transition:all .3s;
+}
+.btn-teal{background:transparent;border-color:var(--teal);color:var(--teal)}
+.btn-teal:hover{background:rgba(74,205,222,.1);transform:translateY(-2px)}
+.btn-gold{
+  background:linear-gradient(135deg,#e8a500,#f5c842,#ffd966,#e09800);
+  border-color:var(--gold);color:#052e16;
+  box-shadow:0 4px 12px rgba(245,200,66,.25);
+}
+.btn-gold:hover{box-shadow:0 8px 22px rgba(245,200,66,.45);transform:translateY(-2px)}
+
+/* ═══ LOADING BAR ═══ */
+.progress-bar-wrap{height:3px;background:rgba(212,175,55,.08);border-radius:3px;margin:0 18px 2px}
+.progress-bar-fill{height:100%;border-radius:3px;
+  background:linear-gradient(90deg,var(--gold2),var(--gold));
+  transition:width .8s cubic-bezier(.23,1,.32,1);
+}
+
+/* ═══ TOAST ═══ */
+#toast{
+  position:fixed;bottom:26px;right:26px;z-index:999;
+  background:rgba(4,12,28,.96);border:1px solid var(--jade);color:var(--jade);
+  border-radius:12px;padding:11px 18px;
+  font-family:var(--sf);font-size:11px;letter-spacing:.08em;
+  opacity:0;transform:translateY(8px);transition:all .35s;pointer-events:none;
+  backdrop-filter:blur(10px);
+}
+#toast.show{opacity:1;transform:translateY(0)}
+
+/* ═══ GENSHIN DOODLE ANIMATION ═══ */
+@keyframes floatDoodle{
+  0%{transform:translateY(0) rotate(0deg)}
+  33%{transform:translateY(-14px) rotate(2deg)}
+  66%{transform:translateY(-6px) rotate(-1.5deg)}
+  100%{transform:translateY(0) rotate(0deg)}
+}
+@keyframes driftLeft{
+  0%{transform:translateX(0) rotate(-3deg)}
+  50%{transform:translateX(-18px) rotate(2deg)}
+  100%{transform:translateX(0) rotate(-3deg)}
+}
+@keyframes spinSlow{
+  0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}
+}
+@keyframes shimmer{
+  0%,100%{opacity:.08}50%{opacity:.2}
+}
+.d1{animation:floatDoodle 7s ease-in-out infinite}
+.d2{animation:floatDoodle 9s ease-in-out infinite;animation-delay:-3s}
+.d3{animation:driftLeft 11s ease-in-out infinite}
+.d4{animation:spinSlow 28s linear infinite}
+.d5{animation:floatDoodle 6s ease-in-out infinite;animation-delay:-5s}
+.d6{animation:shimmer 4s ease-in-out infinite}
+
+/* ═══ PARTICLE CANVAS ═══ */
+#particleCanvas{position:fixed;inset:0;z-index:1;pointer-events:none}
+
+/* ═══ RANK REVEAL ═══ */
+@keyframes rankReveal{
+  0%{opacity:0;transform:scale(.7) rotate(-5deg)}
+  70%{transform:scale(1.08) rotate(1deg)}
+  100%{opacity:1;transform:scale(1) rotate(0)}
+}
+.reveal{animation:rankReveal .6s cubic-bezier(.23,1,.32,1) forwards}
+
+/* ═══ WEEK BADGE ═══ */
+.week-badge{
+  display:inline-block;font-family:var(--sf);font-size:9px;letter-spacing:.12em;
+  background:rgba(74,205,222,.12);border:1px solid rgba(74,205,222,.3);
+  color:var(--teal);border-radius:100px;padding:3px 10px;margin-left:8px;
+  vertical-align:middle;
+}
+
+/* scrollbar */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(212,175,55,.2);border-radius:3px}
+</style>
+</head>
+<body>
+
+<!-- PARTICLE BACKGROUND -->
+<canvas id="particleCanvas"></canvas>
+
+<!-- GENSHIN PIRATE DOODLES -->
+<div class="doodle-layer" id="doodleLayer">
+  <!-- Doodles injected by JS -->
+</div>
+
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <h2 class="logo">StudyVerse</h2>
+    <nav class="nav-links">
+      <a href="teacher-dashboard.html" id="dashLink">Dashboard</a>
+      <a href="create-lesson.html" id="lessonLink">Create Lesson</a>
+      <a href="upload-notes.html" id="notesLink">Upload Notes</a>
+      <a href="student-progress.html" id="progressLink">Student Progress</a>
+      <a href="leaderboard.html" class="active">Leaderboard</a>
+    </nav>
+    <button id="logoutBtn" class="logout-btn">Logout</button>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="opacity:.45;font-size:11px;font-family:'Cinzel',serif;letter-spacing:.04em" id="roleLabel">Crew:</span>
+        <strong id="displayName" style="font-family:'Cinzel Decorative',cursive;font-size:13px;color:#f5c842"></strong>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px">
+        <a href="#" id="backBtn" style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:.06em;color:var(--muted);text-decoration:none;padding:6px 12px;border:1px solid var(--b);border-radius:9px;transition:all .3s" onmouseover="this.style.color='#f5c842'" onmouseout="this.style.color='var(--muted)'">← Dashboard</a>
+        <div id="liveClock" style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:.06em;color:var(--muted)"></div>
+      </div>
+    </header>
+
+    <main class="content">
+
+      <!-- HERO -->
+      <div class="hero">
+        <div class="hero-ship">⛵</div>
+        <h1>Grand Line Bounty Board</h1>
+        <p>The seas remember every conquest — glory is earned, never given.</p>
+        <div class="countdown-chip">
+          <span class="dot"></span>
+          <span>Leaderboard resets in</span>
+          <span id="countdown">—</span>
+        </div>
+      </div>
+
+      <!-- TABS -->
+      <div class="tab-bar">
+        <button class="tab active" onclick="switchTab('all')">All Pirates</button>
+        <button class="tab" onclick="switchTab('week')">This Week</button>
+        <button class="tab" onclick="switchTab('alltime')">All Time</button>
+        <button class="tab" onclick="switchTab('achieve')">Achievements</button>
+      </div>
+
+      <!-- CLAIM YOUR RANK -->
+      <!-- <div class="rank-claim" id="claimSection">
+        <h3>⚓ Log Position in the Archive</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Your Name</label>
+            <input type="text" id="claimName" placeholder="Crew member name">
+          </div>
+          <div class="form-group">
+            <label>Roll Number</label>
+            <input type="text" id="claimRoll" placeholder="SH-001">
+          </div>
+          <div class="form-group" style="max-width:110px">
+            <label>Bounties</label>
+            <input type="number" id="claimBounty" placeholder="e.g. 50000" min="0">
+          </div>
+          <div class="form-group" style="max-width:130px">
+            <label>Achievement Title</label>
+            <select id="claimTitle">
+              <option value="">— None —</option>
+              <option value="Rookie Pirate">Rookie Pirate</option>
+              <option value="Rising Star">Rising Star</option>
+              <option value="Sea Wolf">Sea Wolf</option>
+              <option value="Grand Voyager">Grand Voyager</option>
+              <option value="Warlord">Warlord</option>
+              <option value="Yonko">Yonko</option>
+              <option value="Pirate King">Pirate King</option>
+            </select>
+          </div>
+          <button class="btn btn-gold" onclick="claimRank()" style="align-self:flex-end;margin-bottom:1px">Claim Rank</button>
+        </div>
+      </div> -->
+
+      <!-- ACHIEVEMENT PANEL -->
+      <div class="achieve-panel" id="achieveSection">
+        <div class="achieve-header">
+          <h3> Achievement Vault</h3>
+          <div class="my-rank-display" id="myRankDisplay">Rank —</div>
+        </div>
+        <div class="achieve-grid" id="achieveGrid"></div>
+      </div>
+
+      <!-- BOARDS GRID -->
+      <div class="boards-grid" id="boardsGrid">
+
+        <!-- STUDENT BOARD -->
+        <div class="board" id="studentBoard">
+          <div class="board-header">
+            <span class="board-title">⚔ Student Pirates</span>
+            <span class="board-badge" id="studentWeekBadge">Week 1</span>
+          </div>
+          <div class="progress-bar-wrap"><div class="progress-bar-fill" id="studentBar" style="width:0%"></div></div>
+          <div class="rank-list" id="studentList"></div>
+        </div>
+
+        <!-- TEACHER BOARD -->
+        <!-- <div class="board" id="teacherBoard">
+          <div class="board-header">
+            <span class="board-title">🧭 Teacher Admirals</span>
+            <span class="board-badge" id="teacherWeekBadge">Week 1</span>
+          </div>
+          <div class="progress-bar-wrap"><div class="progress-bar-fill" id="teacherBar" style="width:0%"></div></div>
+          <div class="rank-list" id="teacherList"></div>
+        </div> -->
+
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ════════════════════════════════════════
+   PIRATE GENSHIN DOODLES
+════════════════════════════════════════ */
+(function(){
+  const layer = document.getElementById('doodleLayer');
+  const doodles = [
+    // Skull & crossbones
+    {cls:'d1',top:'8%',left:'2%',svg:`<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="40" cy="34" r="20" stroke="#f5c842" stroke-width="1.5" fill="none"/>
+      <circle cx="33" cy="31" r="4" stroke="#f5c842" stroke-width="1.2" fill="none"/>
+      <circle cx="47" cy="31" r="4" stroke="#f5c842" stroke-width="1.2" fill="none"/>
+      <path d="M33 45 Q40 52 47 45" stroke="#f5c842" stroke-width="1.2" fill="none"/>
+      <line x1="36" y1="45" x2="36" y2="50" stroke="#f5c842" stroke-width="1"/>
+      <line x1="40" y1="45" x2="40" y2="50" stroke="#f5c842" stroke-width="1"/>
+      <line x1="44" y1="45" x2="44" y2="50" stroke="#f5c842" stroke-width="1"/>
+      <line x1="20" y1="62" x2="60" y2="62" stroke="#f5c842" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="20" y1="70" x2="60" y2="70" stroke="#f5c842" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="40" y1="55" x2="40" y2="77" stroke="#f5c842" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>`},
+    // Compass rose
+    {cls:'d4',top:'55%',right:'1%',svg:`<svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="50" cy="50" r="38" stroke="#4acdde" stroke-width="1" fill="none" stroke-dasharray="4 3"/>
+      <circle cx="50" cy="50" r="6" stroke="#4acdde" stroke-width="1.5" fill="none"/>
+      <polygon points="50,10 45,50 50,44 55,50" fill="#4acdde" opacity=".7"/>
+      <polygon points="50,90 45,50 50,56 55,50" fill="#4acdde" opacity=".35"/>
+      <polygon points="10,50 50,45 44,50 50,55" fill="#4acdde" opacity=".35"/>
+      <polygon points="90,50 50,45 56,50 50,55" fill="#4acdde" opacity=".35"/>
+      <text x="50" y="8" text-anchor="middle" font-size="9" fill="#4acdde" font-family="Cinzel,serif">N</text>
+      <text x="50" y="97" text-anchor="middle" font-size="9" fill="#4acdde" font-family="Cinzel,serif">S</text>
+      <text x="3"  y="53" text-anchor="middle" font-size="9" fill="#4acdde" font-family="Cinzel,serif">W</text>
+      <text x="97" y="53" text-anchor="middle" font-size="9" fill="#4acdde" font-family="Cinzel,serif">E</text>
+    </svg>`},
+    // Genshin-style rune circle
+    {cls:'d3',top:'30%',right:'3%',svg:`<svg width="90" height="90" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="45" cy="45" r="40" stroke="#57c785" stroke-width=".8" fill="none"/>
+      <circle cx="45" cy="45" r="32" stroke="#57c785" stroke-width=".5" fill="none" stroke-dasharray="6 4"/>
+      <polygon points="45,10 52,38 45,32 38,38" fill="none" stroke="#57c785" stroke-width=".8"/>
+      <polygon points="45,80 52,52 45,58 38,52" fill="none" stroke="#57c785" stroke-width=".8"/>
+      <polygon points="10,45 38,38 32,45 38,52" fill="none" stroke="#57c785" stroke-width=".8"/>
+      <polygon points="80,45 52,38 58,45 52,52" fill="none" stroke="#57c785" stroke-width=".8"/>
+      <circle cx="45" cy="45" r="5" stroke="#57c785" stroke-width="1" fill="none"/>
+      <circle cx="45" cy="10" r="2.5" fill="#57c785" opacity=".6"/>
+      <circle cx="45" cy="80" r="2.5" fill="#57c785" opacity=".6"/>
+      <circle cx="10" cy="45" r="2.5" fill="#57c785" opacity=".6"/>
+      <circle cx="80" cy="45" r="2.5" fill="#57c785" opacity=".6"/>
+    </svg>`},
+    // Anchor
+    {cls:'d2',bottom:'15%',left:'1%',svg:`<svg width="70" height="90" viewBox="0 0 70 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="35" cy="14" r="10" stroke="#f5c842" stroke-width="1.5" fill="none"/>
+      <circle cx="35" cy="14" r="5" stroke="#f5c842" stroke-width="1" fill="none"/>
+      <line x1="35" y1="24" x2="35" y2="80" stroke="#f5c842" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M8 80 Q20 74 35 80 Q50 86 62 80" stroke="#f5c842" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <circle cx="8"  cy="80" r="3" fill="#f5c842" opacity=".7"/>
+      <circle cx="62" cy="80" r="3" fill="#f5c842" opacity=".7"/>
+      <line x1="18" y1="45" x2="52" y2="45" stroke="#f5c842" stroke-width="1.2" stroke-linecap="round"/>
+    </svg>`},
+    // Stars / sparkles (Genshin)
+    {cls:'d5',top:'70%',left:'3%',svg:`<svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M30 5 L32 26 L30 28 L28 26 Z" fill="#f5c842" opacity=".8"/>
+      <path d="M30 55 L32 34 L30 32 L28 34 Z" fill="#f5c842" opacity=".8"/>
+      <path d="M5 30 L26 28 L28 30 L26 32 Z" fill="#f5c842" opacity=".8"/>
+      <path d="M55 30 L34 28 L32 30 L34 32 Z" fill="#f5c842" opacity=".8"/>
+      <circle cx="30" cy="30" r="4" fill="#f5c842" opacity=".9"/>
+      <circle cx="12" cy="12" r="2" fill="#4acdde" opacity=".6"/>
+      <circle cx="48" cy="14" r="1.5" fill="#4acdde" opacity=".6"/>
+      <circle cx="14" cy="48" r="1.5" fill="#4acdde" opacity=".5"/>
+      <circle cx="50" cy="50" r="2" fill="#57c785" opacity=".5"/>
+    </svg>`},
+    // Poneglyph tablet
+    {cls:'d6',top:'10%',right:'6%',svg:`<svg width="55" height="75" viewBox="0 0 55 75" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="3" y="3" width="49" height="69" rx="6" stroke="#4acdde" stroke-width="1.2" fill="none"/>
+      <rect x="8" y="8" width="39" height="59" rx="4" stroke="#4acdde" stroke-width=".6" fill="none" stroke-dasharray="3 2"/>
+      <line x1="13" y1="20" x2="42" y2="20" stroke="#4acdde" stroke-width=".8"/>
+      <line x1="13" y1="28" x2="36" y2="28" stroke="#4acdde" stroke-width=".8"/>
+      <line x1="13" y1="36" x2="40" y2="36" stroke="#4acdde" stroke-width=".8"/>
+      <line x1="13" y1="44" x2="32" y2="44" stroke="#4acdde" stroke-width=".8"/>
+      <line x1="13" y1="52" x2="38" y2="52" stroke="#4acdde" stroke-width=".8"/>
+      <circle cx="27" cy="63" r="3" stroke="#4acdde" stroke-width=".8" fill="none"/>
+    </svg>`},
+    // Ship wheel
+    {cls:'d1',bottom:'20%',right:'4%',svg:`<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="40" cy="40" r="34" stroke="#f5c842" stroke-width="1" fill="none"/>
+      <circle cx="40" cy="40" r="22" stroke="#f5c842" stroke-width="1.5" fill="none"/>
+      <circle cx="40" cy="40" r="7" stroke="#f5c842" stroke-width="2" fill="none"/>
+      <line x1="40" y1="6"  x2="40" y2="18" stroke="#f5c842" stroke-width="2" stroke-linecap="round"/>
+      <line x1="40" y1="62" x2="40" y2="74" stroke="#f5c842" stroke-width="2" stroke-linecap="round"/>
+      <line x1="6"  y1="40" x2="18" y2="40" stroke="#f5c842" stroke-width="2" stroke-linecap="round"/>
+      <line x1="62" y1="40" x2="74" y2="40" stroke="#f5c842" stroke-width="2" stroke-linecap="round"/>
+      <line x1="16" y1="16" x2="24" y2="24" stroke="#f5c842" stroke-width="2" stroke-linecap="round"/>
+      <line x1="56" y1="56" x2="64" y2="64" stroke="#f5c842" stroke-width="2" stroke-linecap="round"/>
+      <line x1="64" y1="16" x2="56" y2="24" stroke="#f5c842" stroke-width="2" stroke-linecap="round"/>
+      <line x1="24" y1="56" x2="16" y2="64" stroke="#f5c842" stroke-width="2" stroke-linecap="round"/>
+    </svg>`},
+  ];
+  doodles.forEach(d => {
+    const div = document.createElement('div');
+    div.className = d.cls;
+    div.style.cssText = Object.entries(d).filter(([k])=>k!=='cls'&&k!=='svg').map(([k,v])=>`${k}:${v}`).join(';');
+    div.innerHTML = d.svg;
+    layer.appendChild(div);
+  });
+})();
+
+/* ════════════════════════════════════════
+   PARTICLE ENGINE
+════════════════════════════════════════ */
+(function(){
+  const c = document.getElementById('particleCanvas');
+  const ctx = c.getContext('2d');
+  let W,H,pts=[];
+  function resize(){W=c.width=innerWidth;H=c.height=innerHeight}
+  resize();window.addEventListener('resize',()=>{resize();init()});
+  function init(){
+    pts=[];
+    const n = Math.floor(W*H/18000);
+    for(let i=0;i<n;i++) pts.push({
+      x:Math.random()*W, y:Math.random()*H,
+      vx:(Math.random()-.5)*.22, vy:(Math.random()-.5)*.22,
+      r:Math.random()*1.4+.4,
+      c:Math.random()<.5?'rgba(245,200,66,':'rgba(74,205,222,',
+      a:Math.random()*.35+.08
+    });
+  }
+  init();
+  function frame(){
+    ctx.clearRect(0,0,W,H);
+    pts.forEach(p=>{
+      p.x+=p.vx; p.y+=p.vy;
+      if(p.x<0)p.x=W; if(p.x>W)p.x=0;
+      if(p.y<0)p.y=H; if(p.y>H)p.y=0;
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=p.c+p.a+')';
+      ctx.fill();
+    });
+    requestAnimationFrame(frame);
+  }
+  frame();
+})();
+
+/* ════════════════════════════════════════
+   DATA & STATE
+════════════════════════════════════════ */
+const BASE_URL = "https://studyverse-backend-28sn.onrender.com";
+let currentUser = null;
+let activeTab = 'all';
+
+// Persistent store key
+const STORE_KEY = 'sv_leaderboard_v2';
+const WEEK_KEY  = 'sv_week_start';
+
+// Avatar colors
+const AVATAR_COLORS = [
+  ['rgba(212,175,55,.25)','#f5c842'],['rgba(74,205,222,.2)','#4acdde'],
+  ['rgba(87,199,133,.2)','#57c785'],['rgba(224,80,80,.2)','#e05050'],
+  ['rgba(180,140,220,.2)','#b48cdc'],['rgba(255,160,80,.2)','#ffa050'],
+];
+
+// Default DUMMY data — seeded with pirate names so boards are never empty
+const SEED_STUDENTS = [
+  {id:'s1',name:'Monkey D. Luffy', roll:'SH-001',bounty:3000000000,title:'Pirate King',week:3000000000,alltime:3000000000},
+  {id:'s2',name:'Roronoa Zoro',     roll:'SH-002',bounty:1111000000,title:'Warlord',week:1111000000,alltime:1111000000},
+  {id:'s3',name:'Sanji',            roll:'SH-005',bounty:1032000000,title:'Grand Voyager',week:800000000,alltime:1032000000},
+  {id:'s4',name:'Nico Robin',       roll:'SH-007',bounty:930000000, title:'Sea Wolf',week:700000000, alltime:930000000},
+  {id:'s5',name:'Usopp',            roll:'SH-004',bounty:500000000, title:'Rising Star',week:500000000,alltime:500000000},
+  {id:'s6',name:'Franky',           roll:'SH-008',bounty:394000000, title:'Rookie Pirate',week:300000000,alltime:394000000},
+  {id:'s7',name:'Brook',            roll:'SH-009',bounty:383000000, title:'Rookie Pirate',week:280000000,alltime:383000000},
+  {id:'s8',name:'Nami',             roll:'SH-003',bounty:366000000, title:'Rising Star',week:366000000, alltime:366000000},
+  {id:'s9',name:'Chopper',          roll:'SH-006',bounty:1000,      title:'Rookie Pirate',week:1000,alltime:1000},
+];
+const SEED_TEACHERS = [
+  {id:'t1',name:'Silvers Rayleigh', roll:'ADM-001',bounty:2000000000,title:'Yonko',week:2000000000,alltime:2000000000},
+  {id:'t2',name:'Shakuyaku',        roll:'ADM-002',bounty:1400000000,title:'Grand Voyager',week:900000000,alltime:1400000000},
+  {id:'t3',name:'Garp',             roll:'ADM-003',bounty:1200000000,title:'Warlord',week:800000000,alltime:1200000000},
+  {id:'t4',name:'Sengoku',          roll:'ADM-004',bounty:980000000, title:'Sea Wolf',week:600000000,alltime:980000000},
+  {id:'t5',name:'Crocodile',        roll:'ADM-005',bounty:640000000, title:'Rising Star',week:400000000,alltime:640000000},
+];
+
+function loadStore(){
+  try{
+    const raw = localStorage.getItem(STORE_KEY);
+    return raw ? JSON.parse(raw) : {students:SEED_STUDENTS.slice(),teachers:SEED_TEACHERS.slice(),claimed:null};
+  }catch{return {students:SEED_STUDENTS.slice(),teachers:SEED_TEACHERS.slice(),claimed:null}}
+}
+function saveStore(s){ try{localStorage.setItem(STORE_KEY,JSON.stringify(s))}catch{} }
+
+let store = loadStore();
+
+/* ════════════════════════════════════════
+   WEEKLY RESET LOGIC
+════════════════════════════════════════ */
+function getWeekNum(){
+  const now = new Date();
+  const start = new Date(now.getFullYear(),0,1);
+  return Math.ceil(((now-start)/86400000+start.getDay()+1)/7);
+}
+function checkWeeklyReset(){
+  const stored = parseInt(localStorage.getItem(WEEK_KEY)||'0');
+  const cur = getWeekNum();
+  if(stored !== cur){
+    // Roll week bounties — shift current to last, reset week
+    store.students.forEach(s=>{s.lastWeek=s.week||0;s.week=Math.floor(s.bounty*.1+Math.random()*s.bounty*.05)});
+    store.teachers.forEach(t=>{t.lastWeek=t.week||0;t.week=Math.floor(t.bounty*.08+Math.random()*t.bounty*.04)});
+    saveStore(store);
+    localStorage.setItem(WEEK_KEY,cur);
+    toast('New week — bounty board has refreshed! ⚓');
+  }
+}
+function getNextMonday(){
+  const d = new Date();
+  const day = d.getDay(), diff = day===0?1:8-day;
+  const next = new Date(d); next.setDate(d.getDate()+diff);
+  next.setHours(0,0,0,0); return next;
+}
+function updateCountdown(){
+  const diff = getNextMonday()-new Date();
+  if(diff<=0){location.reload();return}
+  const d=Math.floor(diff/86400000), h=Math.floor((diff%86400000)/3600000),
+        m=Math.floor((diff%3600000)/60000), s=Math.floor((diff%60000)/1000);
+  document.getElementById('countdown').textContent = `${d}d ${h}h ${m}m ${s}s`;
+}
+setInterval(updateCountdown,1000); updateCountdown();
+
+/* ════════════════════════════════════════
+   AUTH
+════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded',async()=>{
+  // Clock
+  const cl=document.getElementById('liveClock');
+  setInterval(()=>{if(cl)cl.textContent=new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:true})},1000);
+
+  const token = localStorage.getItem('token');
+  const backBtn = document.getElementById('backBtn');
+
+  if(token){
+    try{
+      const r = await fetch(`${BASE_URL}/api/user/profile`,{headers:{Authorization:`Bearer ${token}`}});
+      if(r.ok){
+        currentUser = await r.json();
+        document.getElementById('displayName').textContent = currentUser.username||'Crew';
+        document.getElementById('roleLabel').textContent = currentUser.role==='teacher'?'Admiral:':'Crew:';
+        // Adjust sidebar for role
+        if(currentUser.role==='student'){
+          document.getElementById('lessonLink').style.display='none';
+          document.getElementById('notesLink').style.display='none';
+          document.getElementById('progressLink').style.display='none';
+          document.getElementById('dashLink').href='dashboard.html';
+          backBtn.href='dashboard.html';
+        } else {
+          backBtn.href='teacher-dashboard.html';
+        }
+        document.getElementById('claimName').value = currentUser.username||'';
+      }
+    }catch{}
+  }
+
+  document.getElementById('logoutBtn').addEventListener('click',()=>{localStorage.clear();window.location.href='../index.html'});
+
+  checkWeeklyReset();
+  renderWeekBadges();
+  renderBoards();
+  renderAchievements();
+  populateClaimed();
+});
+
+/* ════════════════════════════════════════
+   TABS
+════════════════════════════════════════ */
+function switchTab(tab){
+  activeTab=tab;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  event.target.classList.add('active');
+  renderBoards();
+
+  const achSec = document.getElementById('achieveSection');
+  const claimSec = document.getElementById('claimSection');
+  const boardsGrid = document.getElementById('boardsGrid');
+  if(tab==='achieve'){
+    achSec.style.display='block';
+    boardsGrid.style.display='none';
+    claimSec.style.display='none';
+  } else {
+    achSec.style.display='block';
+    boardsGrid.style.display='grid';
+    claimSec.style.display='block';
+  }
+}
+
+/* ════════════════════════════════════════
+   RENDER
+════════════════════════════════════════ */
+function weekNum(){return getWeekNum()}
+function renderWeekBadges(){
+  const w=getWeekNum();
+  document.getElementById('studentWeekBadge').textContent=`Week ${w}`;
+  document.getElementById('teacherWeekBadge').textContent=`Week ${w}`;
+}
+
+function getBountyField(){ return activeTab==='alltime'?'alltime':activeTab==='week'?'week':'bounty'; }
+
+function renderBoards(){
+  const field = getBountyField();
+  const sList = [...store.students].sort((a,b)=>(b[field]||0)-(a[field]||0));
+  const tList = [...store.teachers].sort((a,b)=>(b[field]||0)-(a[field]||0));
+
+  renderList('studentList', sList, field);
+  renderList('teacherList', tList, field);
+
+  // Progress bars (fill = share of top bounty)
+  animateBar('studentBar', sList);
+  animateBar('teacherBar', tList);
+}
+
+function animateBar(id, sorted){
+  const bar = document.getElementById(id);
+  if(!bar) return;
+  setTimeout(()=>{bar.style.width='100%'},100);
+}
+
+function renderList(containerId, sorted, field){
+  const el = document.getElementById(containerId);
+  if(!sorted.length){el.innerHTML='<div style="text-align:center;padding:24px;font-style:italic;color:var(--muted);font-family:var(--bf);font-size:13px">No crew logged yet…</div>';return}
+  el.innerHTML = sorted.map((s,i)=>{
+    const pos = i+1;
+    const cls = pos===1?'pos-gold':pos===2?'pos-silver':pos===3?'pos-bronze':'pos-other';
+    const rowCls = pos===1?'rank-1':pos===2?'rank-2':pos===3?'rank-3':'';
+    const meClass = (currentUser && (s.name===currentUser.username||s.id===currentUser._id)) ? ' me' : '';
+    const change = s.lastWeek !== undefined ? (s.bounty > s.lastWeek ? 'up' : s.bounty < s.lastWeek ? 'down' : 'same') : 'same';
+    const changeLabel = change==='up'?'↑':change==='down'?'↓':'—';
+    const av = AVATAR_COLORS[i%AVATAR_COLORS.length];
+    const initials = s.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    const val = s[field]||0;
+    return `<div class="rank-row ${rowCls}${meClass}">
+      <div class="pos-badge ${cls}">${pos}</div>
+      <div class="avatar" style="background:${av[0]};border-color:${av[1]};color:${av[1]}">${initials}</div>
+      <div class="rank-info">
+        <div class="rank-name">${esc(s.name)}${s.title?`<span style="font-size:9px;color:var(--teal);font-family:var(--sf);margin-left:6px;opacity:.7">${esc(s.title)}</span>`:''}${meClass?' <span style="font-size:9px;color:var(--jade);font-family:var(--sf)">(you)</span>':''}</div>
+        <div class="rank-sub">${esc(s.roll||'—')}</div>
+      </div>
+      <div>
+        <div class="bounty-val">${fmtB(val)}</div>
+        <div style="text-align:right"><span class="change-chip ${change}">${changeLabel}</span></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ════════════════════════════════════════
+   ACHIEVEMENTS
+════════════════════════════════════════ */
+const ACHIEVEMENTS = [
+  {id:'first_blood',icon:'', name:'First Blood',   desc:'Enter the board',      req: s=>true},
+  {id:'rising',     icon:'', name:'Rising Tide',   desc:'Top 10 globally',      req:(s,all)=>all.findIndex(x=>x.id===s.id)<10},
+  {id:'top5',       icon:'', name:'Star Navigator', desc:'Reach top 5',         req:(s,all)=>all.findIndex(x=>x.id===s.id)<5},
+  {id:'top3',       icon:'', name:'Grand Admiral',  desc:'Crack the top 3',     req:(s,all)=>all.findIndex(x=>x.id===s.id)<3},
+  {id:'king',       icon:'', name:'Pirate King',    desc:'Claim rank #1',       req:(s,all)=>all[0]?.id===s.id},
+  {id:'bounty_m',   icon:'', name:'Million Belly',  desc:'1M+ bounty',          req: s=>(s.bounty||0)>=1000000},
+  {id:'bounty_b',   icon:'', name:'Billionaire',    desc:'1B+ bounty',          req: s=>(s.bounty||0)>=1000000000},
+  {id:'weekly_top', icon:'', name:'Week\'s Best',   desc:'#1 this week',        req:(s,all)=>{const ws=[...all].sort((a,b)=>(b.week||0)-(a.week||0));return ws[0]?.id===s.id}},
+];
+
+function renderAchievements(){
+  const grid = document.getElementById('achieveGrid');
+  const claimed = store.claimed;
+  const all = [...store.students,...store.teachers].sort((a,b)=>b.bounty-a.bounty);
+  grid.innerHTML = ACHIEVEMENTS.map(a=>{
+    const earned = claimed && a.req(claimed, all);
+    return `<div class="achieve-card${earned?' earned':''}" onclick="earnAchieve('${a.id}')">
+      <span class="achieve-icon">${a.icon}</span>
+      <div class="achieve-name">${a.name}</div>
+      <div class="achieve-desc">${a.desc}</div>
+    </div>`;
+  }).join('');
+  updateMyRank();
+}
+function earnAchieve(id){
+  if(!store.claimed){toast('Claim your rank first! ⚓');return}
+  toast(`Achievement unlocked: ${ACHIEVEMENTS.find(a=>a.id===id)?.name||''} ✓`);
+}
+function updateMyRank(){
+  if(!store.claimed) return;
+  const all = [...store.students,...store.teachers].sort((a,b)=>b.bounty-a.bounty);
+  const rank = all.findIndex(x=>x.id===store.claimed.id)+1;
+  if(rank>0) document.getElementById('myRankDisplay').textContent = `Rank #${rank}`;
+}
+
+/* ════════════════════════════════════════
+   CLAIM RANK
+════════════════════════════════════════ */
+function claimRank(){
+  const name   = document.getElementById('claimName').value.trim();
+  const roll   = document.getElementById('claimRoll').value.trim();
+  const bounty = Math.max(0, Number(document.getElementById('claimBounty').value)||0);
+  const title  = document.getElementById('claimTitle').value;
+  if(!name){ toast('Enter your name, pirate!'); return; }
+
+  const isTeacher = currentUser?.role==='teacher';
+  const list = isTeacher ? store.teachers : store.students;
+  const id = currentUser?._id || currentUser?.id || 'manual_'+Date.now();
+
+  // Find or create entry
+  let entry = list.find(x=>x.id===id||x.name===name);
+  if(entry){
+    entry.bounty = Math.max(entry.bounty, bounty);
+    entry.roll = roll || entry.roll;
+    if(title) entry.title = title;
+    entry.week = (entry.week||0)+bounty;
+    entry.alltime = Math.max(entry.alltime||0, entry.bounty);
+  } else {
+    entry = {id,name,roll,bounty,title,week:bounty,alltime:bounty};
+    list.push(entry);
+  }
+  store.claimed = entry;
+  saveStore(store);
+
+  // Ripple effect on rank row
+  renderBoards();
+  renderAchievements();
+
+  toast(`⚓ ${name} charted on the Grand Line! Bounty: ${fmtB(bounty)}`);
+  document.getElementById('claimBounty').value='';
+}
+
+function populateClaimed(){
+  if(!store.claimed) return;
+  const c = store.claimed;
+  document.getElementById('claimName').value = c.name||'';
+  document.getElementById('claimRoll').value = c.roll||'';
+  document.getElementById('myRankDisplay').textContent = 'Your rank';
+  updateMyRank();
+}
+
+/* ════════════════════════════════════════
+   HELPERS
+════════════════════════════════════════ */
+function fmtB(n){
+  if(n>=1e9) return (n/1e9).toFixed(2)+'B';
+  if(n>=1e6) return (n/1e6).toFixed(1)+'M';
+  if(n>=1e3) return (n/1e3).toFixed(0)+'K';
+  return String(Math.round(n));
+}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),3000);
+}
+</script>
+</body>
+</html>

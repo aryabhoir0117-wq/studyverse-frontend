@@ -82,6 +82,7 @@ body {
   padding: 20px;
   display: flex;
   flex-direction: column;
+  width: 240px;
 }
 
 .nav-links {
@@ -485,7 +486,9 @@ padding:30px;
 border-radius:12px;
 max-width:500px;
 margin-top:30px;
+margin-left:80px;
 box-shadow:0 10px 25px rgba(0,0,0,0.4);
+align-content: center;
 }
 
 .duel-card h2{
@@ -625,5 +628,31 @@ transform:translateY(-60px);
   height: 100%;
   object-fit: cover;
 }
+.duel-bg {
+  background: url('../assets/duel-bg.png') no-repeat center center fixed;
+  background-size: cover;
+
+  /* kill the animation from layout.css */
+  animation: none;
+}
+
+.color{
+  color: #111827;
+  margin-top: 15px;
+  font-size: 1.1cm;
+}
+.pirate-studybg {
+  background: url('../assets/ChatGPT\ Image\ Apr\ 25\,\ 2026\,\ 09_16_04\ AM.png') no-repeat center center fixed;
+  background-size: cover;
+
+  /* kill the animation from layout.css */
+  animation: none;
+}
+.library {
+  background: url('../assets/library.png') no-repeat center center fixed;
+  background-size: cover;
 
 
+  /* kill the animation from layout.css */
+  animation:none;
+}

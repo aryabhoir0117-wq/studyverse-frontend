@@ -4,7 +4,7 @@
 <title>Study Notes</title>
 <link rel="stylesheet" href="../css/layout.css">
 </head>
-<body>
+<body class="library">
 
 <div class="app-layout">
 
@@ -17,7 +17,7 @@
 
 <div class="main-area">
 
-  <h1 style="padding:20px;" id="notesTitle">Notes</h1>
+  <h1 style="padding:20px;"  id="notesTitle">Notes</h1>
 
   <div style="padding:0 30px 30px;">
     <table style="width:100%;border-collapse:collapse;">
@@ -30,14 +30,14 @@
           <th style="padding:12px;text-align:left;border-bottom:1px solid #334155;">Actions</th>
         </tr>
       </thead>
-      <tbody id="notesTableBody">
-        <tr><td colspan="5" style="padding:20px;color:#94a3b8;">Loading...</td></tr>
+      <tbody id="notesTableBody" class="table">
+        <tr><td colspan="5" style="padding:20px;color:#01060e;">Loading...</td></tr>
       </tbody>
     </table>
   </div>
 
   <div id="pdfViewer" style="padding:0 30px 30px;display:none;">
-    <h3 style="color:#facc15;margin-bottom:15px;">📄Catch-UP</h3>
+    <h4 style="color:#facc15;margin-bottom:15px;">Catch-UP</h4>
     <iframe id="pdfFrame" width="100%" height="600px" style="border:none;border-radius:8px;"></iframe>
   </div>
 

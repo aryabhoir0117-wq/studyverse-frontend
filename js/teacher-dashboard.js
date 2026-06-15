@@ -96,8 +96,33 @@ document.addEventListener("DOMContentLoaded", async () => {
       document.getElementById("notesCount").textContent = notes.length || 0;
     }
 
-    if (document.getElementById("studentCount")) {
-      document.getElementById("studentCount").textContent = "Coming soon";
+    // Fetch actual student count
+    try {
+      const studentsRes = await fetch(`${BASE_URL}/api/students`, {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      if (studentsRes.ok) {
+        const students = await studentsRes.json();
+        const count = Array.isArray(students) ? students.length : (students.students?.length || 0);
+        if (document.getElementById("studentCount")) {
+          document.getElementById("studentCount").textContent = count;
+        }
+      } else {
+        // Fallback: count unique students enrolled across all lessons
+        let uniqueStudents = new Set();
+        (Array.isArray(lessons) ? lessons : []).forEach(lesson => {
+          (lesson.enrolledStudents || lesson.students || []).forEach(s => {
+            uniqueStudents.add(s._id || s.id || s.email);
+          });
+        });
+        if (document.getElementById("studentCount")) {
+          document.getElementById("studentCount").textContent = uniqueStudents.size || "—";
+        }
+      }
+    } catch {
+      if (document.getElementById("studentCount")) {
+        document.getElementById("studentCount").textContent = "—";
+      }
     }
 
   } catch (err) {
@@ -123,6 +148,7 @@ function goUploadNotes() {
   window.location.href = "upload-notes.html";
 }
 
+// Now navigates to the real student progress page instead of an alert
 function goProgress() {
-  alert("Student analytics coming soon");
+  window.location.href = "student-progress.html";
 }
