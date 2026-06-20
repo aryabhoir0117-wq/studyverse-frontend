@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudyVerse — Platform Control</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/admin.css">
+  <style>
+    /* superadmin accent: red-gold instead of teal-gold */
+    .sidebar-brand h2 { color: #ff6b6b; }
+    .nav-btn.active   { background: rgba(255,107,107,.12); color: #ff6b6b; border-color: rgba(255,107,107,.3); }
+    .topbar-title     { color: #ff6b6b; }
+    .btn-gold         { background: rgba(255,107,107,.12); border-color: rgba(255,107,107,.3); color: #ff6b6b; }
+    .btn-gold:hover   { background: rgba(255,107,107,.22); }
+    .qa-btn           { background: rgba(255,107,107,.1); border-color: rgba(255,107,107,.25); color: #ff6b6b; }
+    .role-badge       { color: #ff6b6b; }
+  </style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <span>🏴‍☠️</span>
+    <div>
+      <h2>StudyVerse</h2>
+      <p>Platform Control</p>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <button class="nav-btn active" onclick="switchTab('overview')">🗺️ Overview</button>
+    <button class="nav-btn" onclick="switchTab('schools')">🏫 Schools</button>
+    <button class="nav-btn" onclick="switchTab('admins')">👑 School Admins</button>
+    <button class="nav-btn" onclick="switchTab('analytics')">📊 Analytics</button>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="admin-chip">
+      <div class="admin-avatar" id="saInitials" style="background:rgba(255,107,107,.15);color:#ff6b6b;">S</div>
+      <div>
+        <p id="saName">SuperAdmin</p>
+        <span class="role-badge">Pirate King</span>
+      </div>
+    </div>
+    <button class="logout-btn" onclick="logout()">Leave Ship</button>
+  </div>
+</aside>
+
+<div class="main-wrap">
+  <header class="topbar">
+    <div>
+      <h1 class="topbar-title" id="tabTitle">Platform Overview</h1>
+      <p class="topbar-sub">StudyVerse — Internal Company Dashboard</p>
+    </div>
+    <div id="topbarActions"></div>
+  </header>
+
+  <div class="toast" id="toast"></div>
+
+  <main class="content">
+
+    <!-- OVERVIEW -->
+    <section id="tab-overview" class="tab active">
+      <div class="stats-grid">
+        <div class="stat gold"  onclick="switchTab('schools')"><span>🏫</span><p class="sv" id="sa-schools">—</p><p class="sl">Schools</p></div>
+        <div class="stat red"   onclick="switchTab('admins')"><span>👑</span><p class="sv" id="sa-admins">—</p><p class="sl">School Admins</p></div>
+        <div class="stat teal"><span>🏴</span><p class="sv" id="sa-teachers">—</p><p class="sl">Teachers</p></div>
+        <div class="stat blue"><span>⚓</span><p class="sv" id="sa-students">—</p><p class="sl">Students</p></div>
+        <div class="stat amber"><span>🚫</span><p class="sv" id="sa-blocked">—</p><p class="sl">Blocked</p></div>
+      </div>
+      <h3 class="section-title">Quick Actions</h3>
+      <div class="qa-grid">
+        <button class="qa-btn" onclick="openModal('addSchool')">➕ Add School</button>
+        <button class="qa-btn" onclick="openModal('addAdmin')">➕ Add School Admin</button>
+      </div>
+      <div class="info-box" style="margin-top:20px;">
+        <p>🏴‍☠️ You are logged in as <strong>StudyVerse SuperAdmin</strong>. This panel is for internal company use only.</p>
+        <p>🔗 Chain of trust: <strong>You → School Admin → Teacher → Student</strong></p>
+        <p>🏫 Each school is fully isolated. No data crosses school boundaries.</p>
+        <p>🔑 When you create a school admin, a temp password is generated. Share it securely — they must change it on first login.</p>
+      </div>
+    </section>
+
+    <!-- SCHOOLS -->
+    <section id="tab-schools" class="tab">
+      <div class="toolbar">
+        <input id="schoolSearch" class="search" placeholder="Search schools…" oninput="renderSchools()">
+        <button class="btn-gold" onclick="openModal('addSchool')">➕ Add School</button>
+      </div>
+      <div class="table-wrap">
+        <table class="tbl">
+          <thead><tr><th>School Name</th><th>Board</th><th>Admins</th><th>Teachers</th><th>Students</th><th>Actions</th></tr></thead>
+          <tbody id="schoolTbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ADMINS -->
+    <section id="tab-admins" class="tab">
+      <div class="toolbar">
+        <input id="adminSearch" class="search" placeholder="Search admins…" oninput="renderAdmins()">
+        <button class="btn-gold" onclick="openModal('addAdmin')">➕ Add Admin</button>
+      </div>
+      <div class="table-wrap">
+        <table class="tbl">
+          <thead><tr><th>Name</th><th>Email</th><th>School</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="adminTbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ANALYTICS -->
+    <section id="tab-analytics" class="tab">
+      <div class="stats-grid" id="saAnalyticsGrid"></div>
+    </section>
+
+  </main>
+</div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="overlay" onclick="closeModal()"></div>
+
+<div class="modal" id="modal-addSchool">
+  <div class="modal-hdr"><h3>🏫 Add School</h3><button onclick="closeModal()">✕</button></div>
+  <div class="modal-body">
+    <label>School Name</label><input id="sch-name" placeholder="Greenfield Academy">
+    <label>Board</label>
+    <select id="sch-board">
+      <option value="">Select board</option>
+      <option>CBSE</option><option>ICSE</option>
+      <option>State Board</option><option>IB</option><option>Other</option>
+    </select>
+    <div class="cred-box" id="sch-result" style="display:none"></div>
+  </div>
+  <div class="modal-ftr">
+    <button class="btn-ghost" onclick="closeModal()">Cancel</button>
+    <button class="btn-gold" onclick="createSchool()">Create School</button>
+  </div>
+</div>
+
+<div class="modal" id="modal-addAdmin">
+  <div class="modal-hdr"><h3>👑 Add School Admin</h3><button onclick="closeModal()">✕</button></div>
+  <div class="modal-body">
+    <label>Full Name</label><input id="adm-name" placeholder="Principal Rayleigh">
+    <label>Email</label><input type="email" id="adm-email" placeholder="principal@school.edu">
+    <label>Assign to School</label>
+    <select id="adm-school"><option value="">Select school</option></select>
+    <div class="cred-box" id="adm-result" style="display:none"></div>
+  </div>
+  <div class="modal-ftr">
+    <button class="btn-ghost" onclick="closeModal()">Cancel</button>
+    <button class="btn-gold" onclick="createAdmin()">Create Admin</button>
+  </div>
+</div>
+
+<script src="../js/superadmin-dashboard.js"></script>
+</body>
+</html>

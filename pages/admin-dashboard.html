@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — StudyVerse</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <span>⚓</span>
+    <div>
+      <h2>StudyVerse</h2>
+      <p id="schoolLabel">Loading…</p>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <button class="nav-btn active" onclick="switchTab('overview')">🗺️ Overview</button>
+    <button class="nav-btn" onclick="switchTab('teachers')">🏴 Teachers</button>
+    <button class="nav-btn" onclick="switchTab('students')">⚓ Students</button>
+    <button class="nav-btn" onclick="switchTab('classes')">🗝️ Classes</button>
+    <button class="nav-btn" onclick="switchTab('sections')">🧭 Sections</button>
+    <button class="nav-btn" onclick="switchTab('analytics')">📊 Analytics</button>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="admin-chip">
+      <div class="admin-avatar" id="adminInitials">A</div>
+      <div>
+        <p id="adminName">Admin</p>
+        <span class="role-badge">Fleet Admiral</span>
+      </div>
+    </div>
+    <button class="logout-btn" onclick="logout()">Leave Ship</button>
+  </div>
+</aside>
+
+<div class="main-wrap">
+  <header class="topbar">
+    <div>
+      <h1 class="topbar-title" id="tabTitle">Overview</h1>
+      <p class="topbar-sub" id="tabSub">School administration panel</p>
+    </div>
+    <div id="topbarActions"></div>
+  </header>
+
+  <div class="toast" id="toast"></div>
+
+  <main class="content">
+
+    <!-- OVERVIEW -->
+    <section id="tab-overview" class="tab active">
+      <div class="stats-grid">
+        <div class="stat gold"  onclick="switchTab('teachers')"><span>🏴</span><p class="sv" id="st-teachers">—</p><p class="sl">Teachers</p></div>
+        <div class="stat teal"  onclick="switchTab('students')"><span>⚓</span><p class="sv" id="st-students">—</p><p class="sl">Students</p></div>
+        <div class="stat blue"  onclick="switchTab('classes')"><span>🗝️</span><p class="sv" id="st-classes">—</p><p class="sl">Classes</p></div>
+        <div class="stat green" onclick="switchTab('sections')"><span>🧭</span><p class="sv" id="st-sections">—</p><p class="sl">Sections</p></div>
+        <div class="stat red"><span>🚫</span><p class="sv" id="st-blocked">—</p><p class="sl">Blocked</p></div>
+        <div class="stat amber"><span>⏳</span><p class="sv" id="st-pending">—</p><p class="sl">Pending Setup</p></div>
+      </div>
+      <h3 class="section-title">Quick Actions</h3>
+      <div class="qa-grid">
+        <button class="qa-btn" onclick="openModal('addStudent')">➕ Add Student</button>
+        <button class="qa-btn" onclick="openModal('addTeacher')">➕ Add Teacher</button>
+        <button class="qa-btn" onclick="openModal('addClass')">➕ Add Class</button>
+        <button class="qa-btn" onclick="openModal('addSection')">➕ Add Section</button>
+      </div>
+    </section>
+
+    <!-- TEACHERS -->
+    <section id="tab-teachers" class="tab">
+      <div class="toolbar">
+        <input id="teacherSearch" class="search" placeholder="Search teachers…" oninput="renderTeachers()">
+        <button class="btn-gold" onclick="openModal('addTeacher')">➕ Add Teacher</button>
+      </div>
+      <div class="table-wrap">
+        <table class="tbl">
+          <thead><tr><th>Name</th><th>Email</th><th>Emp ID</th><th>Subjects</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="teacherTbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- STUDENTS -->
+    <section id="tab-students" class="tab">
+      <div class="toolbar">
+        <input id="studentSearch" class="search" placeholder="Search students…" oninput="renderStudents()">
+        <button class="btn-gold" onclick="openModal('addStudent')">➕ Add Student</button>
+      </div>
+      <div class="table-wrap">
+        <table class="tbl">
+          <thead><tr><th>Name</th><th>Email</th><th>Enroll No.</th><th>Class / Section</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="studentTbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- CLASSES -->
+    <section id="tab-classes" class="tab">
+      <div class="toolbar">
+        <button class="btn-gold" onclick="openModal('addClass')">➕ Add Class</button>
+      </div>
+      <div class="card-grid" id="classGrid"></div>
+    </section>
+
+    <!-- SECTIONS -->
+    <section id="tab-sections" class="tab">
+      <div class="toolbar">
+        <select id="sectionFilter" class="search" onchange="renderSections()" style="max-width:220px">
+          <option value="">All Classes</option>
+        </select>
+        <button class="btn-gold" onclick="openModal('addSection')">➕ Add Section</button>
+      </div>
+      <div class="card-grid" id="sectionGrid"></div>
+    </section>
+
+    <!-- ANALYTICS -->
+    <section id="tab-analytics" class="tab">
+      <div class="stats-grid" id="analyticsGrid"></div>
+      <div class="info-box">
+        <p>🔒 Every document in MongoDB carries <code>schoolId</code> — data from other schools is never accessible.</p>
+        <p>🧑‍🏫 Teacher queries always filter by <code>teacherId</code>.</p>
+        <p>🧑‍🎓 Student queries always filter by <code>classId + sectionId</code>.</p>
+        <p>🚫 Blocked users are rejected at the auth middleware — token valid, access denied.</p>
+        <p>🔑 First-login users are forced to change their temp password before entering any dashboard.</p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ── MODALS ─────────────────────────────────────────────────── -->
+<div class="modal-overlay" id="overlay" onclick="closeModal()"></div>
+
+<div class="modal" id="modal-addStudent">
+  <div class="modal-hdr"><h3>⚓ Add Student</h3><button onclick="closeModal()">✕</button></div>
+  <div class="modal-body">
+    <label>Full Name</label><input id="s-name" placeholder="Roronoa Zoro">
+    <label>Email</label><input type="email" id="s-email" placeholder="zoro@school.edu">
+    <label>Class</label>
+    <select id="s-class" onchange="populateSectionSelect('s-class','s-section')">
+      <option value="">Select class</option>
+    </select>
+    <label>Section</label>
+    <select id="s-section"><option value="">Select section</option></select>
+    <div class="cred-box" id="s-result" style="display:none"></div>
+  </div>
+  <div class="modal-ftr">
+    <button class="btn-ghost" onclick="closeModal()">Cancel</button>
+    <button class="btn-gold" onclick="createStudent()">Create Student</button>
+  </div>
+</div>
+
+<div class="modal" id="modal-addTeacher">
+  <div class="modal-hdr"><h3>🏴 Add Teacher</h3><button onclick="closeModal()">✕</button></div>
+  <div class="modal-body">
+    <label>Full Name</label><input id="t-name" placeholder="Nico Robin">
+    <label>Email</label><input type="email" id="t-email" placeholder="robin@school.edu">
+    <label>Subjects (comma separated)</label>
+    <input id="t-subjects" placeholder="Maths, Science, English">
+    <div class="cred-box" id="t-result" style="display:none"></div>
+  </div>
+  <div class="modal-ftr">
+    <button class="btn-ghost" onclick="closeModal()">Cancel</button>
+    <button class="btn-gold" onclick="createTeacher()">Create Teacher</button>
+  </div>
+</div>
+
+<div class="modal" id="modal-addClass">
+  <div class="modal-hdr"><h3>🗝️ Add Class</h3><button onclick="closeModal()">✕</button></div>
+  <div class="modal-body">
+    <label>Class Name</label>
+    <select id="c-name">
+      <option value="">Select class</option>
+      <option>Class 1</option><option>Class 2</option><option>Class 3</option>
+      <option>Class 4</option><option>Class 5</option><option>Class 6</option>
+      <option>Class 7</option><option>Class 8</option><option>Class 9</option>
+      <option>Class 10</option><option>Class 11</option><option>Class 12</option>
+    </select>
+  </div>
+  <div class="modal-ftr">
+    <button class="btn-ghost" onclick="closeModal()">Cancel</button>
+    <button class="btn-gold" onclick="createClass()">Create Class</button>
+  </div>
+</div>
+
+<div class="modal" id="modal-addSection">
+  <div class="modal-hdr"><h3>🧭 Add Section</h3><button onclick="closeModal()">✕</button></div>
+  <div class="modal-body">
+    <label>Class</label>
+    <select id="sec-class"><option value="">Select class</option></select>
+    <label>Section Name</label>
+    <input id="sec-name" placeholder="A" maxlength="2" style="text-transform:uppercase">
+  </div>
+  <div class="modal-ftr">
+    <button class="btn-ghost" onclick="closeModal()">Cancel</button>
+    <button class="btn-gold" onclick="createSection()">Create Section</button>
+  </div>
+</div>
+
+<div class="modal" id="modal-assignStudent">
+  <div class="modal-hdr"><h3>📋 Assign Class & Section</h3><button onclick="closeModal()">✕</button></div>
+  <div class="modal-body">
+    <label>Class</label>
+    <select id="as-class" onchange="populateSectionSelect('as-class','as-section')">
+      <option value="">Select class</option>
+    </select>
+    <label>Section</label>
+    <select id="as-section"><option value="">Select section</option></select>
+  </div>
+  <div class="modal-ftr">
+    <button class="btn-ghost" onclick="closeModal()">Cancel</button>
+    <button class="btn-gold" onclick="saveAssignment()">Save</button>
+  </div>
+</div>
+
+<div class="modal" id="modal-resetPwd">
+  <div class="modal-hdr"><h3>🔑 Reset Password</h3><button onclick="closeModal()">✕</button></div>
+  <div class="modal-body">
+    <p id="resetPwdMsg" style="color:rgba(242,237,215,.7);font-size:14px;margin-bottom:12px"></p>
+    <div class="cred-box" id="reset-result" style="display:none"></div>
+  </div>
+  <div class="modal-ftr">
+    <button class="btn-ghost" onclick="closeModal()">Cancel</button>
+    <button class="btn-gold" onclick="confirmReset()">Reset</button>
+  </div>
+</div>
+
+<script src="../js/admin-dashboard.js"></script>
+</body>
+</html>
