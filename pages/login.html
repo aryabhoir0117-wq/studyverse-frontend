@@ -82,11 +82,11 @@
 <!-- ── FIRST LOGIN: force password change modal ─────────────────────────── -->
 <div id="firstLoginOverlay" style="
   display:none; position:fixed; inset:0;
-  background:rgba(0,0,0,0.75); z-index:999;
+  background:rgba(0, 0, 0, 0.75); z-index:999;
   align-items:center; justify-content:center;
 ">
   <div style="
-    background:#0c1a2e; border:1px solid rgba(232,197,71,0.35);
+    background:#6e5793; border:1px solid rgba(232,197,71,0.35);
     border-radius:16px; padding:32px; width:90%; max-width:420px;
   ">
     <div style="text-align:center; margin-bottom:20px;">
@@ -101,17 +101,17 @@
     <div class="error-banner" id="changePwdError"></div>
 
     <div class="field">
-      <label for="newPassword">New Password</label>
+      <label for="newPassword" style="color: #E8C547;">New Password</label>
       <div class="field-wrap">
         <span class="field-icon">🔑</span>
-        <input type="password" id="newPassword" placeholder="Min 8 characters, letters + numbers">
+        <input type="password" style="color: #E8C547;"id="newPassword" placeholder="Min 8 characters, letters + numbers">
       </div>
     </div>
     <div class="field">
-      <label for="confirmNewPassword">Confirm Password</label>
+      <label for="confirmNewPassword" style="color: #E8C547;">Confirm Password</label>
       <div class="field-wrap">
         <span class="field-icon">🔑</span>
-        <input type="password" id="confirmNewPassword" placeholder="Repeat your new password">
+        <input type="password" style="color: #E8C547;"id="confirmNewPassword" placeholder="Repeat your new password">
       </div>
     </div>
 

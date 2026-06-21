@@ -251,51 +251,70 @@
 
 const BASE_URL = "https://studyverse-backend-28sn.onrender.com";
 
+const RANKS = [
+  "Cabin Boy", "Deckhand", "Swordsman", "Commander",
+  "Captain", "Warlord", "Yonko", "Pirate King"
+];
+
 const achievements = [
-  { id: "first_lesson", title: "First Voyage", desc: "Complete your first lesson", xp: 10 },
-  { id: "xp_100", title: "Cabin Boy", desc: "Reach 100 Bounty", xp: 100 },
-  { id: "xp_200", title: "Deckhand", desc: "Reach 200 Bounty", xp: 200 },
-  { id: "xp_300", title: "Swordsman", desc: "Reach 300 Bounty", xp: 300 },
-  { id: "xp_400", title: "Commander", desc: "Reach 400 Bounty", xp: 400 },
-  { id: "xp_500", title: "Captain", desc: "Reach 500 Bounty", xp: 500 },
-  { id: "xp_600", title: "Warlord", desc: "Reach 600 Bounty", xp: 600 },
-  { id: "xp_700", title: "Yonko", desc: "Reach 700 Bounty", xp: 700 },
-  { id: "xp_800", title: "Pirate King", desc: "Reach 800 Bounty", xp: 800 },
-  { id: "streak_3", title: "On Fire", desc: "Study 3 days streak", streak: 3 },
-  { id: "streak_7", title: "Legend", desc: "Study 7 days streak", streak: 7 }
+  { id: "first_lesson", title: "First Voyage",  desc: "Complete your first lesson", xp: 10 },
+  { id: "xp_100",  title: "Cabin Boy",   desc: "Reach 100 Bounty",  xp: 100  },
+  { id: "xp_200",  title: "Deckhand",    desc: "Reach 200 Bounty",  xp: 200  },
+  { id: "xp_300",  title: "Swordsman",   desc: "Reach 300 Bounty",  xp: 300  },
+  { id: "xp_500",  title: "Captain",     desc: "Reach 500 Bounty",  xp: 500  },
+  { id: "xp_800",  title: "Pirate King", desc: "Reach 800 Bounty",  xp: 800  },
+  { id: "streak_3",title: "On Fire",     desc: "Study 3 days in a row", streak: 3 },
+  { id: "streak_7",title: "Legend",      desc: "Study 7 days in a row", streak: 7 },
 ];
 
 document.addEventListener("DOMContentLoaded", async () => {
-
   const token = localStorage.getItem("token");
   if (!token) { window.location.href = "login.html"; return; }
 
   try {
-    const response = await fetch(`${BASE_URL}/api/user/profile`, {
+    const res = await fetch(`${BASE_URL}/api/user/profile`, {
       headers: { "Authorization": `Bearer ${token}` }
     });
 
-    if (!response.ok) {
-      if (response.status === 401) { localStorage.clear(); window.location.href = "login.html"; }
+    if (!res.ok) {
+      localStorage.clear();
+      window.location.href = "login.html";
       return;
     }
 
-    const user = await response.json();
+    const user = await res.json();
     localStorage.setItem("user", JSON.stringify(user));
 
-    if (user.role === "teacher") { window.location.href = "teacher-dashboard.html"; return; }
+    // Role guard
+    if (user.role === "teacher") { window.location.href = "teacher-picker.html"; return; }
+    if (user.role === "admin")   { window.location.href = "admin-dashboard.html"; return; }
+    if (user.role === "superadmin") { window.location.href = "superadmin-dashboard.html"; return; }
 
-    document.getElementById("displayUser").textContent = user.username;
-    document.getElementById("xpDisplay").textContent = user.xp;
-    document.getElementById("levelDisplay").textContent = user.rank;
-    document.getElementById("streakCount").textContent = user.streak;
-    const lessonCount = document.getElementById("lessonCount");
-    if (lessonCount) lessonCount.textContent = user.lessonsCompleted;
+    // Fill UI
+    const displayUser   = document.getElementById("displayUser");
+    const xpDisplay     = document.getElementById("xpDisplay");
+    const levelDisplay  = document.getElementById("levelDisplay");
+    const streakCount   = document.getElementById("streakCount");
+    const lessonCountEl = document.getElementById("lessonCount");
 
-    checkAchievements(user.xp, user.streak);
+    if (displayUser)  displayUser.textContent  = user.username;
+    if (xpDisplay)    xpDisplay.textContent    = user.xp    || 0;
+    if (streakCount)  streakCount.textContent  = user.streak || 0;
+    if (lessonCountEl)lessonCountEl.textContent= user.lessonsCompleted || 0;
 
-  } catch (err) { console.error(err); }
+    const level = Math.min(Math.floor((user.xp || 0) / 100), RANKS.length - 1);
+    if (levelDisplay) levelDisplay.textContent = RANKS[level];
 
+    checkAchievements(user.xp || 0, user.streak || 0);
+
+    // Fetch dynamic subjects and render subject cards
+    await renderSubjectCards(token);
+
+  } catch (err) {
+    console.error("Dashboard load error:", err);
+  }
+
+  // Logout
   const logoutBtn = document.getElementById("logoutBtn");
   if (logoutBtn) {
     logoutBtn.addEventListener("click", () => {
@@ -303,27 +322,106 @@ document.addEventListener("DOMContentLoaded", async () => {
       window.location.href = "../index.html";
     });
   }
-
 });
 
+// ── DYNAMIC SUBJECT CARDS ─────────────────────────────────────────────────
+async function renderSubjectCards(token) {
+  const grid = document.getElementById("subjectsGrid");
+  if (!grid) return;
+
+  const SUBJECT_CONFIG = {
+    "maths":    { icon: "🔢", desc: "Navigate by the stars", color: "#60a5fa" },
+    "science":  { icon: "🔬", desc: "Discover the deep",     color: "#4ade80" },
+    "english":  { icon: "📜", desc: "Master the written word",color: "#f59e0b" },
+    "history":  { icon: "🗺️", desc: "Uncover ancient secrets",color: "#c084fc" },
+    "geography":{ icon: "🌍", desc: "Chart unknown waters",  color: "#2dd4bf" },
+    "default":  { icon: "📚", desc: "Set sail and learn",    color: "#94a3b8" },
+  };
+
+  let subjects = [];
+  try {
+    const res = await fetch(`${BASE_URL}/api/lessons/my-subjects`, {
+      headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
+    });
+    if (res.ok) subjects = await res.json();
+  } catch { /* no subjects yet */ }
+
+  // Build cards HTML
+  let html = "";
+
+  // Dynamic subject cards
+  subjects.forEach(sub => {
+    const key    = sub.toLowerCase();
+    const config = SUBJECT_CONFIG[key] || SUBJECT_CONFIG["default"];
+    html += `
+      <div class="subject-card" style="border-color:${config.color}33">
+        <h3 style="color:${config.color}">${config.icon} ${sub}</h3>
+        <p style="font-family:'IM Fell English',serif;font-size:12px;color:#7aa8cc;font-style:italic;">
+          ${config.desc}
+        </p>
+        <button onclick="startLesson('${sub}')" class="btn-primary" style="margin-bottom:8px">Start Lesson</button>
+        <button onclick="viewNotes('${sub}')"   class="btn-outline">View Notes</button>
+      </div>`;
+  });
+
+  // If no subjects yet — show placeholder
+  if (!subjects.length) {
+    html += `
+      <div class="subject-card" style="border-color:rgba(148,163,184,.2);opacity:.6;grid-column:span 2">
+        <h3 style="color:#94a3b8">⏳ No Subjects Yet</h3>
+        <p style="font-family:'IM Fell English',serif;font-size:12px;color:#7aa8cc;font-style:italic;">
+          Your teacher hasn't uploaded lessons yet. Check back soon, sailor.
+        </p>
+      </div>`;
+  }
+
+  // GK Quiz — always shown
+  html += `
+    <div class="subject-card" style="border-color:rgba(251,191,36,.25)">
+      <h3 style="color:#fbbf24">📰 Daily GK Quest</h3>
+      <p style="font-family:'IM Fell English',serif;font-size:12px;color:#7aa8cc;font-style:italic;">
+        Today's news. Snake game. Quiz. Conquer all three.
+      </p>
+      <button onclick="startGKQuiz()" class="btn-primary"
+        style="background:linear-gradient(135deg,#92400e,#fbbf24,#f59e0b);color:#1a0e00">
+        Start Quest
+      </button>
+    </div>`;
+
+  // Duel — always shown
+  html += `
+    <div class="subject-card" style="background:rgba(239,68,68,.06);border-color:rgba(53,113,187,.844);align-items:center;justify-content:center;text-align:center;">
+      <h3 style="color:#d8be15">⚔️ Duel Challenge</h3>
+      <p style="font-family:'IM Fell English',serif;font-size:12px;color:rgba(150,200,227,.6);font-style:italic;">
+        Face another captain at sea
+      </p>
+      <button class="btn-primary" onclick="startDuel()"
+        style="background:linear-gradient(135deg,#e8a500,#f5c842,#ffd966,#e09800);color:rgb(39,22,22);box-shadow:0 4px 15px rgba(245,234,82,.56)">
+        Start Duel
+      </button>
+    </div>`;
+
+  grid.innerHTML = html;
+}
+
+// ── ACHIEVEMENTS ──────────────────────────────────────────────────────────
 function checkAchievements(xp, streak) {
-  let unlocked = JSON.parse(localStorage.getItem("achievements")) || [];
+  let unlocked = JSON.parse(localStorage.getItem("achievements") || "[]");
   achievements.forEach(a => {
     if (unlocked.includes(a.id)) return;
-    if (a.xp && xp >= a.xp) unlockAchievement(a, unlocked);
-    if (a.streak && streak >= a.streak) unlockAchievement(a, unlocked);
+    if (a.xp     && xp     >= a.xp)     unlockAchievement(a, unlocked);
+    if (a.streak  && streak >= a.streak) unlockAchievement(a, unlocked);
   });
-  const achievementList = document.getElementById("achievementList");
-  if (achievementList) {
-    achievementList.innerHTML = "";
-    unlocked.forEach(id => {
-      const ach = achievements.find(a => a.id === id);
-      if (!ach) return;
-      const li = document.createElement("li");
-      li.textContent = ach.title + " - " + ach.desc;
-      achievementList.appendChild(li);
-    });
-  }
+  const list = document.getElementById("achievementList");
+  if (!list) return;
+  list.innerHTML = "";
+  unlocked.forEach(id => {
+    const a  = achievements.find(x => x.id === id);
+    if (!a) return;
+    const li = document.createElement("li");
+    li.textContent = a.title + " — " + a.desc;
+    list.appendChild(li);
+  });
 }
 
 function unlockAchievement(a, unlocked) {
@@ -334,31 +432,35 @@ function unlockAchievement(a, unlocked) {
 
 function showAchievement(text) {
   const popup = document.getElementById("achievementPopup");
-  const popupText = document.getElementById("achievementText");
+  const pt    = document.getElementById("achievementText");
   if (!popup) return;
-  popupText.textContent = text;
+  pt.textContent = text;
   popup.classList.add("show");
   setTimeout(() => popup.classList.remove("show"), 3000);
 }
 
+// ── TREASURE ──────────────────────────────────────────────────────────────
 async function claimTreasure() {
-  const token = localStorage.getItem("token");
+  const token   = localStorage.getItem("token");
   const message = document.getElementById("treasureMessage");
   try {
-    const response = await fetch(`${BASE_URL}/api/user/claim-treasure`, {
+    const res  = await fetch(`${BASE_URL}/api/user/claim-treasure`, {
       method: "POST",
       headers: { "Authorization": `Bearer ${token}` }
     });
-    const data = await response.json();
-    if (response.ok) {
+    const data = await res.json();
+    if (res.ok) {
       document.getElementById("xpDisplay").textContent = data.xp;
-      message.textContent = `You found ${data.reward} bounty! 🏴‍☠️`;
+      if (message) message.textContent = `You found ${data.reward} bounty! 🏴‍☠️`;
     } else {
-      message.textContent = data.message;
+      if (message) message.textContent = data.message;
     }
-  } catch (err) { message.textContent = "Server error."; }
+  } catch {
+    if (message) message.textContent = "Server error.";
+  }
 }
 
+// ── NAVIGATION ────────────────────────────────────────────────────────────
 function startLesson(subject) {
   localStorage.setItem("currentSubject", subject);
   window.location.href = "lesson.html";
@@ -367,6 +469,10 @@ function startLesson(subject) {
 function viewNotes(subject) {
   localStorage.setItem("notesSubject", subject);
   window.location.href = "notes.html";
+}
+
+function startGKQuiz() {
+  window.location.href = "gk-quiz.html";
 }
 
 function startDuel() {
