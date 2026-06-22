@@ -156,10 +156,14 @@
 <div class="modal" id="modal-addTeacher">
   <div class="modal-hdr"><h3>🏴 Add Teacher</h3><button onclick="closeModal()">✕</button></div>
   <div class="modal-body">
-    <label>Full Name</label><input id="t-name" placeholder="Nico Robin">
-    <label>Email</label><input type="email" id="t-email" placeholder="robin@school.edu">
-    <label>Subjects (comma separated)</label>
-    <input id="t-subjects" placeholder="Maths, Science, English">
+    <label>Full Name</label>
+    <input id="t-name" placeholder="Nico Robin">
+    <label>Email</label>
+    <input type="email" id="t-email" placeholder="robin@school.edu">
+
+    <label style="margin-top:8px">Class Assignments</label>
+    <div id="t-assignments"></div>
+
     <div class="cred-box" id="t-result" style="display:none"></div>
   </div>
   <div class="modal-ftr">

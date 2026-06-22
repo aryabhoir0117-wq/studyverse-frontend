@@ -252,3 +252,56 @@ body { display:flex; }
   .sidebar { display:none; }
   .stats-grid { grid-template-columns:repeat(2,1fr); }
 }
+.assignment-row {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 8px;
+  position: relative;
+}
+.assignment-row label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+  display: block;
+  margin-bottom: 4px;
+  margin-top: 8px;
+}
+.assignment-row label:first-child { margin-top: 0; }
+.assignment-row select,
+.assignment-row input {
+  width: 100%;
+  padding: 8px 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 13px;
+  font-family: 'DM Sans', sans-serif;
+}
+.remove-row-btn {
+  position: absolute;
+  top: 8px; right: 8px;
+  background: none;
+  border: none;
+  color: var(--red);
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+}
+.add-row-btn {
+  width: 100%;
+  padding: 8px;
+  border: 1px dashed var(--gold-b);
+  border-radius: 8px;
+  background: none;
+  color: var(--gold);
+  cursor: pointer;
+  font-size: 13px;
+  margin-top: 4px;
+  font-family: 'DM Sans', sans-serif;
+  transition: background .2s;
+}
+.add-row-btn:hover { background: var(--gold-d); }
