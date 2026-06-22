@@ -10,7 +10,7 @@ if (!token || user.role !== "teacher") {
 const ICONS = ["🏴","⚓","🗺️","🧭","🔭","⛵","🌊","🏝️","🗝️","⚔️","🐚","🦜"];
 
 document.addEventListener("DOMContentLoaded", load);
-
+document.getElementById("enterBtn").addEventListener("click", enterDashboard);
 async function load() {
   try {
     const res = await fetch(`${BASE_URL}/api/teacher/my-profile`, {
@@ -25,7 +25,7 @@ async function load() {
     }
 
     const profile = await res.json();
-
+console.log(profile.assignments.length);
     // Normalise assignments — handle both populated objects and plain IDs
     const raw = profile.assignments || [];
 
@@ -97,6 +97,7 @@ function storeAssignment(a) {
 }
 
 function enterDashboard() {
+    
   if (!selectedAssignment) return;
   window.location.href = "teacher-dashboard.html";
 }
