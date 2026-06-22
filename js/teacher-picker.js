@@ -21,9 +21,7 @@ async function load() {
     document.getElementById("loadingTxt").style.display  = "none";
 
     if (!res.ok) {
-      const err = await res.json();
-      showError(err.message || "Could not load profile");
-      return;
+      throw new Error(await res.text());
     }
 
     const profile = await res.json();

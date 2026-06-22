@@ -4,7 +4,7 @@ const AUTH_BASE_URL = "https://studyverse-backend-28sn.onrender.com";
 const ROLE_REDIRECT = {
   superadmin: "superadmin-dashboard.html",
   admin:      "admin-dashboard.html",
-  teacher:    "teacher-dashboard.html",
+  teacher:    "teacher-picker.html",
   student:    "dashboard.html"
 };
 

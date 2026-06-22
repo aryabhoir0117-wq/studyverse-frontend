@@ -49,8 +49,14 @@ async function init() {
     });
 
     if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.message || "Server error");
+     const text = await res.text();
+
+try {
+  const err = JSON.parse(text);
+  throw new Error(err.message);
+} catch {
+  throw new Error(text);
+}
     }
 
     quizData = await res.json();
