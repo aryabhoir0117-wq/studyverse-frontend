@@ -1,0 +1,173 @@
+/* ============================================================
+   StudyVerse — Teacher Picker CSS
+   ============================================================ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(-45deg, #0f2027, #203a43, #2c5364, #1c3b4d);
+  background-size: 400% 400%;
+  animation: oceanMove 8s ease infinite;
+  padding: 20px;
+  font-family: 'DM Sans', sans-serif;
+  color: #F2EDD7;
+}
+
+@keyframes oceanMove {
+  0%, 100% { background-position: 0% 50%; }
+  50%       { background-position: 100% 50%; }
+}
+
+/* ── BRAND ───────────────────────────────────────────────────── */
+.brand {
+  position: fixed;
+  top: 20px;
+  left: 24px;
+  font-family: 'Cinzel Decorative', cursive;
+  font-size: 15px;
+  color: #f5c842;
+  text-decoration: none;
+  text-shadow: 0 0 10px rgba(245,200,66,.4);
+}
+
+/* ── WRAPPER ─────────────────────────────────────────────────── */
+.picker-wrap {
+  width: 100%;
+  max-width: 760px;
+  text-align: center;
+}
+
+/* ── LOADING ─────────────────────────────────────────────────── */
+.loading-ship {
+  font-size: 40px;
+  display: block;
+  margin-bottom: 12px;
+  animation: shipBob 2s ease-in-out infinite;
+}
+.loading-txt {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  color: #7aa8cc;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+/* ── HEADINGS ────────────────────────────────────────────────── */
+.picker-title {
+  font-family: 'Cinzel Decorative', cursive;
+  font-size: 26px;
+  color: #f5c842;
+  margin-bottom: 6px;
+  text-shadow: 0 0 20px rgba(245,200,66,.4);
+}
+.picker-sub {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  color: #7aa8cc;
+  font-size: 14px;
+  margin-bottom: 32px;
+}
+
+/* ── MESSAGES ────────────────────────────────────────────────── */
+.error-msg {
+  color: #f87171;
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+.no-assignments {
+  background: rgba(15,23,42,.7);
+  border: 1px solid rgba(248,113,113,.3);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 20px;
+}
+.no-assignments p {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  color: #f87171;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+/* ── CARD GRID ───────────────────────────────────────────────── */
+.class-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+/* ── INDIVIDUAL CARD ─────────────────────────────────────────── */
+.class-card {
+  background: rgba(15,23,42,.85);
+  border: 2px solid rgba(245,200,66,.15);
+  border-radius: 14px;
+  padding: 20px 14px;
+  cursor: pointer;
+  transition: all .3s cubic-bezier(.23,1,.32,1);
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+}
+.class-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 10%; right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(245,200,66,.3), transparent);
+}
+.class-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(245,200,66,.5);
+  box-shadow: 0 14px 36px rgba(245,200,66,.15);
+}
+.class-card.selected {
+  border-color: #f5c842;
+  box-shadow: 0 0 0 2px #f5c842, 0 14px 36px rgba(245,200,66,.25);
+  background: rgba(245,200,66,.07);
+}
+.card-icon    { font-size: 28px; margin-bottom: 10px; }
+.card-class   { font-family: 'Cinzel', serif; font-size: 15px; color: #f5c842; font-weight: 600; margin-bottom: 2px; }
+.card-section { font-family: 'IM Fell English', serif; font-style: italic; color: #7aa8cc; font-size: 12px; margin-bottom: 10px; }
+.card-subjects { display: flex; flex-wrap: wrap; gap: 4px; }
+.subject-chip {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: rgba(96,192,233,.12);
+  color: #60c0e9;
+  border: 1px solid rgba(96,192,233,.2);
+  font-family: 'Cinzel', serif;
+  letter-spacing: .05em;
+}
+
+/* ── ENTER BUTTON ────────────────────────────────────────────── */
+.btn-enter {
+  background: linear-gradient(135deg, #e8a500, #f5c842, #ffd966, #e09800);
+  color: #1a0e00;
+  border: none;
+  padding: 14px 48px;
+  border-radius: 12px;
+  font-family: 'Cinzel', serif;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  cursor: pointer;
+  transition: all .3s;
+  box-shadow: 0 4px 20px rgba(245,200,66,.35);
+  opacity: .45;
+  pointer-events: none;
+}
+.btn-enter.ready            { opacity: 1; pointer-events: all; }
+.btn-enter.ready:hover      { transform: scale(1.05); box-shadow: 0 8px 30px rgba(245,200,66,.55); }
+
+/* ── ANIMATIONS ──────────────────────────────────────────────── */
+@keyframes shipBob {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-8px); }
+}

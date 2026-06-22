@@ -5,106 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Choose Your Post — StudyVerse</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/layout.css">
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{
-  min-height:100vh;display:flex;align-items:center;justify-content:center;
-  background:linear-gradient(-45deg,#0f2027,#203a43,#2c5364,#1c3b4d);
-  background-size:400% 400%;
-  animation:oceanMove 07s ease infinite;
-  padding:20px;
-}
-@keyframes oceanMove{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
-
-.brand{
-  position:fixed;top:20px;left:24px;
-  font-family:'Cinzel Decorative',cursive;font-size:15px;
-  color:#f5c842;text-decoration:none;
-  text-shadow:0 0 10px rgba(245,200,66,.4);
-}
-
-.picker-wrap{width:100%;max-width:760px;text-align:center}
-
-.picker-title{
-  font-family:'Cinzel Decorative',cursive;font-size:26px;
-  color:#f5c842;margin-bottom:6px;
-  text-shadow:0 0 20px rgba(245,200,66,.4);
-}
-.picker-sub{
-  font-family:'IM Fell English',serif;font-style:italic;
-  color:#7aa8cc;font-size:14px;margin-bottom:32px;
-}
-
-.class-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
-  gap:14px;margin-bottom:28px;
-}
-
-.class-card{
-  background:rgba(15,23,42,.85);
-  border:2px solid rgba(245,200,66,.15);
-  border-radius:14px;padding:20px 14px;
-  cursor:pointer;
-  transition:all .3s cubic-bezier(.23,1,.32,1);
-  text-align:left;position:relative;overflow:hidden;
-}
-.class-card::after{
-  content:'';position:absolute;top:0;left:10%;right:10%;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(245,200,66,.3),transparent);
-}
-.class-card:hover{
-  transform:translateY(-6px);
-  border-color:rgba(245,200,66,.5);
-  box-shadow:0 14px 36px rgba(245,200,66,.15);
-}
-.class-card.selected{
-  border-color:#f5c842;
-  box-shadow:0 0 0 2px #f5c842,0 14px 36px rgba(245,200,66,.25);
-  background:rgba(245,200,66,.07);
-}
-.card-icon{font-size:28px;margin-bottom:10px}
-.card-class{
-  font-family:'Cinzel',serif;font-size:15px;
-  color:#f5c842;font-weight:600;margin-bottom:2px;
-}
-.card-section{
-  font-family:'IM Fell English',serif;font-style:italic;
-  color:#7aa8cc;font-size:12px;margin-bottom:10px;
-}
-.card-subjects{display:flex;flex-wrap:wrap;gap:4px}
-.subject-chip{
-  font-size:10px;padding:2px 8px;border-radius:20px;
-  background:rgba(96,192,233,.12);color:#60c0e9;
-  border:1px solid rgba(96,192,233,.2);
-  font-family:'Cinzel',serif;letter-spacing:.05em;
-}
-
-.btn-enter{
-  background:linear-gradient(135deg,#e8a500,#f5c842,#ffd966,#e09800);
-  color:#1a0e00;border:none;padding:14px 48px;border-radius:12px;
-  font-family:'Cinzel',serif;font-size:15px;font-weight:700;
-  letter-spacing:.08em;cursor:pointer;transition:all .3s;
-  box-shadow:0 4px 20px rgba(245,200,66,.35);
-  opacity:.45;pointer-events:none;
-}
-.btn-enter.ready{opacity:1;pointer-events:all}
-.btn-enter.ready:hover{transform:scale(1.05);box-shadow:0 8px 30px rgba(245,200,66,.55)}
-
-.no-assignments{
-  background:rgba(15,23,42,.7);border:1px solid rgba(248,113,113,.3);
-  border-radius:12px;padding:24px;margin-bottom:20px;
-}
-.no-assignments p{font-family:'IM Fell English',serif;font-style:italic;color:#f87171;font-size:14px}
-
-.loading-txt{
-  font-family:'IM Fell English',serif;font-style:italic;
-  color:#7aa8cc;font-size:14px;margin-bottom:20px;
-}
-.loading-ship{font-size:40px;animation:shipBob 2s ease-in-out infinite;display:block;margin-bottom:12px}
-@keyframes shipBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-</style>
+<link rel="stylesheet" href="../css/teacher-picker.css">
 </head>
 <body>
 
@@ -113,127 +14,22 @@ body{
 <div class="picker-wrap">
   <div class="loading-ship" id="loadingShip">⛵</div>
   <p class="loading-txt" id="loadingTxt">Loading your assignments…</p>
+
   <h1 class="picker-title" id="pickerTitle" style="display:none">Choose Your Post</h1>
-  <p class="picker-sub"   id="pickerSub"   style="display:none">Select the class & section you're commanding this session, Captain.</p>
-  <div id="noAssignments" class="no-assignments" style="display:none">
+  <p class="picker-sub"   id="pickerSub"   style="display:none">
+    Select the class &amp; section you're commanding this session, Captain.
+  </p>
+
+  <div id="errorMsg"       class="error-msg"       style="display:none"></div>
+  <div id="noAssignments"  class="no-assignments"  style="display:none">
     <p>⚓ No classes assigned yet.<br>Contact your school admin to get assigned to a class and section.</p>
   </div>
+
   <div class="class-grid" id="classGrid"></div>
-  <button class="btn-enter" id="enterBtn" onclick="enterDashboard()">⚓ Enter the Deck</button>
+
+  <button class="btn-enter" id="enterBtn">⚓ Enter the Deck</button>
 </div>
 
-<script>
-const BASE_URL = "https://studyverse-backend-28sn.onrender.com";
-const token    = localStorage.getItem("token");
-const user     = JSON.parse(localStorage.getItem("user") || "{}");
-let selectedAssignment = null;
-
-if (!token || user.role !== "teacher") {
-  window.location.href = "login.html";
-}
-
-const ICONS = ["🏴","⚓","🗺️","🧭","🔭","⛵","🌊","🏝️","🗝️","⚔️","🐚","🦜"];
-
-document.addEventListener("DOMContentLoaded", load);
-
-async function load() {
-  try {
-    const res = await fetch(`${BASE_URL}/api/teacher/my-profile`, {
-      headers: { "Authorization": `Bearer ${token}` }
-    });
-
-    document.getElementById("loadingShip").style.display = "none";
-    document.getElementById("loadingTxt").style.display  = "none";
-
-    if (!res.ok) {
-      const err = await res.json();
-      showError(err.message || "Could not load profile");
-      return;
-    }
-
-    const profile = await res.json();
-
-    // Normalise assignments — handle both populated objects and plain IDs
-    const raw = profile.assignments || [];
-
-    if (!raw.length) {
-      document.getElementById("noAssignments").style.display = "block";
-      document.getElementById("enterBtn").style.display      = "none";
-      return;
-    }
-
-    document.getElementById("pickerTitle").style.display = "block";
-    document.getElementById("pickerSub").style.display   = "block";
-
-    // If only 1 assignment, auto-select and jump straight in
-    if (raw.length === 1) {
-      storeAssignment(raw[0]);
-      enterDashboard();
-      return;
-    }
-
-    renderCards(raw);
-
-  } catch (e) {
-    document.getElementById("loadingShip").style.display = "none";
-    document.getElementById("loadingTxt").style.display  = "none";
-    showError("Server error: " + e.message);
-  }
-}
-
-function renderCards(assignments) {
-  window._assignments = assignments;
-  const grid = document.getElementById("classGrid");
-  grid.innerHTML = "";
-
-  assignments.forEach((a, i) => {
-    // Support both populated objects and plain strings
-    const className   = a.classId?.className   || a.className   || "Class";
-    const sectionName = a.sectionId?.sectionName || a.sectionName || "—";
-    const subjects    = a.subjects || [];
-    const icon        = ICONS[i % ICONS.length];
-
-    const card = document.createElement("div");
-    card.className = "class-card";
-    card.onclick   = () => selectCard(card, i);
-    card.innerHTML = `
-      <div class="card-icon">${icon}</div>
-      <div class="card-class">${className}</div>
-      <div class="card-section">Section ${sectionName}</div>
-      <div class="card-subjects">
-        ${subjects.map(s => `<span class="subject-chip">${s}</span>`).join("") || '<span class="subject-chip" style="opacity:.5">No subjects</span>'}
-      </div>`;
-    grid.appendChild(card);
-  });
-}
-
-function selectCard(el, idx) {
-  document.querySelectorAll(".class-card").forEach(c => c.classList.remove("selected"));
-  el.classList.add("selected");
-  storeAssignment(window._assignments[idx]);
-  document.getElementById("enterBtn").classList.add("ready");
-}
-
-function storeAssignment(a) {
-  selectedAssignment = a;
-  localStorage.setItem("activeClassId",     a.classId?._id    || a.classId    || "");
-  localStorage.setItem("activeClassname",   a.classId?.className || a.className || "");
-  localStorage.setItem("activeSectionId",   a.sectionId?._id  || a.sectionId  || "");
-  localStorage.setItem("activeSectionName", a.sectionId?.sectionName || a.sectionName || "");
-  localStorage.setItem("activeSubjects",    JSON.stringify(a.subjects || []));
-}
-
-function enterDashboard() {
-  if (!selectedAssignment) return;
-  window.location.href = "teacher-dashboard.html";
-}
-
-function showError(msg) {
-  const el = document.createElement("p");
-  el.style.cssText = "color:#f87171;font-size:13px;margin-bottom:16px;font-family:'IM Fell English',serif;font-style:italic;";
-  el.textContent = msg;
-  document.querySelector(".picker-wrap").insertBefore(el, document.getElementById("classGrid"));
-}
-</script>
+<script src="../js/teacher-picker.js"></script>
 </body>
 </html>
