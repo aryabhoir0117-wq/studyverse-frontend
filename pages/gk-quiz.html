@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="../css/gk-quiz.css">
 </head>
 <body>
-    
+
 
 <!-- PHASE 1: LOADING -->
 <div id="phase-loading" class="phase active">
@@ -31,6 +31,15 @@
     <div class="snake-stat"><span id="coinsNeeded">10</span><small>Needed</small></div>
     <div class="snake-stat"><span id="snakeScore">0</span><small>Score</small></div>
   </div>
+  <div class="mobile-controls">
+  <button id="upBtn">↑</button>
+
+  <div>
+    <button id="leftBtn">←</button>
+    <button id="downBtn">↓</button>
+    <button id="rightBtn">→</button>
+  </div>
+</div>
   <canvas id="snakeCanvas"></canvas>
   <p class="snake-msg" id="snakeMsg">Press Start or any arrow key to begin · Collect all 🪙 coins!</p>
   <div class="snake-controls">

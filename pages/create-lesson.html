@@ -1,85 +1,551 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Create Lesson</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Lesson · StudyVerse</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../css/layout.css">
+<style>
+  /* ── PAGE CHROME ── */
+  .page-header {
+    padding: 28px 36px 0;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .page-icon { font-size: 28px; }
+  .page-title {
+    font-family: 'Cinzel', serif;
+    font-size: 22px;
+    color: #f5c842;
+    text-shadow: 0 0 16px rgba(245,200,66,.3);
+  }
+  .page-sub { font-size: 12px; color: #7aa8cc; margin-top: 2px; }
+
+  /* ── CONTEXT BANNER ── */
+  .ctx-banner {
+    margin: 18px 36px 0;
+    background: rgba(96,192,233,.07);
+    border: 1px solid rgba(96,192,233,.2);
+    border-radius: 10px;
+    padding: 12px 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    flex-wrap: wrap;
+  }
+  .ctx-chip {
+    background: rgba(245,200,66,.12);
+    border: 1px solid rgba(245,200,66,.25);
+    border-radius: 20px;
+    padding: 3px 10px;
+    color: #f5c842;
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+  }
+  .ctx-label { color: #7aa8cc; font-size: 11px; }
+
+  /* ── TWO-COLUMN LAYOUT ── */
+  .creator-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    gap: 24px;
+    padding: 24px 36px;
+    align-items: start;
+  }
+
+  /* ── GLASS CARD ── */
+  .glass-card {
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 16px;
+    padding: 24px;
+    backdrop-filter: blur(8px);
+  }
+  .glass-card h3 {
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    color: #f5c842;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* ── FORM ELEMENTS ── */
+  .field { margin-bottom: 14px; }
+  .field label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: #7aa8cc;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    margin-bottom: 6px;
+  }
+  .field input,
+  .field select,
+  .field textarea {
+    width: 100%;
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.15);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: #f2edd7;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+    border-color: rgba(245,200,66,.5);
+    box-shadow: 0 0 0 3px rgba(245,200,66,.08);
+  }
+  .field select option { background: #1c3b4d; }
+  .field textarea { resize: vertical; min-height: 72px; }
+
+  /* ── SECTION BROADCASTER ── */
+  .section-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .sec-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 9px 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,.15);
+    background: rgba(255,255,255,.04);
+    color: #94b8cc;
+    font-size: 12px;
+    font-family: 'Cinzel', serif;
+    cursor: pointer;
+    transition: all .2s;
+    user-select: none;
+  }
+  .sec-toggle:hover { border-color: rgba(245,200,66,.4); color: #f5c842; }
+  .sec-toggle.active {
+    background: rgba(245,200,66,.15);
+    border-color: rgba(245,200,66,.6);
+    color: #f5c842;
+    box-shadow: 0 0 8px rgba(245,200,66,.15);
+  }
+  .sec-toggle .check { font-size: 10px; opacity: 0; transition: opacity .15s; }
+  .sec-toggle.active .check { opacity: 1; }
+
+  .select-all-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .btn-select-all {
+    background: none;
+    border: 1px dashed rgba(245,200,66,.35);
+    color: #f5c842;
+    border-radius: 6px;
+    padding: 4px 12px;
+    font-size: 11px;
+    font-family: 'Cinzel', serif;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .btn-select-all:hover { background: rgba(245,200,66,.08); }
+  .selected-count { font-size: 11px; color: #7aa8cc; }
+
+  /* ── AI ROW ── */
+  .ai-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+    margin-bottom: 14px;
+  }
+  .ai-row .field { flex: 1; margin-bottom: 0; }
+  .btn-ai {
+    background: linear-gradient(135deg, #7c3aed, #4f46e5);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity .2s, transform .15s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-ai:hover { opacity: .9; transform: translateY(-1px); }
+  .btn-ai:disabled { opacity: .5; cursor: not-allowed; }
+  #aiStatus {
+    font-size: 12px;
+    color: #f5c842;
+    min-height: 16px;
+    margin-bottom: 10px;
+  }
+
+  /* ── OPTIONS GRID ── */
+  .options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .opt-wrap { position: relative; }
+  .opt-badge {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    background: rgba(245,200,66,.15);
+    border: 1px solid rgba(245,200,66,.3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: #f5c842;
+    font-family: 'Cinzel', serif;
+    pointer-events: none;
+  }
+  .opt-wrap input {
+    padding-left: 38px;
+    width: 100%;
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.15);
+    border-radius: 8px;
+    padding: 10px 14px 10px 38px;
+    color: #f2edd7;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    outline: none;
+    transition: border-color .2s;
+  }
+  .opt-wrap input:focus { border-color: rgba(245,200,66,.5); }
+
+  /* ── ANSWER SELECTOR ── */
+  .answer-pills {
+    display: flex;
+    gap: 8px;
+    margin-top: 6px;
+  }
+  .answer-pill {
+    flex: 1;
+    text-align: center;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,.15);
+    background: rgba(255,255,255,.04);
+    color: #94b8cc;
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .answer-pill.selected {
+    background: rgba(74,222,128,.15);
+    border-color: rgba(74,222,128,.5);
+    color: #4ade80;
+  }
+
+  /* ── SAVE BUTTON ── */
+  .btn-save {
+    width: 100%;
+    padding: 13px;
+    background: linear-gradient(135deg, #f5c842, #f59e0b);
+    color: #0f2027;
+    font-weight: 700;
+    font-size: 14px;
+    font-family: 'Cinzel', serif;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all .2s;
+    margin-top: 6px;
+    letter-spacing: .04em;
+  }
+  .btn-save:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(245,200,66,.35); }
+  .btn-save:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+  /* ── LESSONS TABLE ── */
+  .table-section { padding: 0 36px 36px; }
+  .table-section h3 {
+    font-family: 'Cinzel', serif;
+    font-size: 15px;
+    color: #f5c842;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .sv-table { width: 100%; border-collapse: collapse; }
+  .sv-table th {
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: #7aa8cc;
+    border-bottom: 1px solid rgba(255,255,255,.1);
+    font-weight: 600;
+  }
+  .sv-table td {
+    padding: 13px 16px;
+    font-size: 13px;
+    color: #c9d8e4;
+    border-bottom: 1px solid rgba(255,255,255,.05);
+    vertical-align: middle;
+  }
+  .sv-table tr:hover td { background: rgba(255,255,255,.02); }
+  .badge {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-family: 'Cinzel', serif;
+  }
+  .badge-subject {
+    background: rgba(96,192,233,.15);
+    color: #60c0e9;
+    border: 1px solid rgba(96,192,233,.25);
+  }
+  .badge-answer {
+    background: rgba(74,222,128,.12);
+    color: #4ade80;
+    border: 1px solid rgba(74,222,128,.25);
+  }
+  .badge-section {
+    background: rgba(167,139,250,.12);
+    color: #a78bfa;
+    border: 1px solid rgba(167,139,250,.25);
+    margin-right: 4px;
+    margin-bottom: 3px;
+    display: inline-block;
+  }
+  .btn-del {
+    background: rgba(239,68,68,.12);
+    color: #f87171;
+    border: 1px solid rgba(239,68,68,.25);
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .btn-del:hover { background: rgba(239,68,68,.25); }
+  .empty-row td { text-align: center; color: #4a7a99; padding: 40px; font-size: 13px; }
+
+  /* ── FILTER BAR ── */
+  .filter-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .filter-bar select {
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 8px;
+    padding: 7px 12px;
+    color: #c9d8e4;
+    font-size: 12px;
+    outline: none;
+    cursor: pointer;
+  }
+  .filter-bar select option { background: #1c3b4d; }
+
+  @media (max-width: 900px) {
+    .creator-grid { grid-template-columns: 1fr; }
+    .page-header { padding: 20px 18px 0; }
+    .table-section { padding: 0 18px 24px; }
+    .creator-grid { padding: 16px 18px; }
+  }
+</style>
 </head>
-
 <body>
-
 <div class="app-layout">
 
-<aside class="sidebar">
-  <h2 class="logo">StudyVerse</h2>
-  <nav class="nav-links">
-    <a href="teacher-dashboard.html">Dashboard</a>
-    <a href="create-lesson.html">Create Lesson</a>
-    <a href="upload-notes.html">Upload Notes</a>
-  </nav>
-</aside>
-
-<div class="main-area">
-
-  <h1 style="padding:20px;">Create Lesson</h1>
-
-  <div class="form-box">
-
-    <label>Subject</label>
-    <select id="lessonSubject">
-      <option value="maths">Math</option>
-      <option value="science">Science</option>
-      <option value="english">English</option>
-    </select>
-
-    <label>Topic (for AI generation)</label>
-    <div style="display:flex;gap:10px;align-items:center;margin-bottom:20px;">
-      <input type="text" id="topicInput" class="input-field" placeholder="e.g. Pythagoras theorem" style="margin-bottom:0;flex:1;">
-      <button onclick="generateWithAI()" class="btn-primary" style="white-space:nowrap;">⚡ Generate with AI</button>
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <h2 class="logo">StudyVerse</h2>
+    <nav class="nav-links">
+      <a href="teacher-dashboard.html">🏠 Dashboard</a>
+      <a href="create-lesson.html" class="active">📖 Create Lesson</a>
+      <a href="upload-notes.html">📄 Upload Notes</a>
+    </nav>
+    <div style="margin-top:auto;padding:20px;">
+      <button onclick="switchClass()" style="width:100%;background:none;border:1px solid rgba(245,200,66,.3);color:#f5c842;border-radius:8px;padding:9px;font-size:12px;font-family:'Cinzel',serif;cursor:pointer;">⇄ Switch Class</button>
     </div>
-    <p id="aiStatus" style="color:#facc15;margin-bottom:15px;"></p>
+  </aside>
 
-    <label>Question</label>
-    <input type="text" id="questionInput" class="input-field" placeholder="Enter question">
+  <!-- MAIN -->
+  <div class="main-area" style="overflow-y:auto;">
 
-    <label>Option 1</label>
-    <input type="text" id="opt1" class="input-field">
+    <!-- HEADER -->
+    <div class="page-header">
+      <span class="page-icon">📖</span>
+      <div>
+        <div class="page-title">Create Lesson</div>
+        <div class="page-sub">MCQ lessons — broadcast to one or multiple divisions</div>
+      </div>
+    </div>
 
-    <label>Option 2</label>
-    <input type="text" id="opt2" class="input-field">
+    <!-- ACTIVE CONTEXT BANNER -->
+    <div class="ctx-banner" id="ctxBanner">
+      <span class="ctx-label">Active context:</span>
+      <span class="ctx-chip" id="ctxClass">—</span>
+      <span class="ctx-chip" id="ctxSection">—</span>
+      <span style="color:#7aa8cc;font-size:11px;margin-left:auto;">
+        <button onclick="switchClass()" style="background:none;border:none;color:#f5c842;cursor:pointer;font-size:11px;">⇄ Switch</button>
+      </span>
+    </div>
 
-    <label>Option 3</label>
-    <input type="text" id="opt3" class="input-field">
+    <!-- CREATOR + SIDE PANEL -->
+    <div class="creator-grid">
 
-    <label>Option 4</label>
-    <input type="text" id="opt4" class="input-field">
+      <!-- LEFT: LESSON FORM -->
+      <div class="glass-card">
+        <h3>⚡ Lesson Builder</h3>
 
-    <label>Correct Answer (0-3)</label>
-    <input type="number" id="answerIndex" class="input-field" min="0" max="3"><br><br>
+        <!-- Target class/section (auto-filled from picker) -->
+        <div class="field">
+          <label>Subject</label>
+          <select id="lessonSubject">
+            <option value="">— select subject —</option>
+          </select>
+        </div>
 
-    <button onclick="saveLesson()" class="btn-primary">Save Lesson</button>
+        <!-- AI generation -->
+        <div class="ai-row">
+          <div class="field">
+            <label>Topic (for AI generation)</label>
+            <input type="text" id="topicInput" placeholder="e.g. Pythagoras theorem">
+          </div>
+          <button class="btn-ai" id="aiBtn" onclick="generateWithAI()">
+            <span>⚡</span> Generate
+          </button>
+        </div>
+        <div id="aiStatus"></div>
 
-  </div>
-<h2 style="padding:20px 30px;">📋 My Lessons</h2>
+        <!-- Question -->
+        <div class="field">
+          <label>Question</label>
+          <textarea id="questionInput" rows="2" placeholder="Enter your question here"></textarea>
+        </div>
 
-<div style="padding:0 30px 30px;">
-  <table style="width:100%;border-collapse:collapse;">
-    <thead>
-      <tr style="background:#1e293b;color:#facc15;">
-        <th style="padding:12px;text-align:left;border-bottom:1px solid #334155;">Subject</th>
-        <th style="padding:12px;text-align:left;border-bottom:1px solid #334155;">Question</th>
-        <th style="padding:12px;text-align:left;border-bottom:1px solid #334155;">Answer</th>
-        <th style="padding:12px;text-align:left;border-bottom:1px solid #334155;">Actions</th>
-      </tr>
-    </thead>
-    <tbody id="lessonsTableBody">
-      <tr><td colspan="4" style="padding:20px;color:#94a3b8;">Loading...</td></tr>
-    </tbody>
-  </table>
+        <!-- Options -->
+        <label style="display:block;font-size:11px;font-weight:600;color:#7aa8cc;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Answer Options</label>
+        <div class="options-grid">
+          <div class="opt-wrap">
+            <span class="opt-badge">A</span>
+            <input type="text" id="opt1" placeholder="Option A">
+          </div>
+          <div class="opt-wrap">
+            <span class="opt-badge">B</span>
+            <input type="text" id="opt2" placeholder="Option B">
+          </div>
+          <div class="opt-wrap">
+            <span class="opt-badge">C</span>
+            <input type="text" id="opt3" placeholder="Option C">
+          </div>
+          <div class="opt-wrap">
+            <span class="opt-badge">D</span>
+            <input type="text" id="opt4" placeholder="Option D">
+          </div>
+        </div>
+
+        <!-- Correct answer -->
+        <div class="field">
+          <label>Correct Answer</label>
+          <div class="answer-pills">
+            <div class="answer-pill" data-val="0" onclick="selectAnswer(0)">A</div>
+            <div class="answer-pill" data-val="1" onclick="selectAnswer(1)">B</div>
+            <div class="answer-pill" data-val="2" onclick="selectAnswer(2)">C</div>
+            <div class="answer-pill" data-val="3" onclick="selectAnswer(3)">D</div>
+          </div>
+          <input type="hidden" id="answerIndex" value="">
+        </div>
+
+        <button class="btn-save" id="saveBtn" onclick="saveLesson()">Save &amp; Broadcast Lesson</button>
+      </div>
+
+      <!-- RIGHT: SECTION BROADCASTER -->
+      <div>
+        <div class="glass-card" style="margin-bottom:16px;">
+          <h3>🎯 Broadcast to Sections</h3>
+          <p style="font-size:12px;color:#7aa8cc;margin-bottom:14px;line-height:1.6;">
+            Pick which divisions this lesson goes to. Select all to push it everywhere at once — no duplicate work needed.
+          </p>
+
+          <div class="select-all-row">
+            <button class="btn-select-all" onclick="toggleSelectAll()">Select All</button>
+            <span class="selected-count" id="selectedCount">0 selected</span>
+          </div>
+
+          <div class="section-grid" id="sectionGrid">
+            <div style="color:#4a7a99;font-size:12px;grid-column:1/-1;">Loading your sections…</div>
+          </div>
+        </div>
+
+        <!-- Quick tips -->
+        <div class="glass-card">
+          <h3>💡 How Broadcast Works</h3>
+          <ul style="font-size:12px;color:#7aa8cc;line-height:1.9;padding-left:16px;">
+            <li>Select one or more sections above</li>
+            <li>The same lesson is saved for each chosen section</li>
+            <li>Students only see lessons for <em>their</em> section</li>
+            <li>Edit/delete each copy independently from the table below</li>
+          </ul>
+        </div>
+      </div>
+
+    </div><!-- /creator-grid -->
+
+    <!-- LESSONS TABLE -->
+    <div class="table-section">
+      <h3>📋 My Lessons</h3>
+
+      <div class="filter-bar">
+        <select id="filterSection" onchange="loadMyLessons()">
+          <option value="">All Sections</option>
+        </select>
+        <select id="filterSubject" onchange="loadMyLessons()">
+          <option value="">All Subjects</option>
+        </select>
+      </div>
+
+      <div style="overflow-x:auto;">
+        <table class="sv-table">
+          <thead>
+            <tr>
+              <th>Subject</th>
+              <th>Section</th>
+              <th>Question</th>
+              <th>Answer</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="lessonsTableBody">
+            <tr class="empty-row"><td colspan="5">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- /main-area -->
 </div>
-</div>
-
-</div>
-
 <script src="../js/create-lesson.js"></script>
 
 </body>

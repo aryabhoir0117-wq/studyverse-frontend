@@ -413,3 +413,9 @@ body {
   80%       { transform: translate(3px, -1px); }
 }
 .shaking { animation: screenShake .35s ease; }
+
+@media (min-width: 768px) {
+  .mobile-controls {
+    display: none;
+  }
+}

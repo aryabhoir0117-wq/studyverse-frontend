@@ -525,7 +525,10 @@ async function endBattle() {
         </div>`;
     }).join("");
 }
-
+upBtn.onclick = () => changeDirection("up");
+leftBtn.onclick = () => changeDirection("left");
+downBtn.onclick = () => changeDirection("down");
+rightBtn.onclick = () => changeDirection("right");
 // ── BUTTON WIRING ─────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("startBtn").addEventListener("click", startSnake);
