@@ -1,36 +1,459 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Lesson - StudyVerse</title>
-  <link rel="stylesheet" href="../css/layout.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson · StudyVerse</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=DM+Sans:wght@400;500;600&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<style>
+/* ── RESET & BASE ─────────────────────────────────────────────────────── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  min-height: 100vh;
+  background: #0b1623;
+  color: #e2ecf4;
+  font-family: 'DM Sans', sans-serif;
+  overflow-x: hidden;
+}
+
+/* Subtle animated starfield background */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(30,80,120,.35) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, rgba(60,40,100,.25) 0%, transparent 55%),
+    linear-gradient(180deg, #0b1623 0%, #101e2e 60%, #0d1a27 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── TOPBAR ───────────────────────────────────────────────────────────── */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  height: 64px;
+  background: rgba(11,22,35,.92);
+  border-bottom: 1px solid rgba(245,200,66,.12);
+  backdrop-filter: blur(8px);
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: 1px solid rgba(255,255,255,.15);
+  color: #94b8cc;
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  transition: all .2s;
+}
+.back-btn:hover { border-color: rgba(245,200,66,.4); color: #f5c842; }
+
+.subject-badge {
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  color: #f5c842;
+  letter-spacing: .08em;
+  background: rgba(245,200,66,.08);
+  border: 1px solid rgba(245,200,66,.2);
+  border-radius: 20px;
+  padding: 4px 14px;
+}
+
+.xp-display {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  color: #f5c842;
+}
+.xp-icon { font-size: 16px; }
+
+/* ── LAYOUT ──────────────────────────────────────────────────────────── */
+.lesson-wrap {
+  position: relative;
+  z-index: 1;
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 36px 20px 60px;
+}
+
+/* ── PROGRESS ────────────────────────────────────────────────────────── */
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.progress-label {
+  font-size: 11px;
+  color: #5a7f99;
+  font-family: 'Cinzel', serif;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+#questionNum {
+  font-size: 12px;
+  color: #7aa8cc;
+  font-family: 'Cinzel', serif;
+}
+
+.progress-track {
+  width: 100%;
+  height: 6px;
+  background: rgba(255,255,255,.08);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 36px;
+}
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #f5c842, #f59e0b);
+  border-radius: 6px;
+  transition: width .5s cubic-bezier(.4,0,.2,1);
+  box-shadow: 0 0 8px rgba(245,200,66,.4);
+}
+
+/* ── LOADING ─────────────────────────────────────────────────────────── */
+#loadingScreen {
+  text-align: center;
+  padding: 80px 20px;
+}
+.loading-ship {
+  font-size: 48px;
+  display: block;
+  animation: shipBob 1.8s ease-in-out infinite;
+  margin-bottom: 16px;
+}
+@keyframes shipBob {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-10px); }
+}
+.loading-text {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  color: #7aa8cc;
+  font-size: 14px;
+}
+
+/* ── QUESTION CARD ───────────────────────────────────────────────────── */
+.question-card {
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 20px;
+  padding: 36px 32px 28px;
+  margin-bottom: 24px;
+}
+
+#questionText {
+  font-family: 'IM Fell English', serif;
+  font-size: 22px;
+  line-height: 1.55;
+  color: #e8f2fa;
+  margin-bottom: 28px;
+  min-height: 60px;
+}
+
+/* ── OPTIONS ─────────────────────────────────────────────────────────── */
+.options-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.option-btn {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 14px 18px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 12px;
+  color: #cde2f0;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  cursor: pointer;
+  text-align: left;
+  transition: all .18s;
+}
+.option-btn:hover:not(:disabled) {
+  background: rgba(96,192,233,.08);
+  border-color: rgba(96,192,233,.35);
+  color: #e8f2fa;
+  transform: translateX(4px);
+}
+.option-btn:disabled { cursor: default; }
+
+.opt-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,.2);
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: #7aa8cc;
+  flex-shrink: 0;
+  transition: all .18s;
+}
+.opt-text { flex: 1; }
+
+/* Answer states */
+.option-btn.correct {
+  background: rgba(74,222,128,.12);
+  border-color: rgba(74,222,128,.5);
+  color: #4ade80;
+}
+.option-btn.correct .opt-label {
+  background: rgba(74,222,128,.2);
+  border-color: rgba(74,222,128,.6);
+  color: #4ade80;
+}
+.option-btn.wrong {
+  background: rgba(239,68,68,.1);
+  border-color: rgba(239,68,68,.4);
+  color: #f87171;
+}
+.option-btn.wrong .opt-label {
+  background: rgba(239,68,68,.15);
+  border-color: rgba(239,68,68,.5);
+  color: #f87171;
+}
+
+/* ── NEXT BUTTON ─────────────────────────────────────────────────────── */
+#nextBtn {
+  display: none;
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(135deg, #f5c842, #f59e0b);
+  color: #0b1623;
+  font-family: 'Cinzel', serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all .2s;
+  box-shadow: 0 4px 20px rgba(245,200,66,.25);
+}
+#nextBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(245,200,66,.4);
+}
+
+/* ── XP FLOAT ────────────────────────────────────────────────────────── */
+.xp-float {
+  position: fixed;
+  right: 40px;
+  bottom: 120px;
+  font-size: 22px;
+  font-weight: 700;
+  font-family: 'Cinzel', serif;
+  color: #f5c842;
+  text-shadow: 0 0 14px rgba(245,200,66,.6);
+  pointer-events: none;
+  animation: floatUp 1.2s ease-out forwards;
+  z-index: 999;
+}
+@keyframes floatUp {
+  0%   { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-60px); }
+}
+
+/* ── SUMMARY OVERLAY ─────────────────────────────────────────────────── */
+#summaryOverlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(8,15,25,.85);
+  backdrop-filter: blur(10px);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.summary-card {
+  background: #0f1e2e;
+  border: 1px solid rgba(245,200,66,.2);
+  border-radius: 24px;
+  padding: 44px 40px;
+  text-align: center;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0,0,0,.5);
+}
+
+.summary-ship {
+  font-size: 52px;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.summary-title {
+  font-family: 'Cinzel', serif;
+  font-size: 20px;
+  color: #f5c842;
+  margin-bottom: 6px;
+}
+
+#summaryMsg {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  color: #7aa8cc;
+  font-size: 14px;
+  margin-bottom: 28px;
+}
+
+.summary-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.stat-box {
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 12px;
+  padding: 14px 8px;
+}
+.stat-val {
+  font-family: 'Cinzel', serif;
+  font-size: 22px;
+  color: #f5c842;
+  display: block;
+  margin-bottom: 4px;
+}
+.stat-lbl {
+  font-size: 10px;
+  color: #5a7f99;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+}
+
+.btn-done {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #f5c842, #f59e0b);
+  color: #0b1623;
+  font-family: 'Cinzel', serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all .2s;
+}
+.btn-done:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(245,200,66,.35); }
+
+/* ── RESPONSIVE ──────────────────────────────────────────────────────── */
+@media (max-width: 520px) {
+  .lesson-wrap { padding: 20px 14px 40px; }
+  #questionText { font-size: 18px; }
+  .question-card { padding: 24px 18px; }
+  .summary-card { padding: 32px 20px; }
+  .summary-stats { grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+}
+</style>
 </head>
-<body class="pirate-studybg">
+<body>
 
-  <div class="lesson-layout">
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="topbar-left">
+    <button class="back-btn" onclick="goBack()">← Back</button>
+    <span class="subject-badge" id="subjectLabel">LESSON</span>
+  </div>
+  <div class="xp-display">
+    <span class="xp-icon">⚡</span>
+    <span id="liveXP">0</span> XP
+  </div>
+</header>
 
-    <header class="lesson-topbar">
-      <button onclick="goBack()" class="btn-outline">Back</button>
-      <div>Battle Bounty: <span id="liveXP">0</span></div>
-    </header>
+<!-- MAIN LESSON AREA -->
+<div class="lesson-wrap">
 
-    <main class="lesson-content">
+  <!-- LOADING STATE -->
+  <div id="loadingScreen">
+    <span class="loading-ship">⛵</span>
+    <p class="loading-text">Charting your course…</p>
+  </div>
 
-      <div class="progress-bar">
-        <div class="progress-fill" id="progressFill"></div>
-      </div>
+  <!-- LESSON CONTENT (hidden until loaded) -->
+  <div id="lessonMain" style="display:none;">
 
-      <div class="question-card">
-        <h2 id="questionText">Question appears here</h2>
-        <div id="optionsContainer" class="options-grid"></div>
-      </div>
+    <!-- PROGRESS BAR -->
+    <div class="progress-header">
+      <span class="progress-label">Progress</span>
+      <span id="questionNum">— / —</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
 
-      <button id="nextBtn" class="btn-primary next-btn" style="display:none;">
-        Next Question
-      </button>
+    <!-- QUESTION CARD -->
+    <div class="question-card">
+      <h2 id="questionText"></h2>
+      <div id="optionsContainer" class="options-grid"></div>
+    </div>
 
-    </main>
+    <!-- NEXT BUTTON -->
+    <button id="nextBtn">Next Question →</button>
 
   </div>
-  <script src="../js/lesson.js"></script>
+</div>
+
+<!-- SUMMARY OVERLAY -->
+<div id="summaryOverlay">
+  <div class="summary-card">
+    <span class="summary-ship">🏴‍☠️</span>
+    <h2 class="summary-title">Voyage Complete!</h2>
+    <p id="summaryMsg"></p>
+    <div class="summary-stats">
+      <div class="stat-box">
+        <span class="stat-val" id="summaryXP">0</span>
+        <span class="stat-lbl">XP Earned</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-val" id="summaryCorrect">0/0</span>
+        <span class="stat-lbl">Correct</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-val" id="summaryPct">0%</span>
+        <span class="stat-lbl">Score</span>
+      </div>
+    </div>
+    <button class="btn-done" onclick="goToDashboard()">Return to Ship Deck</button>
+  </div>
+</div>
+
+<script src="../js/lesson.js"></script>
 </body>
 </html>

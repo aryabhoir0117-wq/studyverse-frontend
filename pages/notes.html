@@ -1,47 +1,422 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Study Notes</title>
-<link rel="stylesheet" href="../css/layout.css">
-</head>
-<body class="library">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notes · StudyVerse</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=DM+Sans:wght@400;500;600&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<style>
+/* ── RESET & BASE ────────────────────────────────────────────────────── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
+body {
+  min-height: 100vh;
+  background: #0b1623;
+  color: #e2ecf4;
+  font-family: 'DM Sans', sans-serif;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 15% 60%, rgba(25,60,100,.3) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 15%, rgba(50,30,90,.2) 0%, transparent 55%),
+    linear-gradient(180deg, #0b1623 0%, #0e1c2c 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── LAYOUT ──────────────────────────────────────────────────────────── */
+.app-layout {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  min-height: 100vh;
+}
+
+/* ── SIDEBAR ─────────────────────────────────────────────────────────── */
+.sidebar {
+  background: rgba(10,18,28,.95);
+  border-right: 1px solid rgba(255,255,255,.07);
+  padding: 28px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.logo {
+  font-family: 'Cinzel', serif;
+  font-size: 16px;
+  color: #f5c842;
+  text-shadow: 0 0 12px rgba(245,200,66,.3);
+  padding: 0 8px 20px;
+  border-bottom: 1px solid rgba(255,255,255,.07);
+  margin-bottom: 10px;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: #7aa8cc;
+  text-decoration: none;
+  font-size: 13px;
+  font-family: 'DM Sans', sans-serif;
+  transition: all .18s;
+}
+.nav-link:hover {
+  background: rgba(255,255,255,.05);
+  color: #e2ecf4;
+}
+
+/* ── MAIN ────────────────────────────────────────────────────────────── */
+.main-area {
+  overflow-y: auto;
+  padding: 32px 36px 60px;
+}
+
+/* ── PAGE HEADER ─────────────────────────────────────────────────────── */
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.page-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #5a7f99;
+  margin-bottom: 6px;
+}
+.breadcrumb a {
+  color: #7aa8cc;
+  text-decoration: none;
+  transition: color .15s;
+}
+.breadcrumb a:hover { color: #f5c842; }
+.breadcrumb-sep { opacity: .4; }
+.subject-tag {
+  background: rgba(245,200,66,.1);
+  border: 1px solid rgba(245,200,66,.25);
+  border-radius: 20px;
+  padding: 2px 10px;
+  color: #f5c842;
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  letter-spacing: .08em;
+}
+
+#notesTitle {
+  font-family: 'Cinzel', serif;
+  font-size: 24px;
+  color: #e8f2fa;
+  letter-spacing: .02em;
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: 1px solid rgba(255,255,255,.15);
+  color: #7aa8cc;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  transition: all .18s;
+  text-decoration: none;
+}
+.back-btn:hover { border-color: rgba(245,200,66,.4); color: #f5c842; }
+
+/* ── NOTES TABLE ─────────────────────────────────────────────────────── */
+.notes-table-wrap {
+  overflow-x: auto;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.08);
+}
+
+.notes-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.notes-table thead tr {
+  background: rgba(255,255,255,.04);
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+.notes-table th {
+  padding: 13px 18px;
+  text-align: left;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: #5a7f99;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.note-row {
+  border-bottom: 1px solid rgba(255,255,255,.05);
+  transition: background .15s;
+}
+.note-row:hover { background: rgba(255,255,255,.02); }
+.note-row:last-child { border-bottom: none; }
+
+.note-title-cell {
+  padding: 16px 18px;
+  min-width: 160px;
+  vertical-align: top;
+}
+.note-title {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: #e8f2fa;
+  margin-bottom: 4px;
+}
+.note-meta {
+  font-size: 11px;
+  color: #5a7f99;
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+}
+
+.note-content-cell {
+  padding: 16px 18px;
+  vertical-align: top;
+}
+.note-preview, .note-full {
+  font-size: 13px;
+  color: #94b8cc;
+  line-height: 1.65;
+}
+.btn-read-more {
+  background: none;
+  border: none;
+  color: #f5c842;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 4px 0;
+  margin-top: 6px;
+  display: block;
+  font-family: 'DM Sans', sans-serif;
+  opacity: .8;
+  transition: opacity .15s;
+}
+.btn-read-more:hover { opacity: 1; }
+
+.note-actions-cell {
+  padding: 16px 18px;
+  vertical-align: top;
+  white-space: nowrap;
+}
+
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 12px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all .15s;
+  margin-right: 6px;
+  margin-bottom: 4px;
+}
+.view-btn {
+  background: rgba(96,192,233,.1);
+  border: 1px solid rgba(96,192,233,.25);
+  color: #60c0e9;
+}
+.view-btn:hover {
+  background: rgba(96,192,233,.2);
+  border-color: rgba(96,192,233,.5);
+}
+.dl-btn {
+  background: rgba(245,200,66,.1);
+  border: 1px solid rgba(245,200,66,.25);
+  color: #f5c842;
+}
+.dl-btn:hover {
+  background: rgba(245,200,66,.18);
+  border-color: rgba(245,200,66,.5);
+}
+.no-pdf {
+  font-size: 12px;
+  color: #3a5c70;
+  font-style: italic;
+}
+
+/* ── EMPTY STATE ─────────────────────────────────────────────────────── */
+#emptyState {
+  display: none;
+  text-align: center;
+  padding: 80px 20px;
+}
+.empty-icon { font-size: 52px; margin-bottom: 16px; display: block; }
+.empty-title {
+  font-family: 'Cinzel', serif;
+  font-size: 18px;
+  color: #3a5c70;
+  margin-bottom: 8px;
+}
+.empty-sub {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 14px;
+  color: #2a4255;
+}
+
+/* ── ERROR CELL ──────────────────────────────────────────────────────── */
+.error-cell {
+  padding: 40px;
+  text-align: center;
+  color: #f87171;
+  font-size: 13px;
+}
+
+/* ── PDF VIEWER ──────────────────────────────────────────────────────── */
+#pdfViewer {
+  display: none;
+  margin-top: 28px;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.1);
+}
+.pdf-viewer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  background: rgba(255,255,255,.04);
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.pdf-viewer-title {
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  color: #f5c842;
+}
+.close-pdf-btn {
+  background: none;
+  border: 1px solid rgba(239,68,68,.3);
+  color: #f87171;
+  border-radius: 6px;
+  padding: 5px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all .15s;
+}
+.close-pdf-btn:hover { background: rgba(239,68,68,.1); }
+
+#pdfFrame {
+  width: 100%;
+  height: 600px;
+  border: none;
+  background: #0b1623;
+  display: block;
+}
+
+/* ── RESPONSIVE ──────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .app-layout { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+  .main-area { padding: 20px 16px 40px; }
+  .note-content-cell { display: none; }
+  .notes-table th:nth-child(2) { display: none; }
+}
+</style>
+</head>
+<body>
 <div class="app-layout">
 
-<aside class="sidebar">
-  <h2 class="logo">StudyVerse</h2>
-  <nav class="nav-links">
-    <a href="dashboard.html">Dashboard</a>
-  </nav>
-</aside>
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <h2 class="logo">⚓ StudyVerse</h2>
+    <a href="dashboard.html" class="nav-link">🏠 Ship Deck</a>
+    <a href="dashboard.html" class="nav-link">📚 My Subjects</a>
+  </aside>
 
-<div class="main-area">
+  <!-- MAIN -->
+  <div class="main-area">
 
-  <h1 style="padding:20px;"  id="notesTitle">Notes</h1>
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+      <div class="page-title-group">
+        <div class="breadcrumb">
+          <a href="dashboard.html">Dashboard</a>
+          <span class="breadcrumb-sep">›</span>
+          <span class="subject-tag" id="subjectTag">SUBJECT</span>
+          <span class="breadcrumb-sep">›</span>
+          <span>Notes</span>
+        </div>
+        <h1 id="notesTitle">Notes</h1>
+      </div>
+      <a href="dashboard.html" class="back-btn">← Back to Deck</a>
+    </div>
 
-  <div style="padding:0 30px 30px;">
-    <table style="width:100%;border-collapse:collapse;">
-      <thead>
-        <tr style="background:#1e293b;color:#facc15;">
-          <th style="padding:12px;text-align:left;border-bottom:1px solid #334155;">Title</th>
-          <th style="padding:12px;text-align:left;border-bottom:1px solid #334155;">Subject</th>
-          <th style="padding:12px;text-align:left;border-bottom:1px solid #334155;">Date</th>
-          <th style="padding:12px;text-align:left;border-bottom:1px solid #334155;">Content</th>
-          <th style="padding:12px;text-align:left;border-bottom:1px solid #334155;">Actions</th>
-        </tr>
-      </thead>
-      <tbody id="notesTableBody" class="table">
-        <tr><td colspan="5" style="padding:20px;color:#01060e;">Loading...</td></tr>
-      </tbody>
-    </table>
+    <!-- NOTES TABLE -->
+    <div class="notes-table-wrap">
+      <table class="notes-table">
+        <thead>
+          <tr>
+            <th>Title &amp; Date</th>
+            <th>Content</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="notesTableBody">
+          <tr>
+            <td colspan="3" style="padding:40px;text-align:center;color:#3a5c70;font-family:'IM Fell English',serif;font-style:italic;">
+              Loading notes…
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- EMPTY STATE -->
+    <div id="emptyState">
+      <span class="empty-icon">📭</span>
+      <p class="empty-title">No notes yet</p>
+      <p class="empty-sub">Your teacher hasn't uploaded notes for this subject yet. Check back soon, sailor.</p>
+    </div>
+
+    <!-- PDF VIEWER -->
+    <div id="pdfViewer">
+      <div class="pdf-viewer-header">
+        <span class="pdf-viewer-title">📄 PDF Viewer</span>
+        <button class="close-pdf-btn" onclick="closePDF()">✕ Close</button>
+      </div>
+      <iframe id="pdfFrame" title="PDF Viewer"></iframe>
+    </div>
+
   </div>
-
-  <div id="pdfViewer" style="padding:0 30px 30px;display:none;">
-    <h4 style="color:#facc15;margin-bottom:15px;">Catch-UP</h4>
-    <iframe id="pdfFrame" width="100%" height="600px" style="border:none;border-radius:8px;"></iframe>
-  </div>
-
-</div>
 </div>
 
 <script src="../js/notes.js"></script>
