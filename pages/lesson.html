@@ -373,6 +373,34 @@ body::before {
 }
 .btn-done:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(245,200,66,.35); }
 
+.explanation-box {
+  margin-top: 20px;
+  padding: 16px 18px;
+  background: rgba(96,192,233,.06);
+  border: 1px solid rgba(96,192,233,.2);
+  border-radius: 12px;
+  animation: fadeIn .3s ease;
+}
+.explanation-label {
+  display: block;
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  color: #60c0e9;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+#explanationText {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #cde2f0;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 /* ── RESPONSIVE ──────────────────────────────────────────────────────── */
 @media (max-width: 520px) {
   .lesson-wrap { padding: 20px 14px 40px; }
@@ -423,6 +451,11 @@ body::before {
       <h2 id="questionText"></h2>
       <div id="optionsContainer" class="options-grid"></div>
     </div>
+
+    <div id="explanationBox" class="explanation-box" style="display:none;">
+        <span class="explanation-label">⚓ Captain's Note</span>
+        <p id="explanationText"></p>
+      </div>
 
     <!-- NEXT BUTTON -->
     <button id="nextBtn">Next Question →</button>

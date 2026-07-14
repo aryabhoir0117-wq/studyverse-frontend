@@ -11,7 +11,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   const questionNum      = document.getElementById("questionNum");
   const loadingScreen    = document.getElementById("loadingScreen");
   const lessonMain       = document.getElementById("lessonMain");
-
+  const explanationBox  = document.getElementById("explanationBox");
+  const explanationText = document.getElementById("explanationText");
   if (!questionText) return;
 
   const subject = localStorage.getItem("currentSubject") || "";
@@ -77,7 +78,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     questionText.textContent = q.question;
     optionsContainer.innerHTML = "";
     if (nextBtn) nextBtn.style.display = "none";
-
+  if (explanationBox) explanationBox.style.display = "none";
     const pct = ((index + 1) / questions.length) * 100;
     if (progressFill) progressFill.style.width = pct + "%";
     if (questionNum)  questionNum.textContent   = `${index + 1} / ${questions.length}`;
@@ -110,6 +111,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         if (nextBtn) nextBtn.style.display = "block";
+      if (explanationBox && explanationText) {
+          if (q.explanation) {
+            explanationText.textContent = q.explanation;
+            explanationBox.style.display = "block";
+          }
+        }
       };
 
       optionsContainer.appendChild(btn);
